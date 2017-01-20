@@ -9,8 +9,8 @@ int main(int, char*[]) {
 
 	auto pixelSize = 10;
 
-	auto windowWidth = width * 10;
-	auto windowHeight = height * 10;
+	auto windowWidth = width * pixelSize;
+	auto windowHeight = height * pixelSize;
 
 	std::shared_ptr<::SDL_Window> win(
 		::SDL_CreateWindow("Hello World", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN),
