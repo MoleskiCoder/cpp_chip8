@@ -5,42 +5,40 @@
 
 int main(int argc, char* args[]) {
 
-	SDL_Window *win = NULL;
-	SDL_Renderer *renderer = NULL;
-	SDL_Texture *bitmapTex = NULL;
-	SDL_Surface *bitmapSurface = NULL;
+	::SDL_Init(SDL_INIT_VIDEO);
 
 	int posX = 100, posY = 100, width = 320, height = 240;
+	std::shared_ptr<::SDL_Window> win(
+		::SDL_CreateWindow("Hello World", posX, posY, width, height, 0),
+		std::ptr_fun(::SDL_DestroyWindow));
 
-	SDL_Init(SDL_INIT_VIDEO);
+	std::shared_ptr<::SDL_Renderer> renderer(
+		::SDL_CreateRenderer(win.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC),
+		std::ptr_fun(::SDL_DestroyRenderer));
 
-	win = SDL_CreateWindow("Hello World", posX, posY, width, height, 0);
+	std::shared_ptr<::SDL_Surface> bitmapSurface(
+		::SDL_LoadBMP("../resources/x.bmp"),
+		std::ptr_fun(::SDL_FreeSurface));
 
-	renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	std::shared_ptr<::SDL_Texture> bitmapTex(
+		::SDL_CreateTextureFromSurface(renderer.get(), bitmapSurface.get()),
+		std::ptr_fun(::SDL_DestroyTexture));
 
-	bitmapSurface = SDL_LoadBMP("../resources/x.bmp");
+	while (true) {
 
-	bitmapTex = SDL_CreateTextureFromSurface(renderer, bitmapSurface);
-	SDL_FreeSurface(bitmapSurface);
-
-	while (1) {
-		SDL_Event e;
-		if (SDL_PollEvent(&e)) {
+		::SDL_Event e;
+		if (::SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				break;
 			}
 		}
 
-		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, bitmapTex, NULL, NULL);
-		SDL_RenderPresent(renderer);
+		::SDL_RenderClear(renderer.get());
+		::SDL_RenderCopy(renderer.get(), bitmapTex.get(), NULL, NULL);
+		::SDL_RenderPresent(renderer.get());
 	}
 
-	SDL_DestroyTexture(bitmapTex);
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(win);
-
-	SDL_Quit();
+	::SDL_Quit();
 
 	return 0;
 }
