@@ -1,0 +1,45 @@
+.vs/
+Debug/
+Release/
+x64/
+ipch/
+
+*.opendb
+*.sdf
+*.vsp
+*.VC.db
+
+*.swp
+*~
+
+*.bin
+*.rom
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
