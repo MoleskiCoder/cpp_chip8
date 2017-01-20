@@ -18,9 +18,18 @@ int main(int argc, char* args[]) {
 		std::ptr_fun(::SDL_DestroyRenderer));
 	::SDL_RenderSetLogicalSize(renderer.get(), w, h);
 
+	auto pixelType = SDL_PIXELFORMAT_ARGB32;
+
 	std::shared_ptr<::SDL_Texture> bitmapTex(
-		::SDL_CreateTexture(renderer.get(), SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 64, 32),
+		::SDL_CreateTexture(renderer.get(), pixelType, SDL_TEXTUREACCESS_STREAMING, 64, 32),
 		std::ptr_fun(::SDL_DestroyTexture));
+
+	std::shared_ptr<::SDL_PixelFormat> pixelFormat(
+		::SDL_AllocFormat(pixelType),
+		std::ptr_fun(::SDL_FreeFormat));
+
+	auto white = ::SDL_MapRGBA(pixelFormat.get(), 0xff, 0xff, 0xff, 0xff);
+	auto black = ::SDL_MapRGBA(pixelFormat.get(), 0x00, 0x00, 0x00, 0xff);
 
 	// Temporary pixel buffer
 	uint32_t pixels[2048];
@@ -40,7 +49,7 @@ int main(int argc, char* args[]) {
 			// Store pixels in temporary buffer
 			for (int i = 0; i < 2048; ++i) {
 				uint8_t pixel = i % 2;
-				pixels[i] = (0x00FFFFFF * pixel) | 0xFF000000;
+				pixels[i] = pixel ? white : black;
 			}
 
 			// Update SDL texture
