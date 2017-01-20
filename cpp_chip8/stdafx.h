@@ -16,5 +16,6 @@
 
 #include <memory>
 #include <functional>
+#include <vector>
 
 #include <SDL.h>
