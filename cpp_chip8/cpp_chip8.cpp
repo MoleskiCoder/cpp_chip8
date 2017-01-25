@@ -36,9 +36,17 @@ int main(int, char*[]) {
 
 		::SDL_Event e;
 		while (::SDL_PollEvent(&e)) {
-			if (e.type == SDL_QUIT) {
+			switch (e.type) {
+			case SDL_QUIT:
 				quit = true;
 				processor->setFinished(true);
+				break;
+			case SDL_KEYDOWN:
+				processor->getKeyboardMutable().pokeKey(e.key.keysym.sym);
+				break;
+			case SDL_KEYUP:
+				processor->getKeyboardMutable().pokeKey(-1);
+				break;
 			}
 		}
 

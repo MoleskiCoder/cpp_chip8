@@ -42,6 +42,10 @@ public:
 		return m_display;
 	}
 
+	KeyboardDevice& getKeyboardMutable() {
+		return m_keyboard;
+	}
+
 	bool getDrawNeeded() const {
 		return m_drawNeeded;
 	}
