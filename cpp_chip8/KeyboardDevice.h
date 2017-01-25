@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <unordered_set>
 #include <SDL.h>
 
 class KeyboardDevice {
@@ -9,9 +10,10 @@ public:
 	bool isKeyPressed(int key) const;
 
 	void pokeKey(SDL_Keycode raw);
+	void pullKey(SDL_Keycode raw);
 
 private:
-	SDL_Keycode m_raw;
+	std::unordered_set<SDL_Keycode> m_raw;
 
 	// CHIP-8 Keyboard layout
 	//  1   2   3   C

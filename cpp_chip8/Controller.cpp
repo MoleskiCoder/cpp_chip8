@@ -62,7 +62,7 @@ void Controller::runGameLoop() {
 				m_processor->getKeyboardMutable().pokeKey(e.key.keysym.sym);
 				break;
 			case SDL_KEYUP:
-				m_processor->getKeyboardMutable().pokeKey(-1);
+				m_processor->getKeyboardMutable().pullKey(e.key.keysym.sym);
 				break;
 			}
 		}

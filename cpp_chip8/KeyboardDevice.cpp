@@ -13,9 +13,13 @@ bool KeyboardDevice::checkKeyPress(int& key) const {
 }
 
 bool KeyboardDevice::isKeyPressed(int key) const {
-	return m_raw == m_mapping[key];
+	return m_raw.find(m_mapping[key]) != m_raw.end();
 }
 
 void KeyboardDevice::pokeKey(SDL_Keycode raw) {
-	m_raw = raw;
+	m_raw.emplace(raw);
+}
+
+void KeyboardDevice::pullKey(SDL_Keycode raw) {
+	m_raw.erase(raw);
 }

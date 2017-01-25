@@ -26,5 +26,6 @@
 #include <random>
 #include <limits>
 #include <stdexcept>
+#include <unordered_set>
 
 #include <SDL.h>
