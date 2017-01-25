@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <random>
 
 #include "Memory.h"
 #include "BitmappedGraphics.h"
@@ -184,6 +185,9 @@ private:
 
 	bool m_waitingForKeyPress;
 	int m_waitingForKeyPressRegister;
+
+	std::mt19937 m_randomNumberGenerator;
+	std::uniform_int_distribution<std::mt19937::result_type> m_eightBitDistribution;
 
 	void waitForKeyPress();
 

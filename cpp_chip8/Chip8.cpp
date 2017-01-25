@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <limits>
 
 #include "Configuration.h"
 
@@ -10,7 +11,8 @@ Chip8::Chip8(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, 
 : m_display(display),
   m_memory(memory),
   m_keyboard(keyboard),
-  m_configuration(configuration) {
+  m_configuration(configuration),
+  m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
 }
 
 void Chip8::initialise() {
@@ -39,6 +41,8 @@ void Chip8::initialise() {
 
 	m_soundPlaying = false;
 	m_waitingForKeyPress = false;
+
+	m_randomNumberGenerator.seed(std::random_device()());
 }
 
 void Chip8::loadGame(std::string game) {
@@ -573,7 +577,8 @@ void Chip8::JP_V0(int x, int nnn) {
 
 void Chip8::RND(int x, int nn) {
 	m_mnemomicFormat = "RND\tV{0:X1},#{1:X2}";
-	//m_v[x] = (uint8_t)(this.randomNumbers.Next(uint8_t.MaxValue) & nn);
+	auto random = m_eightBitDistribution(m_randomNumberGenerator);
+	m_v[x] = (uint8_t)(random & nn);
 }
 
 void Chip8::DRW(int x, int y, int n) {
