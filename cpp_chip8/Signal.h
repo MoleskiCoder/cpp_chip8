@@ -3,8 +3,7 @@
 #include <vector>
 #include <functional>
 
-template<class T> class Signal
-{
+template<class T> class Signal {
 private:
 	typedef std::function<void(const T&)> delegate_t;
 	typedef std::vector<delegate_t> delegates_t;

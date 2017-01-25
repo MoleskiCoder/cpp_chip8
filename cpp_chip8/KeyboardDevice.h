@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <SDL.h>
 
 class KeyboardDevice {
 public:

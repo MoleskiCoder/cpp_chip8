@@ -23,5 +23,8 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
+#include <random>
+#include <limits>
+#include <stdexcept>
 
 #include <SDL.h>
