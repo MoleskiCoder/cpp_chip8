@@ -138,7 +138,7 @@ void Chip8::emulateCycle() {
 
 	if ((m_pc % 2) == 1) {
 		if (!m_configuration.getAllowMisalignedOpcodes()) {
-			//// throw new InvalidOperationException("Instruction is not on an aligned address");
+			throw std::runtime_error("Instruction is not on an aligned address.");
 		}
 	}
 
@@ -147,7 +147,7 @@ void Chip8::emulateCycle() {
 
 	onEmulatingCycle(programCounter, m_opcode, nnn, nn, n, x, y);
 	if (!emulateInstruction(nnn, nn, n, x, y)) {
-		//throw new IllegalInstructionException(m_opcode);
+		throw std::runtime_error("Illegal instruction.");
 	}
 
 	onEmulatedCycle(programCounter, m_opcode, nnn, nn, n, x, y);

@@ -31,6 +31,6 @@ void ColourPalette::load(SDL_PixelFormat* hardware) {
 		m_colours[3] = white;
 		break;
 	default:
-		throw new std::domain_error("Undefined number of graphics bit planes in use.");
+		throw std::logic_error("Undefined number of graphics bit planes in use.");
 	}
 }

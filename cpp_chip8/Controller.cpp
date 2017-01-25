@@ -37,7 +37,7 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 		return new XoChip(memory, keyboard, graphics, configuration);
 
 	default:
-		throw new std::domain_error("Whoops: unknown processor type");
+		throw std::logic_error("Whoops: unknown processor type.");
 	}
 }
 
