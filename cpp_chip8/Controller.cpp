@@ -10,10 +10,20 @@
 Controller::Controller(Chip8* processor, std::string game)
 : m_processor(processor),
   m_game(game),
-  m_colours(processor->getDisplay()) {
+  m_colours(processor->getDisplay()),
+  m_bitmapTexture(nullptr),
+  m_pixelFormat(nullptr) {
 }
 
 Controller::~Controller() {
+
+	if (m_bitmapTexture != nullptr) {
+		::SDL_DestroyTexture(m_bitmapTexture);
+	}
+
+	if (m_pixelFormat != nullptr) {
+		::SDL_FreeFormat(m_pixelFormat);
+	}
 }
 
 Chip8* Controller::buildProcessor(const Configuration& configuration) {
@@ -61,16 +71,24 @@ void Controller::stop() {
 	m_processor->setFinished(true);
 }
 
-void Controller::loadContent(SDL_Renderer* renderer, SDL_PixelFormat* pixelFormat) {
-	m_colours.load(pixelFormat);
+void Controller::loadContent(SDL_Renderer* renderer) {
+	m_colours.load(m_pixelFormat);
 	m_processor->initialise();
 	m_processor->loadGame(m_game);
-	configureBackground(renderer, pixelFormat);
+	configureBackground(renderer);
+	createBitmapTexture(renderer);
+	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 }
 
-void Controller::configureBackground(SDL_Renderer* renderer, SDL_PixelFormat* pixelFormat) const {
+void Controller::createBitmapTexture(SDL_Renderer* renderer) {
+	auto screenWidth = m_processor->getDisplay().getWidth();
+	auto screenHeight = m_processor->getDisplay().getHeight();
+	m_bitmapTexture = ::SDL_CreateTexture(renderer, m_pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
+}
+
+void Controller::configureBackground(SDL_Renderer* renderer) const {
 	Uint8 r, g, b;
-	::SDL_GetRGB(m_colours.getColour(0), pixelFormat, &r, &g, &b);
+	::SDL_GetRGB(m_colours.getColour(0), m_pixelFormat, &r, &g, &b);
 	::SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
 }
 
@@ -91,12 +109,6 @@ void Controller::drawFrame(SDL_Renderer* renderer) const {
 
 	std::vector<uint32_t> pixels(screenWidth * screenHeight);
 
-	auto pixelType = SDL_PIXELFORMAT_ARGB32;
-
-	std::shared_ptr<::SDL_Texture> bitmapTexture(
-		::SDL_CreateTexture(renderer, pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight),
-		std::ptr_fun(::SDL_DestroyTexture));
-
 	for (int y = 0; y < screenHeight; y++) {
 		auto rowOffset = y * screenWidth;
 		for (int x = 0; x < screenWidth; x++) {
@@ -111,10 +123,10 @@ void Controller::drawFrame(SDL_Renderer* renderer) const {
 		}
 	}
 
-	::SDL_UpdateTexture(bitmapTexture.get(), NULL, &pixels[0], screenWidth * sizeof(Uint32));
+	::SDL_UpdateTexture(m_bitmapTexture, NULL, &pixels[0], screenWidth * sizeof(Uint32));
 
 	::SDL_RenderClear(renderer);
-	::SDL_RenderCopy(renderer, bitmapTexture.get(), NULL, NULL);
+	::SDL_RenderCopy(renderer, m_bitmapTexture, NULL, NULL);
 	::SDL_RenderPresent(renderer);
 }
 

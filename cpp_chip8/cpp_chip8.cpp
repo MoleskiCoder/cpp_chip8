@@ -25,17 +25,11 @@ int main(int, char*[]) {
 		std::ptr_fun(::SDL_DestroyRenderer));
 	::SDL_RenderSetLogicalSize(renderer.get(), windowWidth, windowHeight);
 
-	auto pixelType = SDL_PIXELFORMAT_ARGB32;
-
-	std::shared_ptr<::SDL_PixelFormat> pixelFormat(
-		::SDL_AllocFormat(pixelType),
-		std::ptr_fun(::SDL_FreeFormat));
-
 	Configuration configuration;
 	std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
 	Controller controller(processor.get(), "GAMES\\PONG.ch8");
 
-	controller.loadContent(renderer.get(), pixelFormat.get());
+	controller.loadContent(renderer.get());
 
 	auto quit = false;
 	while (!quit) {
