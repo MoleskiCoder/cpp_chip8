@@ -40,7 +40,7 @@ void Chip8::initialise() {
 
 void Chip8::loadGame(std::string game)
 {
-	auto path = "..\\..\\..\\Roms\\" + game;
+	auto path = "..\\Roms\\" + game;
 	loadRom(path, m_configuration.getLoadAddress());
 }
 
@@ -688,7 +688,10 @@ void Chip8::updateSoundTimer() {
 
 void Chip8::loadRom(std::string path, uint16_t offset) {
 
-	std::ifstream file(path, std::ios::binary | std::ios::ate);
+	std::ifstream file;
+	file.exceptions(std::ios::failbit | std::ios::badbit);
+
+	file.open(path, std::ios::binary | std::ios::ate);
 	auto size = (int)file.tellg();
 
 	file.seekg(0, std::ios::beg);
