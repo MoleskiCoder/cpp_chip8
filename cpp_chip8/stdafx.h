@@ -17,5 +17,11 @@
 #include <memory>
 #include <functional>
 #include <vector>
+#include <array>
+#include <string>
+#include <algorithm>
+#include <cstdint>
+#include <iostream>
+#include <fstream>
 
 #include <SDL.h>

@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "Controller.h"
+#include "Configuration.h"
+#include "Chip8.h"
+
 int main(int, char*[]) {
 
 	::SDL_Init(SDL_INIT_VIDEO);
@@ -37,6 +41,12 @@ int main(int, char*[]) {
 	// Temporary texture buffer
 	std::vector<uint32_t> pixels(width * height);
 
+	Configuration configuration;
+	std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
+	Controller controller(processor.get(), "GAMES\\PONG.ch8");
+
+	controller.loadContent(pixelFormat.get());
+
 	auto quit = false;
 	while (!quit) {
 
@@ -44,8 +54,12 @@ int main(int, char*[]) {
 		while (::SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				quit = true;
+				processor->setFinished(true);
 			}
 		}
+
+		controller.runFrame();
+		quit = processor->getFinished();
 
 		if (!quit) {
 

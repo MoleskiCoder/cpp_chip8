@@ -165,17 +165,38 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BitmappedGraphics.h" />
+    <ClInclude Include="Chip8.h" />
+    <ClInclude Include="ColourPalette.h" />
+    <ClInclude Include="Configuration.h" />
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="DisassemblyEventArgs.h" />
+    <ClInclude Include="EventArgs.h" />
+    <ClInclude Include="KeyboardDevice.h" />
+    <ClInclude Include="Memory.h" />
+    <ClInclude Include="Schip.h" />
+    <ClInclude Include="Signal.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="XoChip.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BitmappedGraphics.cpp" />
+    <ClCompile Include="Chip8.cpp" />
+    <ClCompile Include="ColourPalette.cpp" />
+    <ClCompile Include="Configuration.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="cpp_chip8.cpp" />
+    <ClCompile Include="KeyboardDevice.cpp" />
+    <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="Schip.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="XoChip.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
