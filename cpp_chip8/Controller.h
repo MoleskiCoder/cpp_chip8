@@ -14,11 +14,12 @@ public:
 	Controller(Chip8* processor, std::string game);
 	~Controller();
 
+	virtual void runGameLoop(SDL_Renderer* renderer);
 	virtual void loadContent(SDL_Renderer* renderer);
-	virtual void update(SDL_Renderer* renderer);
 
 protected:
-	void runFrame();
+	virtual void update(SDL_Renderer* renderer);
+	virtual void runFrame();
 	virtual bool runCycle() const;
 	virtual void draw(SDL_Renderer* renderer) const;
 

@@ -30,29 +30,7 @@ int main(int, char*[]) {
 	Controller controller(processor.get(), "GAMES\\PONG.ch8");
 
 	controller.loadContent(renderer.get());
-
-	auto quit = false;
-	while (!quit) {
-
-		::SDL_Event e;
-		while (::SDL_PollEvent(&e)) {
-			switch (e.type) {
-			case SDL_QUIT:
-				quit = true;
-				processor->setFinished(true);
-				break;
-			case SDL_KEYDOWN:
-				processor->getKeyboardMutable().pokeKey(e.key.keysym.sym);
-				break;
-			case SDL_KEYUP:
-				processor->getKeyboardMutable().pokeKey(-1);
-				break;
-			}
-		}
-
-		controller.update(renderer.get());
-		quit = processor->getFinished();
-	}
+	controller.runGameLoop(renderer.get());
 
 	::SDL_Quit();
 

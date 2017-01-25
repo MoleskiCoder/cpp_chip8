@@ -53,6 +53,29 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 	}
 }
 
+void Controller::runGameLoop(SDL_Renderer* renderer) {
+	auto quit = false;
+	while (!quit) {
+		::SDL_Event e;
+		while (::SDL_PollEvent(&e)) {
+			switch (e.type) {
+			case SDL_QUIT:
+				quit = true;
+				m_processor->setFinished(true);
+				break;
+			case SDL_KEYDOWN:
+				m_processor->getKeyboardMutable().pokeKey(e.key.keysym.sym);
+				break;
+			case SDL_KEYUP:
+				m_processor->getKeyboardMutable().pokeKey(-1);
+				break;
+			}
+		}
+		update(renderer);
+		quit = m_processor->getFinished();
+	}
+}
+
 void Controller::update(SDL_Renderer* renderer) {
 	runFrame();
 	m_processor->updateTimers();
