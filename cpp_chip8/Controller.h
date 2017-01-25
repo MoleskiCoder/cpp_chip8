@@ -14,14 +14,14 @@ public:
 	Controller(Chip8* processor, std::string game);
 	~Controller();
 
-	virtual void runGameLoop(SDL_Renderer* renderer);
-	virtual void loadContent(SDL_Renderer* renderer);
+	virtual void runGameLoop();
+	virtual void loadContent(SDL_Window* window);
 
 protected:
-	virtual void update(SDL_Renderer* renderer);
+	virtual void update();
 	virtual void runFrame();
 	virtual bool runCycle() const;
-	virtual void draw(SDL_Renderer* renderer) const;
+	virtual void draw() const;
 
 	void stop();
 
@@ -36,8 +36,15 @@ private:
 	Uint32 m_pixelType;
 	SDL_PixelFormat* m_pixelFormat;
 
-	void configureBackground(SDL_Renderer* renderer) const;
-	void drawFrame(SDL_Renderer* renderer) const;
+	void configureBackground() const;
+	void drawFrame() const;
 
-	void createBitmapTexture(SDL_Renderer* renderer);
+	void createBitmapTexture();
+	void recreateBitmapTexture();
+
+	void destroyBitmapTexture();
+	void destroyPixelFormat();
+
+	void Processor_HighResolution();
+	void Processor_LowResolution();
 };

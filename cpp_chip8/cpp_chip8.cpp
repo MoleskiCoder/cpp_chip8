@@ -20,17 +20,15 @@ int main(int, char*[]) {
 		::SDL_CreateWindow("Hello World", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN),
 		std::ptr_fun(::SDL_DestroyWindow));
 
-	std::shared_ptr<::SDL_Renderer> renderer(
-		::SDL_CreateRenderer(win.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC),
-		std::ptr_fun(::SDL_DestroyRenderer));
-	::SDL_RenderSetLogicalSize(renderer.get(), windowWidth, windowHeight);
-
-	Configuration configuration;
+	//Configuration configuration;
+	auto configuration = Configuration::buildSuperChipConfiguration();
 	std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
-	Controller controller(processor.get(), "GAMES\\PONG.ch8");
 
-	controller.loadContent(renderer.get());
-	controller.runGameLoop(renderer.get());
+	//Controller controller(processor.get(), "GAMES\\PONG.ch8");
+	Controller controller(processor.get(), "SGAMES\\SPACEFIG");
+
+	controller.loadContent(win.get());
+	controller.runGameLoop();
 
 	::SDL_Quit();
 

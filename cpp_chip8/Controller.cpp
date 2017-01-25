@@ -18,14 +18,9 @@ Controller::Controller(Chip8* processor, std::string game)
 }
 
 Controller::~Controller() {
-
-	if (m_bitmapTexture != nullptr) {
-		::SDL_DestroyTexture(m_bitmapTexture);
-	}
-
-	if (m_pixelFormat != nullptr) {
-		::SDL_FreeFormat(m_pixelFormat);
-	}
+	destroyBitmapTexture();
+	destroyPixelFormat();
+	::SDL_DestroyRenderer(m_renderer);
 }
 
 Chip8* Controller::buildProcessor(const Configuration& configuration) {
@@ -53,7 +48,7 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 	}
 }
 
-void Controller::runGameLoop(SDL_Renderer* renderer) {
+void Controller::runGameLoop() {
 	auto quit = false;
 	while (!quit) {
 		::SDL_Event e;
@@ -71,15 +66,15 @@ void Controller::runGameLoop(SDL_Renderer* renderer) {
 				break;
 			}
 		}
-		update(renderer);
+		update();
 		quit = m_processor->getFinished();
 	}
 }
 
-void Controller::update(SDL_Renderer* renderer) {
+void Controller::update() {
 	runFrame();
 	m_processor->updateTimers();
-	draw(renderer);
+	draw();
 }
 
 void Controller::runFrame() {
@@ -102,35 +97,70 @@ void Controller::stop() {
 	m_processor->setFinished(true);
 }
 
-void Controller::loadContent(SDL_Renderer* renderer) {
+void Controller::loadContent(SDL_Window* window) {
+
+	auto width = m_processor->getDisplay().getWidth();
+	auto height = m_processor->getDisplay().getHeight();
+
+	auto scale = 10;
+
+	auto windowWidth = width * scale;
+	auto windowHeight = height * scale;
+
+	m_renderer = ::SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	::SDL_RenderSetLogicalSize(m_renderer, windowWidth, windowHeight);
+
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 	m_colours.load(m_pixelFormat);
+
+	if (auto schip = dynamic_cast<Schip*>(m_processor)) {
+		schip->HighResolutionConfigured.connect(std::bind(&Controller::Processor_HighResolution, this));
+		schip->LowResolutionConfigured.connect(std::bind(&Controller::Processor_LowResolution, this));
+	}
+
 	m_processor->initialise();
 	m_processor->loadGame(m_game);
-	configureBackground(renderer);
-	createBitmapTexture(renderer);
+	configureBackground();
+	createBitmapTexture();
 }
 
-void Controller::createBitmapTexture(SDL_Renderer* renderer) {
+void Controller::destroyBitmapTexture() {
+	if (m_bitmapTexture != nullptr) {
+		::SDL_DestroyTexture(m_bitmapTexture);
+	}
+}
+
+void Controller::destroyPixelFormat() {
+	if (m_pixelFormat != nullptr) {
+		::SDL_FreeFormat(m_pixelFormat);
+	}
+}
+
+void Controller::recreateBitmapTexture() {
+	destroyBitmapTexture();
+	createBitmapTexture();
+}
+
+void Controller::createBitmapTexture() {
 	auto screenWidth = m_processor->getDisplay().getWidth();
 	auto screenHeight = m_processor->getDisplay().getHeight();
-	m_bitmapTexture = ::SDL_CreateTexture(renderer, m_pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
+	m_bitmapTexture = ::SDL_CreateTexture(m_renderer, m_pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
 }
 
-void Controller::configureBackground(SDL_Renderer* renderer) const {
+void Controller::configureBackground() const {
 	Uint8 r, g, b;
 	::SDL_GetRGB(m_colours.getColour(0), m_pixelFormat, &r, &g, &b);
-	::SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
+	::SDL_SetRenderDrawColor(m_renderer, r, g, b, SDL_ALPHA_OPAQUE);
 }
 
-void Controller::draw(SDL_Renderer* renderer) const {
+void Controller::draw() const {
 	if (m_processor->getDrawNeeded()) {
-		drawFrame(renderer);
+		drawFrame();
 		m_processor->setDrawNeeded(false);
 	}
 }
 
-void Controller::drawFrame(SDL_Renderer* renderer) const {
+void Controller::drawFrame() const {
 
 	auto screenWidth = m_processor->getDisplay().getWidth();
 	auto screenHeight = m_processor->getDisplay().getHeight();
@@ -156,165 +186,15 @@ void Controller::drawFrame(SDL_Renderer* renderer) const {
 
 	::SDL_UpdateTexture(m_bitmapTexture, NULL, &pixels[0], screenWidth * sizeof(Uint32));
 
-	::SDL_RenderClear(renderer);
-	::SDL_RenderCopy(renderer, m_bitmapTexture, NULL, NULL);
-	::SDL_RenderPresent(renderer);
+	::SDL_RenderClear(m_renderer);
+	::SDL_RenderCopy(m_renderer, m_bitmapTexture, NULL, NULL);
+	::SDL_RenderPresent(m_renderer);
 }
 
-//	public class Controller : Game, IDisposable
-//	{
-//		private const Keys ToggleKey = Keys.F12;
-//
-//		private const int PixelSizeHigh = 5;
-//		private const int PixelSizeLow = 10;
-//
-//		private readonly string game;
-//		private readonly GraphicsDeviceManager graphics;
-//		private readonly SoundPlayer soundPlayer = new SoundPlayer();
-//
-//		private readonly MonoGameColourPalette palette;
-//
-//		private readonly Chip8 processor;
-//
-//		private SpriteBatch spriteBatch;
-//
-//		private bool wasToggleKeyPressed;
-//
-//		private bool disposed = false;
+void Controller::Processor_HighResolution() {
+	recreateBitmapTexture();
+}
 
-//		public Chip8 Processor
-//		{
-//			get
-//		{
-//			return this.processor;
-//		}
-//		}
-//
-//			private int PixelSize
-//		{
-//			get
-//		{
-//			return this.processor.Display.HighResolution ? PixelSizeHigh : PixelSizeLow;
-//		}
-//		}
-//
-//			public void Stop()
-//		{
-//			this.processor.Finished = true;
-//		}
-//
-//		protected override void Dispose(bool disposing)
-//		{
-//			base.Dispose(disposing);
-//			if (!this.disposed)
-//			{
-//				if (disposing)
-//				{
-//					if (this.soundPlayer != null)
-//					{
-//						this.soundPlayer.Dispose();
-//					}
-//
-//					if (this.graphics != null)
-//					{
-//						this.graphics.Dispose();
-//					}
-//
-//					if (this.palette != null)
-//					{
-//						this.palette.Dispose();
-//					}
-//
-//					if (this.spriteBatch != null)
-//					{
-//						this.spriteBatch.Dispose();
-//					}
-//				}
-//
-//				this.disposed = true;
-//			}
-//		}
-//
-//		protected override void LoadContent()
-//		{
-//			this.soundPlayer.SoundLocation = @"..\..\..\Sounds\beep.wav";
-//
-//				this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
-//
-//			this.palette.Load(this.GraphicsDevice);
-//
-//			this.SetLowResolution();
-//
-//			var schip = this.processor as Schip;
-//			if (schip != null)
-//			{
-//				schip.HighResolutionConfigured += this.Processor_HighResolution;
-//				schip.LowResolutionConfigured += this.Processor_LowResolution;
-//			}
-//
-//			this.processor.BeepStarting += this.Processor_BeepStarting;
-//			this.processor.BeepStopped += this.Processor_BeepStopped;
-//
-//			this.processor.Initialise();
-//
-//			this.processor.LoadGame(this.game);
-//		}
-//
-//		protected override void Update(GameTime gameTime)
-//		{
-//			this.RunFrame();
-//			this.processor.UpdateTimers();
-//			this.CheckFullScreen();
-//			base.Update(gameTime);
-//		}
-//
-//
-//
-//
-//		private void CheckFullScreen()
-//		{
-//			var toggleKeyPressed = Keyboard.GetState().IsKeyDown(ToggleKey);
-//			if (toggleKeyPressed && !this.wasToggleKeyPressed)
-//			{
-//				this.graphics.ToggleFullScreen();
-//			}
-//
-//			this.wasToggleKeyPressed = toggleKeyPressed;
-//		}
-//
-//		private void Processor_BeepStarting(object sender, EventArgs e)
-//		{
-//			this.soundPlayer.PlayLooping();
-//		}
-//
-//		private void Processor_BeepStopped(object sender, EventArgs e)
-//		{
-//			this.soundPlayer.Stop();
-//		}
-//
-//		private void Processor_LowResolution(object sender, System.EventArgs e)
-//		{
-//			this.SetLowResolution();
-//		}
-//
-//		private void Processor_HighResolution(object sender, System.EventArgs e)
-//		{
-//			this.SetHighResolution();
-//		}
-//
-//		private void ChangeResolution(int width, int height)
-//		{
-//			this.graphics.PreferredBackBufferWidth = this.PixelSize * width;
-//			this.graphics.PreferredBackBufferHeight = this.PixelSize * height;
-//			this.graphics.ApplyChanges();
-//		}
-//
-//		private void SetLowResolution()
-//		{
-//			this.ChangeResolution(BitmappedGraphics.ScreenWidthLow, BitmappedGraphics.ScreenHeightLow);
-//		}
-//
-//		private void SetHighResolution()
-//		{
-//			this.ChangeResolution(BitmappedGraphics.ScreenWidthHigh, BitmappedGraphics.ScreenHeightHigh);
-//		}
+void Controller::Processor_LowResolution() {
+	recreateBitmapTexture();
+}
