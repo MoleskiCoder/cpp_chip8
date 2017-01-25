@@ -42,12 +42,8 @@ int main(int, char*[]) {
 			}
 		}
 
-		controller.runFrame();
+		controller.update(renderer.get());
 		quit = processor->getFinished();
-
-		if (!quit) {
-			controller.draw(renderer.get());
-		}
 	}
 
 	::SDL_Quit();

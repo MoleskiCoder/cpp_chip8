@@ -51,6 +51,12 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 	}
 }
 
+void Controller::update(SDL_Renderer* renderer) {
+	runFrame();
+	m_processor->updateTimers();
+	draw(renderer);
+}
+
 void Controller::runFrame() {
 	auto cycles = m_processor->getConfiguration().getCyclesPerFrame();
 	for (int i = 0; i < cycles; ++i) {
@@ -72,12 +78,12 @@ void Controller::stop() {
 }
 
 void Controller::loadContent(SDL_Renderer* renderer) {
+	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 	m_colours.load(m_pixelFormat);
 	m_processor->initialise();
 	m_processor->loadGame(m_game);
 	configureBackground(renderer);
 	createBitmapTexture(renderer);
-	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 }
 
 void Controller::createBitmapTexture(SDL_Renderer* renderer) {
