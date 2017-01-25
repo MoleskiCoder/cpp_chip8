@@ -27,25 +27,15 @@ int main(int, char*[]) {
 
 	auto pixelType = SDL_PIXELFORMAT_ARGB32;
 
-	std::shared_ptr<::SDL_Texture> bitmapTex(
-		::SDL_CreateTexture(renderer.get(), pixelType, SDL_TEXTUREACCESS_STREAMING, width, height),
-		std::ptr_fun(::SDL_DestroyTexture));
-
 	std::shared_ptr<::SDL_PixelFormat> pixelFormat(
 		::SDL_AllocFormat(pixelType),
 		std::ptr_fun(::SDL_FreeFormat));
-
-	auto white = ::SDL_MapRGBA(pixelFormat.get(), 0xff, 0xff, 0xff, 0xff);
-	auto black = ::SDL_MapRGBA(pixelFormat.get(), 0x00, 0x00, 0x00, 0xff);
-
-	// Temporary texture buffer
-	std::vector<uint32_t> pixels(width * height);
 
 	Configuration configuration;
 	std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
 	Controller controller(processor.get(), "GAMES\\PONG.ch8");
 
-	controller.loadContent(pixelFormat.get());
+	controller.loadContent(renderer.get(), pixelFormat.get());
 
 	auto quit = false;
 	while (!quit) {
@@ -62,20 +52,7 @@ int main(int, char*[]) {
 		quit = processor->getFinished();
 
 		if (!quit) {
-
-			// Store pixels in temporary buffer
-			for (int y = 0; y < height; ++y) {
-				for (int x = 0; x < width; ++x) {
-					auto pixel = (x+y) % 2;
-					pixels[x + y * width] = pixel ? white : black;
-				}
-			}
-
-			::SDL_UpdateTexture(bitmapTex.get(), NULL, &pixels[0], width * sizeof(Uint32));
-
-			::SDL_RenderClear(renderer.get());
-			::SDL_RenderCopy(renderer.get(), bitmapTex.get(), NULL, NULL);
-			::SDL_RenderPresent(renderer.get());
+			controller.draw(renderer.get());
 		}
 	}
 

@@ -14,10 +14,10 @@ ColourPalette::ColourPalette(const BitmappedGraphics& device)
 
 void ColourPalette::load(SDL_PixelFormat* hardware) {
 
-	auto black = ::SDL_MapRGBA(hardware, 0x00, 0x00, 0x00, 0xff);
-	auto white = ::SDL_MapRGBA(hardware, 0xff, 0xff, 0xff, 0xff);
-	auto red = ::SDL_MapRGBA(hardware, 0xff, 0x00, 0x00, 0xff);
-	auto yellow = ::SDL_MapRGBA(hardware, 0xff, 0xff, 0x00, 0xff);
+	auto black = ::SDL_MapRGBA(hardware, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+	auto white = ::SDL_MapRGBA(hardware, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
+	auto red = ::SDL_MapRGBA(hardware, 0xff, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+	auto yellow = ::SDL_MapRGBA(hardware, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
 
 	switch (m_device.getNumberOfPlanes()) {
 	case 1:

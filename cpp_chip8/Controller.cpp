@@ -61,12 +61,62 @@ void Controller::stop() {
 	m_processor->setFinished(true);
 }
 
-void Controller::loadContent(SDL_PixelFormat* pixelFormat) {
+void Controller::loadContent(SDL_Renderer* renderer, SDL_PixelFormat* pixelFormat) {
 	m_colours.load(pixelFormat);
 	m_processor->initialise();
 	m_processor->loadGame(m_game);
+	configureBackground(renderer, pixelFormat);
 }
 
+void Controller::configureBackground(SDL_Renderer* renderer, SDL_PixelFormat* pixelFormat) const {
+	Uint8 r, g, b;
+	::SDL_GetRGB(m_colours.getColour(0), pixelFormat, &r, &g, &b);
+	::SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
+}
+
+void Controller::draw(SDL_Renderer* renderer) const {
+	if (m_processor->getDrawNeeded()) {
+		drawFrame(renderer);
+		m_processor->setDrawNeeded(false);
+	}
+}
+
+void Controller::drawFrame(SDL_Renderer* renderer) const {
+
+	auto screenWidth = m_processor->getDisplay().getWidth();
+	auto screenHeight = m_processor->getDisplay().getHeight();
+
+	auto source = m_processor->getDisplay().getGraphics();
+	auto numberOfPlanes = m_processor->getDisplay().getNumberOfPlanes();
+
+	std::vector<uint32_t> pixels(screenWidth * screenHeight);
+
+	auto pixelType = SDL_PIXELFORMAT_ARGB32;
+
+	std::shared_ptr<::SDL_Texture> bitmapTexture(
+		::SDL_CreateTexture(renderer, pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight),
+		std::ptr_fun(::SDL_DestroyTexture));
+
+	for (int y = 0; y < screenHeight; y++) {
+		auto rowOffset = y * screenWidth;
+		for (int x = 0; x < screenWidth; x++) {
+			int colourIndex = 0;
+			for (int plane = 0; plane < numberOfPlanes; ++plane) {
+				auto bit = source[plane][x + rowOffset];
+				colourIndex |= bit << plane;
+			}
+			if (colourIndex != 0) {
+				pixels[x + y * screenWidth] = m_colours.getColour(colourIndex);
+			}
+		}
+	}
+
+	::SDL_UpdateTexture(bitmapTexture.get(), NULL, &pixels[0], screenWidth * sizeof(Uint32));
+
+	::SDL_RenderClear(renderer);
+	::SDL_RenderCopy(renderer, bitmapTexture.get(), NULL, NULL);
+	::SDL_RenderPresent(renderer);
+}
 
 //	public class Controller : Game, IDisposable
 //	{
@@ -175,87 +225,8 @@ void Controller::loadContent(SDL_PixelFormat* pixelFormat) {
 //			base.Update(gameTime);
 //		}
 //
-//		protected override void Draw(GameTime gameTime)
-//		{
-//			if (this.processor.DrawNeeded)
-//			{
-//				try
-//				{
-//					this.graphics.GraphicsDevice.Clear(this.palette.Colours[0]);
-//					this.Draw();
-//				}
-//				finally
-//				{
-//					this.processor.DrawNeeded = false;
-//				}
-//			}
 //
-//			base.Draw(gameTime);
-//		}
 //
-//		protected virtual void RunFrame()
-//		{
-//			for (int i = 0; i < this.processor.RuntimeConfiguration.CyclesPerFrame; ++i)
-//			{
-//				if (this.RunCycle())
-//				{
-//					break;
-//				}
-//
-//				this.processor.Step();
-//			}
-//		}
-//
-//		protected virtual bool RunCycle()
-//		{
-//			if (this.processor.Finished)
-//			{
-//				this.Exit();
-//			}
-//
-//			return this.processor.Display.LowResolution && this.processor.DrawNeeded;
-//		}
-//
-//		private void Draw()
-//		{
-//			var pixelSize = this.PixelSize;
-//			var screenWidth = this.processor.Display.Width;
-//			var screenHeight = this.processor.Display.Height;
-//
-//			var source = this.processor.Display.Graphics;
-//			var numberOfPlanes = this.processor.Display.NumberOfPlanes;
-//
-//			this.spriteBatch.Begin();
-//			try
-//			{
-//				for (int y = 0; y < screenHeight; y++)
-//				{
-//					var rowOffset = y * screenWidth;
-//					var rectanglePositionY = y * pixelSize;
-//					for (int x = 0; x < screenWidth; x++)
-//					{
-//						int colourIndex = 0;
-//						for (int plane = 0; plane < numberOfPlanes; ++plane)
-//						{
-//							var bit = source[plane][x + rowOffset];
-//							colourIndex |= Convert.ToByte(bit) << plane;
-//						}
-//
-//						if (colourIndex != 0)
-//						{
-//							var colour = this.palette.Colours[colourIndex];
-//							var pixel = this.palette.Pixels[colourIndex - 1];
-//							var rectanglePositionX = x * pixelSize;
-//							this.spriteBatch.Draw(pixel, new Rectangle(rectanglePositionX, rectanglePositionY, pixelSize, pixelSize), colour);
-//						}
-//					}
-//				}
-//			}
-//			finally
-//			{
-//				this.spriteBatch.End();
-//			}
-//		}
 //
 //		private void CheckFullScreen()
 //		{

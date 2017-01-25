@@ -45,6 +45,10 @@ public:
 		return m_drawNeeded;
 	}
 
+	void setDrawNeeded(bool value) {
+		m_drawNeeded = value;
+	}
+
 	bool getFinished() const {
 		return m_finished;
 	}
