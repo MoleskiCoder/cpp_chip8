@@ -32,7 +32,7 @@ private:
 	SDL_Renderer* m_renderer;
 
 	SDL_Texture* m_bitmapTexture;
-	Uint32 m_pixelType = SDL_PIXELFORMAT_ARGB32;
+	Uint32 m_pixelType;
 	SDL_PixelFormat* m_pixelFormat;
 
 	void configureBackground(SDL_Renderer* renderer) const;

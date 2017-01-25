@@ -82,11 +82,11 @@ public:
 	static Configuration buildXoChipConfiguration();
 
 private:
-	ProcessorLevel m_type = ProcessorChip8;
-	bool m_allowMisalignedOpcodes = false;
-	int m_cyclesPerFrame = 13;
-	uint16_t m_startAddress = 0x200;
-	uint16_t m_loadAddress = 0x200;
-	int m_memorySize = 4096;
-	int m_graphicPlanes = 1;
+	ProcessorLevel m_type;
+	bool m_allowMisalignedOpcodes;
+	int m_cyclesPerFrame;
+	uint16_t m_startAddress;
+	uint16_t m_loadAddress;
+	int m_memorySize;
+	int m_graphicPlanes;
 };

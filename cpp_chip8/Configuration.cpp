@@ -4,7 +4,14 @@
 #include "Schip.h"
 #include "XoChip.h"
 
-Configuration::Configuration() {
+Configuration::Configuration()
+: m_type(ProcessorChip8),
+  m_allowMisalignedOpcodes(false),
+  m_cyclesPerFrame(13),
+  m_startAddress(0x200),
+  m_loadAddress(0x200),
+  m_memorySize(4096),
+  m_graphicPlanes(1) {
 }
 
 Configuration Configuration::buildSuperChipConfiguration() {

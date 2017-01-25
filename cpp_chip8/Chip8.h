@@ -68,7 +68,7 @@ protected:
 
 	bool m_drawNeeded;
 
-	bool m_finished = false;
+	bool m_finished;
 
 	std::string m_mnemomicFormat;
 	bool m_usedAddress;
@@ -180,7 +180,7 @@ private:
 
 	uint16_t m_opcode;
 
-	bool m_soundPlaying = false;
+	bool m_soundPlaying;
 
 	bool m_waitingForKeyPress;
 	int m_waitingForKeyPressRegister;

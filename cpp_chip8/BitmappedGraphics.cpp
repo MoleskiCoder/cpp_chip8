@@ -6,8 +6,10 @@
 #include "Memory.h"
 
 BitmappedGraphics::BitmappedGraphics(int numberOfPlanes)
-: m_numberOfPlanes(numberOfPlanes) {
-	m_graphics.resize(m_numberOfPlanes);
+: m_numberOfPlanes(numberOfPlanes),
+  m_graphics(numberOfPlanes),
+  m_planeMask(DefaultPlane),
+  m_highResolution(false) {
 }
 
 void BitmappedGraphics::initialise() {

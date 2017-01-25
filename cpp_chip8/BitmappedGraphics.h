@@ -75,11 +75,9 @@ public:
 
 private:
 	int m_numberOfPlanes;
-
 	std::vector<std::vector<int>> m_graphics;
-	int m_planeMask = DefaultPlane;
-
-	bool m_highResolution = false;
+	int m_planeMask;
+	bool m_highResolution;
 
 	bool isPlaneSelected(int plane) const;
 

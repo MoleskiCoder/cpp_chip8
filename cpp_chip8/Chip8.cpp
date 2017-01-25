@@ -7,10 +7,10 @@
 #include "Configuration.h"
 
 Chip8::Chip8(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, const Configuration& configuration)
-:	m_memory(memory),
-	m_keyboard(keyboard),
-	m_display(display),
-	m_configuration(configuration) {
+: m_display(display),
+  m_memory(memory),
+  m_keyboard(keyboard),
+  m_configuration(configuration) {
 }
 
 void Chip8::initialise() {
@@ -36,6 +36,9 @@ void Chip8::initialise() {
 
 	// Reset timers
 	m_delayTimer = m_soundTimer = 0;
+
+	m_soundPlaying = false;
+	m_waitingForKeyPress = false;
 }
 
 void Chip8::loadGame(std::string game) {

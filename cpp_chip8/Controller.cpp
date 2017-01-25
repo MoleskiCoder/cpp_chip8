@@ -10,8 +10,10 @@
 Controller::Controller(Chip8* processor, std::string game)
 : m_processor(processor),
   m_game(game),
-  m_colours(processor->getDisplay()),
+  m_colours(m_processor->getDisplay()),
+  m_renderer(nullptr),
   m_bitmapTexture(nullptr),
+  m_pixelType(SDL_PIXELFORMAT_ARGB32),
   m_pixelFormat(nullptr) {
 }
 
