@@ -38,8 +38,7 @@ void Chip8::initialise() {
 	m_delayTimer = m_soundTimer = 0;
 }
 
-void Chip8::loadGame(std::string game)
-{
+void Chip8::loadGame(std::string game) {
 	auto path = "..\\Roms\\" + game;
 	loadRom(path, m_configuration.getLoadAddress());
 }
@@ -569,8 +568,7 @@ void Chip8::JP_V0(int x, int nnn) {
 	m_pc = (uint16_t)(m_v[0] + nnn);
 }
 
-void Chip8::RND(int x, int nn)
-{
+void Chip8::RND(int x, int nn) {
 	m_mnemomicFormat = "RND\tV{0:X1},#{1:X2}";
 	//m_v[x] = (uint8_t)(this.randomNumbers.Next(uint8_t.MaxValue) & nn);
 }
@@ -657,7 +655,6 @@ void Chip8::LD_Vx_DT(int x) {
 }
 
 ////
-
 
 void Chip8::waitForKeyPress() {
 	int key;
