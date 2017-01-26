@@ -99,16 +99,10 @@ void Controller::stop() {
 
 void Controller::loadContent(SDL_Window* window) {
 
-	auto width = m_processor->getDisplay().getWidth();
-	auto height = m_processor->getDisplay().getHeight();
-
-	auto scale = 10;
-
-	auto windowWidth = width * scale;
-	auto windowHeight = height * scale;
+	m_processor->initialise();
 
 	m_renderer = ::SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	::SDL_RenderSetLogicalSize(m_renderer, windowWidth, windowHeight);
+	::SDL_RenderSetLogicalSize(m_renderer, getScreenWidth(), getScreenHeight());
 
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 	m_colours.load(m_pixelFormat);
@@ -118,7 +112,6 @@ void Controller::loadContent(SDL_Window* window) {
 		schip->LowResolutionConfigured.connect(std::bind(&Controller::Processor_LowResolution, this));
 	}
 
-	m_processor->initialise();
 	m_processor->loadGame(m_game);
 	configureBackground();
 	createBitmapTexture();

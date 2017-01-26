@@ -3,12 +3,16 @@
 #include <string>
 
 #include "ColourPalette.h"
+#include "Chip8.h"
 
-class Chip8;
 class Configuration;
 
 class Controller {
 public:
+	enum {
+		DisplayScale = 10
+	};
+
 	static Chip8* buildProcessor(const Configuration& configuration);
 
 	Controller(Chip8* processor, std::string game);
@@ -16,6 +20,22 @@ public:
 
 	virtual void runGameLoop();
 	virtual void loadContent(SDL_Window* window);
+
+	int getDisplayWidth() const {
+		return m_processor->getDisplay().getWidth();
+	}
+
+	int getDisplayHeight() const {
+		return m_processor->getDisplay().getHeight();
+	}
+
+	int getScreenWidth() const {
+		return getDisplayWidth() * DisplayScale;
+	}
+
+	int getScreenHeight() const {
+		return getDisplayHeight() * DisplayScale;
+	}
 
 protected:
 	virtual void update();
