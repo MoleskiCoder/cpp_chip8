@@ -60,6 +60,11 @@ private:
 	void configureBackground() const;
 	void drawFrame() const;
 
+	void handleKeyDown(SDL_Keycode key);
+	void handleKeyUp(SDL_Keycode key);
+
+	void toggleFullscreen();
+
 	void createBitmapTexture();
 	void recreateBitmapTexture();
 

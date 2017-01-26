@@ -62,16 +62,36 @@ void Controller::runGameLoop() {
 				m_processor->setFinished(true);
 				break;
 			case SDL_KEYDOWN:
-				m_processor->getKeyboardMutable().pokeKey(e.key.keysym.sym);
+				handleKeyDown(e.key.keysym.sym);
 				break;
 			case SDL_KEYUP:
-				m_processor->getKeyboardMutable().pullKey(e.key.keysym.sym);
+				handleKeyUp(e.key.keysym.sym);
 				break;
 			}
 		}
 		update();
 		quit = m_processor->getFinished();
 	}
+}
+void Controller::toggleFullscreen() {
+	auto wasFullscreen = SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN;
+	SDL_SetWindowFullscreen(m_window, wasFullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
+	SDL_ShowCursor(wasFullscreen);
+}
+
+void Controller::handleKeyDown(SDL_Keycode key) {
+	switch (key) {
+	case SDLK_F12:
+		toggleFullscreen();
+		break;
+	default:
+		m_processor->getKeyboardMutable().pokeKey(key);
+		break;
+	}
+}
+
+void Controller::handleKeyUp(SDL_Keycode key) {
+	m_processor->getKeyboardMutable().pullKey(key);
 }
 
 void Controller::update() {
