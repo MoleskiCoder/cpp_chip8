@@ -151,6 +151,7 @@ void Controller::draw() const {
 		drawFrame();
 		m_processor->setDrawNeeded(false);
 	}
+	::SDL_RenderPresent(m_renderer);
 }
 
 void Controller::drawFrame() const {
@@ -181,7 +182,6 @@ void Controller::drawFrame() const {
 
 	::SDL_RenderClear(m_renderer);
 	::SDL_RenderCopy(m_renderer, m_bitmapTexture, NULL, NULL);
-	::SDL_RenderPresent(m_renderer);
 }
 
 void Controller::Processor_HighResolution() {
