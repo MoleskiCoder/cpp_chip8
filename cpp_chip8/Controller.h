@@ -19,7 +19,7 @@ public:
 	~Controller();
 
 	virtual void runGameLoop();
-	virtual void loadContent(SDL_Window* window);
+	virtual void loadContent();
 
 	int getDisplayWidth() const {
 		return m_processor->getDisplay().getWidth();
@@ -50,6 +50,7 @@ private:
 	std::string m_game;
 	ColourPalette m_colours;
 
+	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
 
 	SDL_Texture* m_bitmapTexture;
@@ -64,6 +65,8 @@ private:
 
 	void destroyBitmapTexture();
 	void destroyPixelFormat();
+	void destroyRenderer();
+	void destroyWindow();
 
 	void Processor_HighResolution();
 	void Processor_LowResolution();

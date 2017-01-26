@@ -11,6 +11,7 @@ Controller::Controller(Chip8* processor, std::string game)
 : m_processor(processor),
   m_game(game),
   m_colours(m_processor->getDisplay()),
+  m_window(nullptr),
   m_renderer(nullptr),
   m_bitmapTexture(nullptr),
   m_pixelType(SDL_PIXELFORMAT_ARGB32),
@@ -20,7 +21,9 @@ Controller::Controller(Chip8* processor, std::string game)
 Controller::~Controller() {
 	destroyBitmapTexture();
 	destroyPixelFormat();
-	::SDL_DestroyRenderer(m_renderer);
+	destroyRenderer();
+	destroyWindow();
+	::SDL_Quit();
 }
 
 Chip8* Controller::buildProcessor(const Configuration& configuration) {
@@ -97,11 +100,14 @@ void Controller::stop() {
 	m_processor->setFinished(true);
 }
 
-void Controller::loadContent(SDL_Window* window) {
+void Controller::loadContent() {
+
+	::SDL_Init(SDL_INIT_VIDEO);
 
 	m_processor->initialise();
 
-	m_renderer = ::SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	m_window = ::SDL_CreateWindow("Chip-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, getScreenWidth(), getScreenHeight(), SDL_WINDOW_SHOWN);
+	m_renderer = ::SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	::SDL_RenderSetLogicalSize(m_renderer, getScreenWidth(), getScreenHeight());
 
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
@@ -126,6 +132,18 @@ void Controller::destroyBitmapTexture() {
 void Controller::destroyPixelFormat() {
 	if (m_pixelFormat != nullptr) {
 		::SDL_FreeFormat(m_pixelFormat);
+	}
+}
+
+void Controller::destroyRenderer() {
+	if (m_renderer != nullptr) {
+		::SDL_DestroyRenderer(m_renderer);
+	}
+}
+
+void Controller::destroyWindow() {
+	if (m_window != nullptr) {
+		::SDL_DestroyWindow(m_window);
 	}
 }
 
