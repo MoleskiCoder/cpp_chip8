@@ -15,7 +15,7 @@ public:
 
 private:
 	enum {
-		Frequency = 200 // the frequency we want
+		Frequency = 1000 // the frequency we want
 	};
 
 	static void audioStreamProvider(void *userdata, Uint8 *stream, int len);
