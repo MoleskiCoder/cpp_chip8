@@ -157,6 +157,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioDevice.h" />
     <ClInclude Include="BitmappedGraphics.h" />
     <ClInclude Include="Chip8.h" />
     <ClInclude Include="ColourPalette.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="XoChip.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioDevice.cpp" />
     <ClCompile Include="BitmappedGraphics.cpp" />
     <ClCompile Include="Chip8.cpp" />
     <ClCompile Include="ColourPalette.cpp" />

@@ -122,7 +122,7 @@ void Controller::stop() {
 
 void Controller::loadContent() {
 
-	::SDL_Init(SDL_INIT_VIDEO);
+	::SDL_Init(SDL_INIT_EVERYTHING);
 
 	m_processor->initialise();
 
@@ -133,6 +133,9 @@ void Controller::loadContent() {
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 	m_colours.load(m_pixelFormat);
 
+	m_processor->BeepStarting.connect(std::bind(&Controller::Processor_BeepStarting, this));
+	m_processor->BeepStopped.connect(std::bind(&Controller::Processor_BeepStopped, this));
+
 	if (auto schip = dynamic_cast<Schip*>(m_processor)) {
 		schip->HighResolutionConfigured.connect(std::bind(&Controller::Processor_HighResolution, this));
 		schip->LowResolutionConfigured.connect(std::bind(&Controller::Processor_LowResolution, this));
@@ -141,6 +144,8 @@ void Controller::loadContent() {
 	m_processor->loadGame(m_game);
 	configureBackground();
 	createBitmapTexture();
+
+	m_audio.initialise();
 }
 
 void Controller::destroyBitmapTexture() {
@@ -228,4 +233,12 @@ void Controller::Processor_HighResolution() {
 
 void Controller::Processor_LowResolution() {
 	recreateBitmapTexture();
+}
+
+void Controller::Processor_BeepStarting() {
+	m_audio.play();
+}
+
+void Controller::Processor_BeepStopped() {
+	m_audio.pause();
 }

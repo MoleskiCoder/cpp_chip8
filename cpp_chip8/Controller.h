@@ -4,6 +4,7 @@
 
 #include "ColourPalette.h"
 #include "Chip8.h"
+#include "AudioDevice.h"
 
 class Configuration;
 
@@ -57,6 +58,8 @@ private:
 	Uint32 m_pixelType;
 	SDL_PixelFormat* m_pixelFormat;
 
+	AudioDevice m_audio;
+
 	void configureBackground() const;
 	void drawFrame() const;
 
@@ -75,4 +78,7 @@ private:
 
 	void Processor_HighResolution();
 	void Processor_LowResolution();
+
+	void Processor_BeepStarting();
+	void Processor_BeepStopped();
 };
