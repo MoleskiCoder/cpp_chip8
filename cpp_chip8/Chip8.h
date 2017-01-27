@@ -197,6 +197,4 @@ private:
 
 	void updateDelayTimer();
 	void updateSoundTimer();
-
-	void loadRom(std::string path, uint16_t offset);
 };

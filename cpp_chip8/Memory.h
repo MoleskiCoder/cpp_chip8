@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <string>
 
 class Memory {
 public:
@@ -16,6 +17,7 @@ public:
 	void set(int address, uint8_t value);
 
 	void clear();
+	void loadRom(std::string path, uint16_t offset);
 
 private:
 	std::vector<uint8_t> m_bus;

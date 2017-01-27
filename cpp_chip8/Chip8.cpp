@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "Chip8.h"
 
-#include <iostream>
-#include <fstream>
 #include <limits>
 
 #include "Configuration.h"
@@ -47,7 +45,7 @@ void Chip8::initialise() {
 
 void Chip8::loadGame(std::string game) {
 	auto path = "..\\Roms\\" + game;
-	loadRom(path, m_configuration.getLoadAddress());
+	m_memory.loadRom(path, m_configuration.getLoadAddress());
 }
 
 void Chip8::step() {
@@ -689,27 +687,4 @@ void Chip8::updateSoundTimer() {
 			onBeepStopped();
 		}
 	}
-}
-
-void Chip8::loadRom(std::string path, uint16_t offset) {
-
-	std::ifstream file;
-	file.exceptions(std::ios::failbit | std::ios::badbit);
-
-	file.open(path, std::ios::binary | std::ios::ate);
-	auto size = (int)file.tellg();
-
-	file.seekg(0, std::ios::beg);
-	std::vector<char> buffer(size);
-
-	file.read(&buffer[0], size);
-	file.close();
-
-	auto hp48 = ::strncmp(&buffer[0], "HPHP48-A", 8) == 0;
-
-	auto header = 0;
-	if (hp48)
-		header = 13;
-
-	std::copy(buffer.begin() + header, buffer.end(), m_memory.getBusMutable().begin() + offset);
 }
