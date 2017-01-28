@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <SDL.h>
 
 class AudioDevice
@@ -27,6 +28,6 @@ private:
 
 	uint32_t m_sinewave_position; // which sample we are up to
 	int m_sinewave_length; // how many samples left to play, stops when <= 0
-	float m_sinewave_frequency; // audio frequency in cycles per sample
-	float m_sinewave_volume; // audio volume, 0 - ~32000
+	double m_sinewave_frequency; // audio frequency in cycles per sample
+	double m_sinewave_volume; // audio volume, 0 - ~32000
 };

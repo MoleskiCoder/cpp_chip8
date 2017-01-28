@@ -29,11 +29,11 @@ void AudioDevice::sinWave_StreamProvider(void *userdata, Uint8 *stream, int len)
 	auto audioDevice = (AudioDevice*)userdata;
 	 
 	len /= 2; // 16 bit
-	Sint16* buf = (Sint16*)stream;
+	auto buffer = (Sint16*)stream;
 	for (int i = 0; i < len; i++) {
 		auto frequency = std::sin(2 * M_PI * audioDevice->m_sinewave_position * audioDevice->m_sinewave_frequency);
 		auto value = audioDevice->m_sinewave_volume * frequency;
-		buf[i] = value;
+		buffer[i] = (Sint16)value;
 		audioDevice->m_sinewave_position++;
 	}
 	audioDevice->m_sinewave_length -= len;
