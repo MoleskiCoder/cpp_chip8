@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "AudioDevice.h"
 
+#include <cmath>
+
 AudioDevice::AudioDevice()
 : m_deviceValid(false) {
 
@@ -12,7 +14,7 @@ AudioDevice::AudioDevice()
 	m_want.samples = 4096;
 	m_want.userdata = this;
 
-	m_want.callback = audioStreamProvider;
+	m_want.callback = sinWave_StreamProvider;
 }
 
 AudioDevice::~AudioDevice() {
@@ -22,29 +24,29 @@ AudioDevice::~AudioDevice() {
 }
 
 // http://rerwarwar.weebly.com/sdl2-audio-sine1.html
-void AudioDevice::audioStreamProvider(void *userdata, Uint8 *stream, int len) {
+void AudioDevice::sinWave_StreamProvider(void *userdata, Uint8 *stream, int len) {
 
 	auto audioDevice = (AudioDevice*)userdata;
 	 
 	len /= 2; // 16 bit
 	Sint16* buf = (Sint16*)stream;
 	for (int i = 0; i < len; i++) {
-		auto frequency = sin(2 * M_PI * audioDevice->m_audio_pos * audioDevice->m_audio_frequency);
-		auto value = audioDevice->m_audio_volume * frequency;
+		auto frequency = std::sin(2 * M_PI * audioDevice->m_sinewave_position * audioDevice->m_sinewave_frequency);
+		auto value = audioDevice->m_sinewave_volume * frequency;
 		buf[i] = value;
-		audioDevice->m_audio_pos++;
+		audioDevice->m_sinewave_position++;
 	}
-	audioDevice->m_audio_len -= len;
+	audioDevice->m_sinewave_length -= len;
 }
 
 void AudioDevice::initialise() {
 
 	m_device = ::SDL_OpenAudioDevice(NULL, 0, &m_want, &m_have, SDL_AUDIO_ALLOW_ANY_CHANGE);
 
-	m_audio_len = m_have.freq * 5; /* 5 seconds */
-	m_audio_pos = 0;
-	m_audio_frequency = 1.0 * Frequency / m_have.freq; // 1.0 to make it a float
-	m_audio_volume = 6000; /* ~1/5 max volume */
+	m_sinewave_length = m_have.freq * 5; /* 5 seconds */
+	m_sinewave_position = 0;
+	m_sinewave_frequency = 1.0 * SineWaveFrequency / m_have.freq; // 1.0 to make it a float
+	m_sinewave_volume = 6000; /* ~1/5 max volume */
 
 	m_deviceValid = true;
 }

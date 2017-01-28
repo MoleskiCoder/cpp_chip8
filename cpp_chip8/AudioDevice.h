@@ -15,18 +15,18 @@ public:
 
 private:
 	enum {
-		Frequency = 1000 // the frequency we want
+		SineWaveFrequency = 1000 // the frequency we want
 	};
 
-	static void audioStreamProvider(void *userdata, Uint8 *stream, int len);
+	static void sinWave_StreamProvider(void *userdata, Uint8 *stream, int len);
 
 	SDL_AudioSpec m_want;
 	SDL_AudioSpec m_have;
 	SDL_AudioDeviceID m_device;
 	bool m_deviceValid;
 
-	uint32_t m_audio_pos; // which sample we are up to
-	int m_audio_len; // how many samples left to play, stops when <= 0
-	float m_audio_frequency; // audio frequency in cycles per sample
-	float m_audio_volume; // audio volume, 0 - ~32000
+	uint32_t m_sinewave_position; // which sample we are up to
+	int m_sinewave_length; // how many samples left to play, stops when <= 0
+	float m_sinewave_frequency; // audio frequency in cycles per sample
+	float m_sinewave_volume; // audio volume, 0 - ~32000
 };
