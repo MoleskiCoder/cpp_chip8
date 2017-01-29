@@ -128,7 +128,6 @@ void Controller::loadContent() {
 
 	m_window = ::SDL_CreateWindow("Chip-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, getScreenWidth(), getScreenHeight(), SDL_WINDOW_SHOWN);
 	m_renderer = ::SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	::SDL_RenderSetLogicalSize(m_renderer, getScreenWidth(), getScreenHeight());
 
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 	m_colours.load(m_pixelFormat);
