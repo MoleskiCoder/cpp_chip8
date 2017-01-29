@@ -75,21 +75,11 @@ protected:
 
 	bool m_finished;
 
-	std::string m_mnemomicFormat;
-	bool m_usedAddress;
-	bool m_usedOperand;
-	bool m_usedN;
-	bool m_usedX;
-	bool m_usedY;
-
 	void onBeepStarting();
 	void onBeepStopped();
 
 	virtual void onEmulatingCycle(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y);
 	virtual void onEmulatedCycle(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y);
-
-	virtual void onDisassembleInstruction(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y);
-	virtual void onDisassembleInstruction(std::string output);
 
 	virtual void onEmulatingCycle();
 	virtual void onEmulatedCycle();

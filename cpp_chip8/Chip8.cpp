@@ -76,46 +76,7 @@ void Chip8::onEmulatingCycle(uint16_t, uint16_t, int, int, int, int, int) {
 }
 
 void Chip8::onEmulatedCycle(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y) {
-	onDisassembleInstruction(programCounter, instruction, address, operand, n, x, y);
 	onEmulatedCycle();
-}
-
-void Chip8::onDisassembleInstruction(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y) {
-	//auto objects = new List<object>();
-
-	//if (this.UsedAddress)
-	//{
-	//	objects.Add(address);
-	//}
-
-	//if (this.UsedN)
-	//{
-	//	objects.Add(n);
-	//}
-
-	//if (this.UsedX)
-	//{
-	//	objects.Add(x);
-	//}
-
-	//if (this.UsedY)
-	//{
-	//	objects.Add(y);
-	//}
-
-	//if (this.UsedOperand)
-	//{
-	//	objects.Add(operand);
-	//}
-
-	//auto pre = string.Format(CultureInfo.InvariantCulture, "PC={0:x4}\t{1:x4}\t", programCounter, instruction);
-	//auto post = string.Format(CultureInfo.InvariantCulture, m_mnemomicFormat, objects.ToArray());
-
-	//this.OnDisassembleInstruction(pre + post);
-}
-
-void Chip8::onDisassembleInstruction(std::string output) {
-	DisassembleInstruction.fire(DisassemblyEventArgs(output));
 }
 
 void Chip8::onEmulatingCycle() {
@@ -165,8 +126,6 @@ void Chip8::draw(int x, int y, int width, int height) {
 }
 
 bool Chip8::emulateInstruction(int nnn, int nn, int n, int x, int y) {
-
-	m_usedAddress = m_usedOperand = m_usedN = m_usedX = m_usedY = false;
 
 	switch (m_opcode & 0xf000) {
 	case 0x0000:
@@ -223,7 +182,6 @@ bool Chip8::emulateInstruction(int nnn, int nn, int n, int x, int y) {
 }
 
 bool Chip8::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
 	switch (nn) {
 	case 0x07:
 		LD_Vx_DT(x);
@@ -269,7 +227,6 @@ bool Chip8::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
 }
 
 bool Chip8::emulateInstructions_E(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
 	switch (nn) {
 	case 0x9E:
 		SKP(x);
@@ -287,35 +244,26 @@ bool Chip8::emulateInstructions_E(int nnn, int nn, int n, int x, int y) {
 }
 
 bool Chip8::emulateInstructions_D(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedY = true;
-	m_usedN = true;
 	DRW(x, y, n);
 	return true;
 }
 
 bool Chip8::emulateInstructions_C(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedOperand = true;
 	RND(x, nn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_B(int nnn, int nn, int n, int x, int y) {
-	m_usedAddress = true;
 	JP_V0(x, nnn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_A(int nnn, int nn, int n, int x, int y) {
-	m_usedAddress = true;
 	LD_I(nnn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_9(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedY = true;
 	switch (n) {
 	case 0:
 		SNE(x, y);
@@ -329,8 +277,6 @@ bool Chip8::emulateInstructions_9(int nnn, int nn, int n, int x, int y) {
 }
 
 bool Chip8::emulateInstructions_8(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedY = true;
 	switch (n) {
 	case 0x0:
 		LD(x, y);
@@ -376,48 +322,36 @@ bool Chip8::emulateInstructions_8(int nnn, int nn, int n, int x, int y) {
 }
 
 bool Chip8::emulateInstructions_7(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedOperand = true;
 	ADD_REG_IMM(x, nn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_6(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedOperand = true;
 	LD_REG_IMM(x, nn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_5(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedY = true;
 	SE(x, y);
 	return true;
 }
 
 bool Chip8::emulateInstructions_4(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedOperand = true;
 	SNE_REG_IMM(x, nn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_3(int nnn, int nn, int n, int x, int y) {
-	m_usedX = true;
-	m_usedOperand = true;
 	SE_REG_IMM(x, nn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_2(int nnn, int nn, int n, int x, int y) {
-	m_usedAddress = true;
 	CALL(nnn);
 	return true;
 }
 
 bool Chip8::emulateInstructions_1(int nnn, int nn, int n, int x, int y) {
-	m_usedAddress = true;
 	JP(nnn);
 	return true;
 }
@@ -442,86 +376,71 @@ bool Chip8::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 ////
 
 void Chip8::CLS() {
-	m_mnemomicFormat = "CLS";
 	m_display.clear();
 	m_drawNeeded = true;
 }
 
 void Chip8::RET() {
-	m_mnemomicFormat = "RET";
 	m_pc = m_stack[--m_sp & 0xF];
 }
 
 void Chip8::JP(int nnn) {
-	m_mnemomicFormat = "JP\t{0:X3}";
 	m_pc = (uint16_t)nnn;
 }
 
 void Chip8::CALL(int nnn) {
-	m_mnemomicFormat = "CALL\t{0:X3}";
 	m_stack[m_sp++] = m_pc;
 	m_pc = (uint16_t)nnn;
 }
 
 void Chip8::SE_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "SE\tV{0:X1},#{1:X2}";
 	if (m_v[x] == nn) {
 		m_pc += 2;
 	}
 }
 
 void Chip8::SNE_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "SNE\tV{0:X1},#{1:X2}";
 	if (m_v[x] != nn) {
 		m_pc += 2;
 	}
 }
 
 void Chip8::SE(int x, int y) {
-	m_mnemomicFormat = "SE\tV{0:X1},V{1:X1}";
 	if (m_v[x] == m_v[y]) {
 		m_pc += 2;
 	}
 }
 
 void Chip8::LD_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "LD\tV{0:X1},#{1:X2}";
 	m_v[x] = (uint8_t)nn;
 }
 
 void Chip8::ADD_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "ADD\tV{0:X1},#{1:X2}";
 	m_v[x] += (uint8_t)nn;
 }
 
 void Chip8::LD(int x, int y) {
-	m_mnemomicFormat = "LD\tV{0:X1},V{1:X1}";
 	m_v[x] = m_v[y];
 }
 
 void Chip8::OR(int x, int y) {
-	m_mnemomicFormat = "OR\tV{0:X1},V{1:X1}";
 	m_v[x] |= m_v[y];
 }
 
 void Chip8::AND(int x, int y) {
-	m_mnemomicFormat = "AND\tV{0:X1},V{1:X1}";
 	m_v[x] &= m_v[y];
 }
 
 void Chip8::XOR(int x, int y) {
-	m_mnemomicFormat = "XOR\tV{0:X1},V{1:X1}";
 	m_v[x] ^= m_v[y];
 }
 
 void Chip8::ADD(int x, int y) {
-	m_mnemomicFormat = "ADD\tV{0:X1},V{1:X1}";
 	m_v[0xf] = (uint8_t)(m_v[y] > (0xff - m_v[x]) ? 1 : 0);
 	m_v[x] += m_v[y];
 }
 
 void Chip8::SUB(int x, int y) {
-	m_mnemomicFormat = "SUB\tV{0:X1},V{1:X1}";
 	m_v[0xf] = (uint8_t)(m_v[x] >= m_v[y] ? 1 : 0);
 	m_v[x] -= m_v[y];
 }
@@ -529,14 +448,12 @@ void Chip8::SUB(int x, int y) {
 void Chip8::SHR(int x, int y) {
 	// https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 	// Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
-	m_mnemomicFormat = "SHR\tV{0:X1},V{0:X1}";
 	m_v[y] >>= 1;
 	m_v[x] = m_v[y];
 	m_v[0xf] = (uint8_t)(m_v[x] & 0x1);
 }
 
 void Chip8::SUBN(int x, int y) {
-	m_mnemomicFormat = "SUBN\tV{0:X1},V{1:X1}";
 	m_v[0xf] = (uint8_t)(m_v[x] > m_v[y] ? 0 : 1);
 	m_v[x] = (uint8_t)(m_v[y] - m_v[x]);
 }
@@ -544,27 +461,22 @@ void Chip8::SUBN(int x, int y) {
 void Chip8::SHL(int x, int y) {
 	// https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 	// Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
-	m_mnemomicFormat = "SHL\tV{0:X1},V{1:X1}";
 	m_v[0xf] = (uint8_t)((m_v[x] & 0x80) == 0 ? 0 : 1);
 	m_v[y] <<= 1;
 	m_v[x] = m_v[y];
 }
 
 void Chip8::SNE(int x, int y) {
-	m_mnemomicFormat = "SNE\tV{0:X1},V{1:X1}";
 	if (m_v[x] != m_v[y]) {
 		m_pc += 2;
 	}
 }
 
 void Chip8::LD_I(int nnn) {
-	m_mnemomicFormat = "LD\tI,#{0:X3}";
 	m_i = (uint16_t)nnn;
 }
 
 void Chip8::JP_V0(int x, int nnn) {
-	m_mnemomicFormat = "JP\t[V0],#{0:X3}";
-
 	// https://github.com/Chromatophore/HP48-Superchip#bnnn
 	// Sets PC to address NNN + v0 -
 	//  VIP: correctly jumps based on v0
@@ -574,25 +486,21 @@ void Chip8::JP_V0(int x, int nnn) {
 }
 
 void Chip8::RND(int x, int nn) {
-	m_mnemomicFormat = "RND\tV{0:X1},#{1:X2}";
 	auto random = m_eightBitDistribution(m_randomNumberGenerator);
 	m_v[x] = (uint8_t)(random & nn);
 }
 
 void Chip8::DRW(int x, int y, int n) {
-	m_mnemomicFormat = "DRW\tV{1:X1},V{2:X1},#{0:X1}";
 	draw(x, y, 8, n);
 }
 
 void Chip8::SKP(int x) {
-	m_mnemomicFormat = "SKP\tV{0:X1}";
 	if (m_keyboard.isKeyPressed(m_v[x])) {
 		m_pc += 2;
 	}
 }
 
 void Chip8::SKNP(int x) {
-	m_mnemomicFormat = "SKNP\tV{0:X1}";
 	if (!m_keyboard.isKeyPressed(m_v[x])) {
 		m_pc += 2;
 	}
@@ -601,7 +509,6 @@ void Chip8::SKNP(int x) {
 void Chip8::LD_Vx_II(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
-	m_mnemomicFormat = "LD\tV{0:X1},[I]";
 	std::copy_n(m_memory.getBus().begin() + m_i, x + 1, m_v.begin());
 	m_i += (uint16_t)(x + 1);
 }
@@ -609,13 +516,11 @@ void Chip8::LD_Vx_II(int x) {
 void Chip8::LD_II_Vx(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
-	m_mnemomicFormat = "LD\t[I],V{0:X1}";
 	std::copy_n(m_v.begin(), x + 1, m_memory.getBusMutable().begin() + m_i);
 	m_i += (uint16_t)(x + 1);
 }
 
 void Chip8::LD_B_Vx(int x) {
-	m_mnemomicFormat = "LD\tB,V{0:X1}";
 	auto content = m_v[x];
 	m_memory.set(m_i, (uint8_t)(content / 100));
 	m_memory.set(m_i + 1, (uint8_t)((content / 10) % 10));
@@ -623,40 +528,32 @@ void Chip8::LD_B_Vx(int x) {
 }
 
 void Chip8::LD_F_Vx(int x) {
-	m_mnemomicFormat = "LD\tF,V{0:X1}";
 	m_i = (uint16_t)(StandardFontOffset + (5 * m_v[x]));
 }
 
 void Chip8::ADD_I_Vx(int x) {
-	m_mnemomicFormat = "ADD\tI,V{0:X1}";
-
 	// From wikipedia entry on CHIP-8:
 	// VF is set to 1 when there is a range overflow (I+VX>0xFFF), and to 0
 	// when there isn't. This is an undocumented feature of the CHIP-8 and used by the Spacefight 2091! game
 	auto sum = m_i + m_v[x];
 	m_v[0xf] = (uint8_t)(sum > 0xfff ? 1 : 0);
-
 	m_i += m_v[x];
 }
 
 void Chip8::LD_ST_Vx(int x) {
-	m_mnemomicFormat = "LD\tST,V{0:X1}";
 	m_soundTimer = m_v[x];
 }
 
 void Chip8::LD_DT_Vx(int x) {
-	m_mnemomicFormat = "LD\tDT,V{0:X1}";
 	m_delayTimer = m_v[x];
 }
 
 void Chip8::LD_Vx_K(int x) {
-	m_mnemomicFormat = "LD\tV{0:X1},K";
 	m_waitingForKeyPress = true;
 	m_waitingForKeyPressRegister = x;
 }
 
 void Chip8::LD_Vx_DT(int x) {
-	m_mnemomicFormat = "LD\tV{0:X1},DT";
 	m_v[x] = m_delayTimer;
 }
 

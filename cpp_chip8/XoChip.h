@@ -18,8 +18,6 @@ protected:
 	bool emulateInstructions_5(int nnn, int nn, int n, int x, int y);
 	bool emulateInstructions_F(int nnn, int nn, int n, int x, int y);
 
-	void onDisassembleInstruction(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y);
-
 private:
 	std::array<uint8_t, 16> m_audoPatternBuffer;
 	int m_nnnn;

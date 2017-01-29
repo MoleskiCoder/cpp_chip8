@@ -42,7 +42,7 @@ protected:
 	virtual void update();
 	virtual void runFrame();
 	virtual bool runCycle() const;
-	virtual void draw() const;
+	virtual void draw();
 
 	void stop();
 
@@ -58,10 +58,12 @@ private:
 	Uint32 m_pixelType;
 	SDL_PixelFormat* m_pixelFormat;
 
+	std::vector<uint32_t> m_pixels;
+
 	AudioDevice m_audio;
 
 	void configureBackground() const;
-	void drawFrame() const;
+	void drawFrame();
 
 	void handleKeyDown(SDL_Keycode key);
 	void handleKeyUp(SDL_Keycode key);

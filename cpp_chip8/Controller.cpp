@@ -122,7 +122,7 @@ void Controller::stop() {
 
 void Controller::loadContent() {
 
-	::SDL_Init(SDL_INIT_EVERYTHING);
+	::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
 	m_processor->initialise();
 
@@ -180,6 +180,7 @@ void Controller::createBitmapTexture() {
 	auto screenWidth = m_processor->getDisplay().getWidth();
 	auto screenHeight = m_processor->getDisplay().getHeight();
 	m_bitmapTexture = ::SDL_CreateTexture(m_renderer, m_pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
+	m_pixels.resize(screenWidth * screenHeight);
 }
 
 void Controller::configureBackground() const {
@@ -188,7 +189,7 @@ void Controller::configureBackground() const {
 	::SDL_SetRenderDrawColor(m_renderer, r, g, b, SDL_ALPHA_OPAQUE);
 }
 
-void Controller::draw() const {
+void Controller::draw() {
 	if (m_processor->getDrawNeeded()) {
 		drawFrame();
 		m_processor->setDrawNeeded(false);
@@ -196,15 +197,13 @@ void Controller::draw() const {
 	::SDL_RenderPresent(m_renderer);
 }
 
-void Controller::drawFrame() const {
+void Controller::drawFrame() {
 
 	auto screenWidth = m_processor->getDisplay().getWidth();
 	auto screenHeight = m_processor->getDisplay().getHeight();
 
 	auto source = m_processor->getDisplay().getGraphics();
 	auto numberOfPlanes = m_processor->getDisplay().getNumberOfPlanes();
-
-	std::vector<uint32_t> pixels(screenWidth * screenHeight);
 
 	for (int y = 0; y < screenHeight; y++) {
 		auto rowOffset = y * screenWidth;
@@ -214,15 +213,11 @@ void Controller::drawFrame() const {
 				auto bit = source[plane][x + rowOffset];
 				colourIndex |= bit << plane;
 			}
-			if (colourIndex != 0) {
-				pixels[x + y * screenWidth] = m_colours.getColour(colourIndex);
-			}
+			m_pixels[x + y * screenWidth] = m_colours.getColour(colourIndex);
 		}
 	}
 
-	::SDL_UpdateTexture(m_bitmapTexture, NULL, &pixels[0], screenWidth * sizeof(Uint32));
-
-	::SDL_RenderClear(m_renderer);
+	::SDL_UpdateTexture(m_bitmapTexture, NULL, &m_pixels[0], screenWidth * sizeof(Uint32));
 	::SDL_RenderCopy(m_renderer, m_bitmapTexture, NULL, NULL);
 }
 

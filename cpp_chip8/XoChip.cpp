@@ -8,7 +8,6 @@ XoChip::XoChip(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display
 bool XoChip::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 	switch (y) {
 	case 0xd:
-		m_usedN = true;
 		SCUP(n);
 		break;
 
@@ -18,9 +17,7 @@ bool XoChip::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 	return true;
 }
 
-bool XoChip::emulateInstructions_5(int nnn, int nn, int n, int x, int y)
-{
-	m_usedX = m_usedY = true;
+bool XoChip::emulateInstructions_5(int nnn, int nn, int n, int x, int y) {
 	switch (n) {
 	case 2:
 		save_vx_to_vy(x, y);
@@ -31,14 +28,12 @@ bool XoChip::emulateInstructions_5(int nnn, int nn, int n, int x, int y)
 		break;
 
 	default:
-		m_usedX = m_usedY = false;
 		return Schip::emulateInstructions_5(nnn, nn, n, x, y);
 	}
 	return true;
 }
 
-bool XoChip::emulateInstructions_F(int nnn, int nn, int n, int x, int y)
-{
+bool XoChip::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
 	switch (nnn) {
 	case 0:
 		load_i_long();
@@ -51,7 +46,6 @@ bool XoChip::emulateInstructions_F(int nnn, int nn, int n, int x, int y)
 	default:
 		switch (nn) {
 		case 0x01:
-			m_usedX = true;
 			plane(x);
 			break;
 
@@ -63,25 +57,8 @@ bool XoChip::emulateInstructions_F(int nnn, int nn, int n, int x, int y)
 	return true;
 }
 
-void XoChip::onDisassembleInstruction(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y) {
-	switch (instruction) {
-	case 0xf000:{
-			//var pre = string.Format(CultureInfo.InvariantCulture, "PC={0:x4}\t{1:x4}\t", programCounter, instruction);
-			//var post = string.Format(CultureInfo.InvariantCulture, "LD I,#{0:x4}L", this.nnnn);
-			//this.OnDisassembleInstruction(pre + post);
-		}
-		break;
-
-	default:
-		Schip::onDisassembleInstruction(programCounter, instruction, address, operand, n, x, y);
-		break;
-	}
-}
-
 //// scroll-up n (0x00DN) scroll the contents of the display up by 0-15 pixels.
 void XoChip::SCUP(int n) {
-	m_mnemomicFormat = "SCUP\t{0:X1}";
-	m_usedN = true;
 
 	auto screenHeight = m_display.getHeight();
 
@@ -101,8 +78,6 @@ void XoChip::SCUP(int n) {
 // save vx - vy (0x5XY2) save an inclusive range of registers to memory starting at i.
 // https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md#memory-access
 void XoChip::save_vx_to_vy(int x, int y) {
-	m_mnemomicFormat = "LD\t[I],V{0:X1}-V{1:X1}";
-
 	auto step = x > y ? -1 : +1;
 	auto address = m_i;
 	auto ongoing = true;
@@ -117,8 +92,6 @@ void XoChip::save_vx_to_vy(int x, int y) {
 // load vx - vy (0x5XY3) load an inclusive range of registers from memory starting at i.
 // https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md#memory-access
 void XoChip::load_vx_to_vy(int x, int y) {
-	m_mnemomicFormat = "LD\tV{0:X1}-V{1:X1},[I]";
-
 	auto step = x > y ? -1 : +1;
 	auto address = m_i;
 	auto ongoing = true;
@@ -139,12 +112,10 @@ void XoChip::load_i_long() {
 
 ////plane n (0xFN01) select zero or more drawing planes by bitmask (0 <= n <= 3).
 void XoChip::plane(int n) {
-	m_mnemomicFormat = "PLANE\t#{0:X1}";
 	m_display.setPlaneMask(n);
 }
 
 ////audio (0xF002) store 16 bytes starting at i in the audio pattern buffer.
 void XoChip::audio() {
-	m_mnemomicFormat = "AUDIO";
 	std::copy_n(m_memory.getBus().begin() + m_i, m_audoPatternBuffer.size(), m_audoPatternBuffer.begin());
 }
