@@ -160,18 +160,7 @@ void Schip::EXIT() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00Cn
 void Schip::SCDOWN(int n) {
-	auto screenHeight = m_display.getHeight();
-
-	// Copy rows bottom to top
-	for (int y = screenHeight - n - 1; y >= 0; --y) {
-		m_display.copyRow(y, y + n);
-	}
-
-	// Remove the top columns, blanked by the scroll effect
-	for (int y = 0; y < n; ++y) {
-		m_display.clearRow(y);
-	}
-
+	m_display.scrollDown(n);
 	m_drawNeeded = true;
 }
 
@@ -190,21 +179,7 @@ void Schip::COMPATIBILITY() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00FB
 void Schip::SCRIGHT() {
-	auto screenWidth = m_display.getWidth();
-
-	// Scroll distance
-	auto n = 4;
-
-	// Copy colummns from right to left
-	for (int x = screenWidth - n - 1; x >= 0; --x) {
-		m_display.copyColumn(x, x + n);
-	}
-
-	// Remove the leftmost columns, blanked by the scroll effect
-	for (int x = 0; x < n; ++x) {
-		m_display.clearColumn(x);
-	}
-
+	m_display.scrollRight();
 	m_drawNeeded = true;
 }
 
@@ -214,21 +189,7 @@ void Schip::SCRIGHT() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00FC
 void Schip::SCLEFT() {
-	auto screenWidth = m_display.getWidth();
-
-	// Scroll distance
-	auto n = 4;
-
-	// Copy columns from left to right
-	for (int x = 0; x < (screenWidth - n); ++x) {
-		m_display.copyColumn(x + n, x);
-	}
-
-	// Remove the rightmost columns, blanked by the scroll effect
-	for (int x = 0; x < n; ++x) {
-		m_display.clearColumn(screenWidth - x - 1);
-	}
-
+	m_display.scrollLeft();
 	m_drawNeeded = true;
 }
 

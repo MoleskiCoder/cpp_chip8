@@ -65,11 +65,10 @@ public:
 	
 	int draw(const Memory& memory, int address, int drawX, int drawY, int width, int height);
 
-	void clearRow(int row);
-	void clearColumn(int column);
-
-	void copyRow(int source, int destination);
-	void copyColumn(int source, int destination);
+	void scrollUp(int count);
+	void scrollDown(int count);
+	void scrollLeft();
+	void scrollRight();
 
 	void clear();
 
@@ -85,18 +84,23 @@ private:
 
 	void allocateMemory(int plane);
 
-	void maybeClearRow(int plane, int row);
-	void clearRow(int plane, int row);
+	void maybeScrollUp(int plane, int count);
+	void scrollUp(int plane, int count);
 
-	void maybeClearColumn(int plane, int column);
-	void clearColumn(int plane, int column);
+	void maybeScrollDown(int plane, int count);
+	void scrollDown(int plane, int count);
 
-	void maybeCopyRow(int plane, int source, int destination);
-	void copyRow(int plane, int source, int destination);
+	void maybeScrollLeft(int plane);
+	void scrollLeft(int plane);
 
-	void maybeCopyColumn(int plane, int source, int destination);
-	void copyColumn(int plane, int source, int destination);
+	void maybeScrollRight(int plane);
+	void scrollRight(int plane);
 
 	void maybeClear(int plane);
 	void clear(int plane);
+
+	void clearRow(int plane, int row);
+	void clearColumn(int plane, int column);
+	void copyRow(int plane, int source, int destination);
+	void copyColumn(int plane, int source, int destination);
 };

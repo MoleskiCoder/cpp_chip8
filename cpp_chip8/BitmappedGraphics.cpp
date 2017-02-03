@@ -36,27 +36,27 @@ int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int dr
 	return hits;
 }
 
-void BitmappedGraphics::clearRow(int row) {
+void BitmappedGraphics::scrollDown(int count) {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
-		maybeClearRow(plane, row);
+		maybeScrollDown(plane, count);
 	}
 }
 
-void BitmappedGraphics::clearColumn(int column) {
+void BitmappedGraphics::scrollUp(int count) {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
-		maybeClearColumn(plane, column);
+		maybeScrollUp(plane, count);
 	}
 }
 
-void BitmappedGraphics::copyRow(int source, int destination) {
+void BitmappedGraphics::scrollLeft() {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
-		maybeCopyRow(plane, source, destination);
+		maybeScrollLeft(plane);
 	}
 }
 
-void BitmappedGraphics::copyColumn(int source, int destination) {
+void BitmappedGraphics::scrollRight() {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
-		maybeCopyColumn(plane, source, destination);
+		maybeScrollRight(plane);
 	}
 }
 
@@ -139,21 +139,10 @@ void BitmappedGraphics::allocateMemory(int plane) {
 	}
 }
 
-void BitmappedGraphics::maybeClearRow(int plane, int row) {
-	if (isPlaneSelected(plane)) {
-		clearRow(plane, row);
-	}
-}
 
 void BitmappedGraphics::clearRow(int plane, int row) {
 	auto width = getWidth();
 	std::fill_n(m_graphics[plane].begin()+ row * width, width, 0);
-}
-
-void BitmappedGraphics::maybeClearColumn(int plane, int column) {
-	if (isPlaneSelected(plane)) {
-		clearColumn(plane, column);
-	}
 }
 
 void BitmappedGraphics::clearColumn(int plane, int column) {
@@ -164,22 +153,10 @@ void BitmappedGraphics::clearColumn(int plane, int column) {
 	}
 }
 
-void BitmappedGraphics::maybeCopyRow(int plane, int source, int destination) {
-	if (isPlaneSelected(plane)) {
-		copyRow(plane, source, destination);
-	}
-}
-
 void BitmappedGraphics::copyRow(int plane, int source, int destination) {
 	auto width = getWidth();
 	auto iterator = m_graphics[plane].begin();
 	std::copy_n(iterator + source * width, width, iterator + destination * width);
-}
-
-void BitmappedGraphics::maybeCopyColumn(int plane, int source, int destination) {
-	if (isPlaneSelected(plane)) {
-		copyColumn(plane, source, destination);
-	}
 }
 
 void BitmappedGraphics::copyColumn(int plane, int source, int destination) {
@@ -187,6 +164,92 @@ void BitmappedGraphics::copyColumn(int plane, int source, int destination) {
 	auto height = getHeight();
 	for (int y = 0; y < height; ++y) {
 		m_graphics[plane][destination + (y * width)] = m_graphics[plane][source + (y * width)];
+	}
+}
+
+void BitmappedGraphics::maybeScrollDown(int plane, int count) {
+	if (isPlaneSelected(plane)) {
+		scrollDown(plane, count);
+	}
+}
+
+void BitmappedGraphics::scrollDown(int plane, int count) {
+	auto screenHeight = getHeight();
+
+	// Copy rows bottom to top
+	for (int y = screenHeight - count - 1; y >= 0; --y) {
+		copyRow(plane, y, y + count);
+	}
+
+	// Remove the top columns, blanked by the scroll effect
+	for (int y = 0; y < count; ++y) {
+		clearRow(plane, y);
+	}
+}
+
+void BitmappedGraphics::maybeScrollUp(int plane, int count) {
+	if (isPlaneSelected(plane)) {
+		scrollUp(plane, count);
+	}
+}
+
+void BitmappedGraphics::scrollUp(int plane, int count) {
+	auto screenHeight = getHeight();
+
+	// Copy rows from top to bottom
+	for (int y = 0; y < (screenHeight - count); ++y) {
+		copyRow(plane, y + count, y);
+	}
+
+	// Remove the bottommost rows, blanked by the scroll effect
+	for (int y = 0; y < count; ++y) {
+		clearRow(plane, screenHeight - y - 1);
+	}
+}
+
+void BitmappedGraphics::maybeScrollLeft(int plane) {
+	if (isPlaneSelected(plane)) {
+		scrollLeft(plane);
+	}
+}
+
+void BitmappedGraphics::scrollLeft(int plane) {
+	auto screenWidth = getWidth();
+
+	// Scroll distance
+	auto n = 4;
+
+	// Copy columns from left to right
+	for (int x = 0; x < (screenWidth - n); ++x) {
+		copyColumn(plane, x + n, x);
+	}
+
+	// Remove the rightmost columns, blanked by the scroll effect
+	for (int x = 0; x < n; ++x) {
+		clearColumn(plane, screenWidth - x - 1);
+	}
+}
+
+void BitmappedGraphics::maybeScrollRight(int plane) {
+	if (isPlaneSelected(plane)) {
+		scrollRight(plane);
+	}
+}
+
+void BitmappedGraphics::scrollRight(int plane) {
+	auto screenWidth = getWidth();
+
+	// Scroll distance
+	auto n = 4;
+
+	// Copy colummns from right to left
+	for (int x = screenWidth - n - 1; x >= 0; --x) {
+		copyColumn(plane, x, x + n);
+	}
+
+	// Remove the leftmost columns, blanked by the scroll effect
+	for (int x = 0; x < n; ++x) {
+		clearColumn(plane, x);
 	}
 }
 

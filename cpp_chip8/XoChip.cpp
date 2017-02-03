@@ -59,19 +59,7 @@ bool XoChip::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
 
 //// scroll-up n (0x00DN) scroll the contents of the display up by 0-15 pixels.
 void XoChip::SCUP(int n) {
-
-	auto screenHeight = m_display.getHeight();
-
-	// Copy rows from top to bottom
-	for (int y = 0; y < (screenHeight - n); ++y) {
-		m_display.copyRow(y + n, y);
-	}
-
-	// Remove the bottommost rows, blanked by the scroll effect
-	for (int y = 0; y < n; ++y) {
-		m_display.clearRow(screenHeight - y - 1);
-	}
-
+	m_display.scrollUp(n);
 	m_drawNeeded = true;
 }
 
