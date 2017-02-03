@@ -78,6 +78,30 @@ public:
 		m_graphicPlanes = value;
 	}
 
+	bool getGraphicsClip() const {
+		return m_graphicsClip;
+	}
+
+	void setGraphicsClip(bool value) {
+		m_graphicsClip = value;
+	}
+
+	bool getGraphicsCountExceededRows() const {
+		return m_graphicsCountExceededRows;
+	}
+
+	void setGraphicsCountExceededRows(bool value) {
+		m_graphicsCountExceededRows = value;
+	}
+
+	bool getGraphicsCountRowHits() const {
+		return m_graphicsCountRowHits;
+	}
+
+	void setGraphicsCountRowHits(bool value) {
+		m_graphicsCountRowHits = value;
+	}
+
 	static Configuration buildSuperChipConfiguration();
 	static Configuration buildXoChipConfiguration();
 
@@ -89,4 +113,7 @@ private:
 	uint16_t m_loadAddress;
 	int m_memorySize;
 	int m_graphicPlanes;
+	bool m_graphicsClip;
+	bool m_graphicsCountExceededRows;
+	bool m_graphicsCountRowHits;
 };

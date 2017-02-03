@@ -17,7 +17,7 @@ public:
 		ScreenHeightHigh = 64
 	};
 
-	BitmappedGraphics(int numberOfPlanes);
+	BitmappedGraphics(int numberOfPlanes, bool clip, bool countExceededRows, bool countRowHits);
 
 	int getNumberOfPlanes() const {
 		return m_numberOfPlanes;
@@ -77,6 +77,9 @@ private:
 	std::vector<std::vector<int>> m_graphics;
 	int m_planeMask;
 	bool m_highResolution;
+	bool m_clip;
+	bool m_countExceededRows;
+	bool m_countRowHits;
 
 	bool isPlaneSelected(int plane) const;
 

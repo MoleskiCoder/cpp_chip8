@@ -11,13 +11,18 @@ Configuration::Configuration()
   m_startAddress(0x200),
   m_loadAddress(0x200),
   m_memorySize(4096),
-  m_graphicPlanes(1) {
+  m_graphicPlanes(1),
+  m_graphicsClip(true),
+  m_graphicsCountExceededRows(false),
+  m_graphicsCountRowHits(false) {
 }
 
 Configuration Configuration::buildSuperChipConfiguration() {
 	Configuration configuration;
 	configuration.setType(ProcessorSuperChip);
 	configuration.setCyclesPerFrame(22);
+	configuration.setGraphicsCountExceededRows(true);
+	configuration.setGraphicsCountRowHits(true);
 	return configuration;
 }
 

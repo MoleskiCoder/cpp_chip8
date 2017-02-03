@@ -32,7 +32,10 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 	Memory memory(memorySize);
 
 	auto graphicsPlanes = configuration.getGraphicPlanes();
-	BitmappedGraphics graphics(graphicsPlanes);
+	auto graphicsClip = configuration.getGraphicsClip();
+	auto graphicsCountExceededRows = configuration.getGraphicsCountExceededRows();
+	auto graphicsCountRowHits = configuration.getGraphicsCountRowHits();
+	BitmappedGraphics graphics(graphicsPlanes, graphicsClip, graphicsCountExceededRows, graphicsCountRowHits);
 
 	KeyboardDevice keyboard;
 

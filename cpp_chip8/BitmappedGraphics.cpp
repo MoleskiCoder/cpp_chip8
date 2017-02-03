@@ -5,11 +5,14 @@
 
 #include "Memory.h"
 
-BitmappedGraphics::BitmappedGraphics(int numberOfPlanes)
+BitmappedGraphics::BitmappedGraphics(int numberOfPlanes, bool clip, bool countExceededRows, bool countRowHits)
 : m_numberOfPlanes(numberOfPlanes),
   m_graphics(numberOfPlanes),
   m_planeMask(DefaultPlane),
-  m_highResolution(false) {
+  m_highResolution(false),
+  m_clip(clip),
+  m_countExceededRows(countExceededRows),
+  m_countRowHits(countRowHits) {
 }
 
 void BitmappedGraphics::initialise() {
@@ -33,6 +36,8 @@ int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int dr
 			address += height * bytesPerRow;
 		}
 	}
+	if (!m_countRowHits)
+		hits &= 1;
 	return hits;
 }
 
@@ -75,7 +80,6 @@ bool BitmappedGraphics::isPlaneSelected(int plane) const {
 int BitmappedGraphics::draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height) {
 
 	auto screenWidth = getWidth();
-	auto screenHeight = getHeight();
 
 	auto bytesPerRow = width / 8;
 
@@ -87,33 +91,39 @@ int BitmappedGraphics::draw(int plane, const Memory& memory, int address, int dr
 	//// so the 'correct' way to detect collisions is Vf <> 0 rather than Vf == 1.
 	std::vector<int> rowHits(height);
 
+	auto numberOfCells = m_graphics[plane].size();
+	auto cellRowOffset = drawY * screenWidth;
+	auto skipX = !m_clip;
+
 	for (int row = 0; row < height; ++row) {
-		auto cellY = drawY + row;
-		auto cellRowOffset = cellY * screenWidth;
-		auto pixelAddress = address + (row * bytesPerRow);
+		auto spriteAddress = address + (row * bytesPerRow);
 		for (int column = 0; column < width; ++column) {
-			int high = column > 7;
-			auto pixelMemory = memory.get(pixelAddress + (high ? 1 : 0));
-			auto pixel = (pixelMemory & (0x80 >> (column & 0x7))) != 0;
-			if (pixel) {
-				auto cellX = drawX + column;
-				if ((cellX < screenWidth) && (cellY < screenHeight)){
-					auto cell = cellX + cellRowOffset;
-					if (m_graphics[plane][cell]) {
-						rowHits[row]++;
-					}
-					m_graphics[plane][cell] ^= 1;
+			int highColumn = column > 7;
+			auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));
+			auto spritePixel = (spritePixelByte & (0x80 >> (column & 0x7))) == 0 ? 0 : 1;
+			auto cellX = drawX + column;
+			auto clippedX = cellX % screenWidth;
+			auto skip = skipX && (clippedX != cellX);
+			if (!skip) {
+				auto cell = cellRowOffset + clippedX;
+				if (cell < numberOfCells) {
+					auto before = m_graphics[plane][cell];
+					auto after = before ^ spritePixel;
+					if (before && after)
+						++rowHits[row];
+					m_graphics[plane][cell] = after;
 				} else {
 					//// https://github.com/Chromatophore/HP48-Superchip#collision-with-the-bottom-of-the-screen
 					//// Sprites that are drawn such that they contain data that runs off of the bottom of the
 					//// screen will set Vf based on the number of lines that run off of the screen,
 					//// as if they are colliding.
-					if (cellY >= screenHeight) {
+					if (m_countExceededRows) {
 						rowHits[row]++;
 					}
 				}
 			}
 		}
+		cellRowOffset += screenWidth;
 	}
 
 	auto rowHitCount = 0;
