@@ -37,7 +37,7 @@ int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int dr
 		}
 	}
 	if (!m_countRowHits)
-		hits &= 1;
+		hits = hits > 0 ? 1 : 0;
 	return hits;
 }
 
@@ -107,11 +107,12 @@ int BitmappedGraphics::draw(int plane, const Memory& memory, int address, int dr
 			if (!skip) {
 				auto cell = cellRowOffset + clippedX;
 				if (cell < numberOfCells) {
-					auto before = m_graphics[plane][cell];
-					auto after = before ^ spritePixel;
-					if (before && after)
-						++rowHits[row];
-					m_graphics[plane][cell] = after;
+					if (spritePixel) {
+						auto before = m_graphics[plane][cell];
+						if (before)
+							++rowHits[row];
+						m_graphics[plane][cell] ^= spritePixel;
+					}
 				} else {
 					//// https://github.com/Chromatophore/HP48-Superchip#collision-with-the-bottom-of-the-screen
 					//// Sprites that are drawn such that they contain data that runs off of the bottom of the
