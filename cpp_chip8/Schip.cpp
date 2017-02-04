@@ -124,7 +124,7 @@ void Schip::LD_Vx_II(int x) {
 	if (m_compatibility) {
 		Chip8::LD_Vx_II(x);
 	} else {
-		std::copy_n(m_memory.getBusMutable().begin() + m_i, x + 1, m_v.begin());
+		std::copy_n(m_memory.getBus().begin() + m_i, x + 1, m_v.begin());
 	}
 }
 

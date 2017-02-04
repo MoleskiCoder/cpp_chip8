@@ -29,7 +29,7 @@ void BitmappedGraphics::allocateMemory() {
 
 int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int drawY, int width, int height) {
 	auto bytesPerRow = width / 8;
-	auto hits = 0;
+	size_t hits = 0;
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
 		if (isPlaneSelected(plane)) {
 			hits += draw(plane, memory, address, drawX, drawY, width, height);
@@ -38,7 +38,7 @@ int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int dr
 	}
 	if (!m_countRowHits)
 		hits = hits > 0 ? 1 : 0;
-	return hits;
+	return (int)hits;
 }
 
 void BitmappedGraphics::scrollDown(int count) {
@@ -77,7 +77,7 @@ bool BitmappedGraphics::isPlaneSelected(int plane) const {
 	return selected;
 }
 
-int BitmappedGraphics::draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height) {
+size_t BitmappedGraphics::draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height) {
 
 	auto screenWidth = getWidth();
 
@@ -98,15 +98,15 @@ int BitmappedGraphics::draw(int plane, const Memory& memory, int address, int dr
 	for (int row = 0; row < height; ++row) {
 		auto spriteAddress = address + (row * bytesPerRow);
 		for (int column = 0; column < width; ++column) {
-			int highColumn = column > 7;
-			auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));
-			auto spritePixel = (spritePixelByte & (0x80 >> (column & 0x7))) == 0 ? 0 : 1;
 			auto cellX = drawX + column;
 			auto clippedX = cellX % screenWidth;
 			auto skip = skipX && (clippedX != cellX);
 			if (!skip) {
 				auto cell = cellRowOffset + clippedX;
 				if (cell < numberOfCells) {
+					int highColumn = column > 7;
+					auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));
+					auto spritePixel = (spritePixelByte & (0x80 >> (column & 0x7))) == 0 ? 0 : 1;
 					if (spritePixel) {
 						auto before = m_graphics[plane][cell];
 						if (before)
@@ -126,14 +126,7 @@ int BitmappedGraphics::draw(int plane, const Memory& memory, int address, int dr
 		}
 		cellRowOffset += screenWidth;
 	}
-
-	auto rowHitCount = 0;
-	for (auto rowHit : rowHits) {
-		if (rowHit > 0) {
-			++rowHitCount;
-		}
-	}
-	return rowHitCount;
+	return std::count_if(rowHits.begin(), rowHits.end(), [](int hits) { return hits > 0; });
 }
 
 void BitmappedGraphics::allocateMemory(int plane) {

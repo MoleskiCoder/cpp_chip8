@@ -83,7 +83,7 @@ private:
 
 	bool isPlaneSelected(int plane) const;
 
-	int draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height);
+	size_t draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height);
 
 	void allocateMemory(int plane);
 
