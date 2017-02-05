@@ -146,14 +146,14 @@ void BitmappedGraphics::allocateMemory(int plane) {
 
 void BitmappedGraphics::clearRow(int plane, int row) {
 	auto width = getWidth();
-	std::fill_n(m_graphics[plane].begin()+ row * width, width, 0);
+	std::fill_n(m_graphics[plane].begin() + row * width, width, 0);
 }
 
 void BitmappedGraphics::clearColumn(int plane, int column) {
 	auto width = getWidth();
 	auto height = getHeight();
 	for (int y = 0; y < height; ++y) {
-		m_graphics[plane][column + (y * width)] = false;
+		m_graphics[plane][column + (y * width)] = 0;
 	}
 }
 
