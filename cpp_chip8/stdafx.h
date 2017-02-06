@@ -18,6 +18,7 @@
 #include <cmath>
 
 #include <SDL.h>
+#include <boost/program_options.hpp>
 
 #pragma comment(lib, "SDL2.lib")
 #pragma comment(lib, "SDL2main.lib")

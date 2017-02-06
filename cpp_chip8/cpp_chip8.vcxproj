@@ -88,14 +88,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;C:\local\boost_1_61_0</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName);C:\local\boost_1_61_0\lib32-msvc-14.0</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,14 +105,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;C:\local\boost_1_61_0</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName);C:\local\boost_1_61_0\lib64-msvc-14.0</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,7 +120,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;C:\local\boost_1_61_0</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Full</Optimization>
@@ -132,7 +132,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName);C:\local\boost_1_61_0\lib32-msvc-14.0</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,7 +140,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\include;C:\local\boost_1_61_0</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Full</Optimization>
@@ -152,7 +152,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\local\SDL2-devel-2.0.5-VC\SDL2-2.0.5\lib\$(PlatformShortName);C:\local\boost_1_61_0\lib64-msvc-14.0</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
