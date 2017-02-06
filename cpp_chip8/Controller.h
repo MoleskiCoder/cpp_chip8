@@ -41,7 +41,7 @@ public:
 protected:
 	virtual void update();
 	virtual void runFrame();
-	virtual bool runCycle() const;
+	virtual bool finishedCycling() const;
 	virtual void draw();
 
 	void stop();
@@ -77,9 +77,6 @@ private:
 	void destroyPixelFormat();
 	void destroyRenderer();
 	void destroyWindow();
-
-	void Processor_HighResolution();
-	void Processor_LowResolution();
 
 	void Processor_BeepStarting();
 	void Processor_BeepStopped();

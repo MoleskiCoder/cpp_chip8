@@ -55,13 +55,11 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 }
 
 void Controller::runGameLoop() {
-	auto quit = false;
-	while (!quit) {
+	while (!m_processor->getFinished()) {
 		::SDL_Event e;
 		while (::SDL_PollEvent(&e)) {
 			switch (e.type) {
 			case SDL_QUIT:
-				quit = true;
 				m_processor->setFinished(true);
 				break;
 			case SDL_KEYDOWN:
@@ -73,19 +71,19 @@ void Controller::runGameLoop() {
 			}
 		}
 		update();
-		quit = m_processor->getFinished();
 	}
 }
+
 void Controller::toggleFullscreen() {
-	auto wasFullscreen = SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN;
-	SDL_SetWindowFullscreen(m_window, wasFullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
-	SDL_ShowCursor(wasFullscreen);
+	auto wasFullscreen = ::SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN;
+	::SDL_SetWindowFullscreen(m_window, wasFullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
+	::SDL_ShowCursor(wasFullscreen);
 }
 
 void Controller::handleKeyDown(SDL_Keycode key) {
 	switch (key) {
 	case SDLK_F12:
-		toggleFullscreen();
+		// Don't let it get poked.  The key up will handle the full-screen toggle
 		break;
 	default:
 		m_processor->getKeyboardMutable().pokeKey(key);
@@ -94,7 +92,14 @@ void Controller::handleKeyDown(SDL_Keycode key) {
 }
 
 void Controller::handleKeyUp(SDL_Keycode key) {
-	m_processor->getKeyboardMutable().pullKey(key);
+	switch (key) {
+	case SDLK_F12:
+		toggleFullscreen();
+		break;
+	default:
+		m_processor->getKeyboardMutable().pullKey(key);
+		break;
+	}
 }
 
 void Controller::update() {
@@ -105,15 +110,12 @@ void Controller::update() {
 
 void Controller::runFrame() {
 	auto cycles = m_processor->getConfiguration().getCyclesPerFrame();
-	for (int i = 0; i < cycles; ++i) {
-		if (runCycle()) {
-			break;
-		}
+	for (int i = 0; i < cycles && !finishedCycling(); ++i) {
 		m_processor->step();
 	}
 }
 
-bool Controller::runCycle() const {
+bool Controller::finishedCycling() const {
 	auto finished = m_processor->getFinished();
 	auto draw = m_processor->getDisplay().getLowResolution() && m_processor->getDrawNeeded();
 	return finished || draw;
@@ -139,8 +141,8 @@ void Controller::loadContent() {
 	m_processor->BeepStopped.connect(std::bind(&Controller::Processor_BeepStopped, this));
 
 	if (auto schip = dynamic_cast<Schip*>(m_processor)) {
-		schip->HighResolutionConfigured.connect(std::bind(&Controller::Processor_HighResolution, this));
-		schip->LowResolutionConfigured.connect(std::bind(&Controller::Processor_LowResolution, this));
+		schip->HighResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
+		schip->LowResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
 	}
 
 	m_processor->loadGame(m_game);
@@ -211,25 +213,18 @@ void Controller::drawFrame() {
 	for (int y = 0; y < screenHeight; y++) {
 		auto rowOffset = y * screenWidth;
 		for (int x = 0; x < screenWidth; x++) {
+			auto pixelIndex = x + rowOffset;
 			int colourIndex = 0;
 			for (int plane = 0; plane < numberOfPlanes; ++plane) {
-				auto bit = source[plane][x + rowOffset];
+				auto bit = source[plane][pixelIndex];
 				colourIndex |= bit << plane;
 			}
-			m_pixels[x + y * screenWidth] = m_colours.getColour(colourIndex);
+			m_pixels[pixelIndex] = m_colours.getColour(colourIndex);
 		}
 	}
 
 	::SDL_UpdateTexture(m_bitmapTexture, NULL, &m_pixels[0], screenWidth * sizeof(Uint32));
 	::SDL_RenderCopy(m_renderer, m_bitmapTexture, NULL, NULL);
-}
-
-void Controller::Processor_HighResolution() {
-	recreateBitmapTexture();
-}
-
-void Controller::Processor_LowResolution() {
-	recreateBitmapTexture();
 }
 
 void Controller::Processor_BeepStarting() {
