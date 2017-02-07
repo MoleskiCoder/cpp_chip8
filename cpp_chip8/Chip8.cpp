@@ -44,8 +44,7 @@ void Chip8::initialise() {
 }
 
 void Chip8::loadGame(std::string game) {
-	auto path = "..\\Roms\\" + game;
-	m_memory.loadRom(path, m_configuration.getLoadAddress());
+	m_memory.loadRom(game, m_configuration.getLoadAddress());
 }
 
 void Chip8::step() {

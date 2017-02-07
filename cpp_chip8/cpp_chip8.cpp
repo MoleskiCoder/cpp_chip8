@@ -21,7 +21,7 @@ static boost::program_options::variables_map processCommandLine(int argc, char* 
 			"Allow instuctions to be loaded from odd addresses")
 
 		("rom",
-			boost::program_options::value<std::string>(),
+			boost::program_options::value<std::string>()->required(),
 			"ROM to use")
 
 		("graphics-count-row-hits",
@@ -48,14 +48,24 @@ static boost::program_options::variables_map processCommandLine(int argc, char* 
 
 	boost::program_options::variables_map options;
 	boost::program_options::store(poCommandLineParser.options(poOptionsDescription).positional(poPositionalOptions).run(), options);
-	boost::program_options::notify(options);
+
+	try {
+		boost::program_options::notify(options);
+	} catch (std::exception& error) {
+		options.clear();
+	}
 
 	return options;
 }
 
 int main(int argc, char* argv[]) {
 
+
 	auto options = processCommandLine(argc, argv);
+	if (options.empty()) {
+		std::cerr << "Error: missing path to ROM" << std::endl;
+		return 1;
+	}
 
 	auto processorTypeOption = options["processor-type"].as<std::string>();
 	Configuration configuration;
