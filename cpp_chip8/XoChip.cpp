@@ -101,6 +101,7 @@ void XoChip::load_i_long() {
 ////plane n (0xFN01) select zero or more drawing planes by bitmask (0 <= n <= 3).
 void XoChip::plane(int n) {
 	m_display.setPlaneMask(n);
+	m_drawNeeded = true;
 }
 
 ////audio (0xF002) store 16 bytes starting at i in the audio pattern buffer.
