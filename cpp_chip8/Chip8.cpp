@@ -112,7 +112,7 @@ void Chip8::emulateCycle() {
 
 	onEmulatingCycle(programCounter, m_opcode, nnn, nn, n, x, y);
 	if (!emulateInstruction(nnn, nn, n, x, y)) {
-		throw std::runtime_error("Illegal instruction.");
+		throw std::runtime_error("Illegal instruction (is the processor type set correctly?)");
 	}
 
 	onEmulatedCycle(programCounter, m_opcode, nnn, nn, n, x, y);

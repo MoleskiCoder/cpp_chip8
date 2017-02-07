@@ -86,8 +86,13 @@ int main(int argc, char* argv[]) {
 	auto game = options["rom"].as<std::string>();
 	Controller controller(processor.get(), game);
 
-	controller.loadContent();
-	controller.runGameLoop();
+	try {
+		controller.loadContent();
+		controller.runGameLoop();
+	} catch (std::exception& error) {
+		std::cerr << "Error: " << error.what() << std::endl;
+		return 2;
+	}
 
 	return 0;
 }

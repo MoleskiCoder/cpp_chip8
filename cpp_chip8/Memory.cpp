@@ -55,5 +55,9 @@ void Memory::loadRom(std::string path, uint16_t offset) {
 	if (hp48)
 		header = 13;
 
+	if (m_bus.size() < (size + offset - header)) {
+		throw std::runtime_error("Game is too large (is this an XoChip game?)");
+	}
+
 	std::copy(buffer.begin() + header, buffer.end(), m_bus.begin() + offset);
 }
