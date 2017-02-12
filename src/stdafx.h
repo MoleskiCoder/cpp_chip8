@@ -20,5 +20,7 @@
 #include <SDL.h>
 #include <boost/program_options.hpp>
 
+#ifdef _MSC_VER
 #pragma comment(lib, "SDL2.lib")
 #pragma comment(lib, "SDL2main.lib")
+#endif

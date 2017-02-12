@@ -20,7 +20,7 @@ private:
 	//  4   5   6   D
 	//  7   8   9   E
 	//  A   0   B   F
-	std::array<int, 16> m_mapping = {
+	std::array<int, 16> m_mapping = { {
 		SDLK_x,
 
 		SDLK_1,		SDLK_2,		SDLK_3,
@@ -33,5 +33,5 @@ private:
 		SDLK_r,
 		SDLK_f,
 		SDLK_v
-	};
+	} };
 };

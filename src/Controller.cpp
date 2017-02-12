@@ -14,7 +14,7 @@ Controller::Controller(Chip8* processor, std::string game)
   m_window(nullptr),
   m_renderer(nullptr),
   m_bitmapTexture(nullptr),
-  m_pixelType(SDL_PIXELFORMAT_ARGB32),
+  m_pixelType(SDL_PIXELFORMAT_ARGB8888),
   m_pixelFormat(nullptr) {
 }
 
