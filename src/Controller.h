@@ -16,6 +16,16 @@ public:
 
 	static Chip8* buildProcessor(const Configuration& configuration);
 
+	static void throwSDLException(std::string failure) {
+		throw std::runtime_error(failure + ::SDL_GetError());
+	}
+
+	static void verifySDLCall(int returned, std::string failure) {
+		if (returned < 0) {
+			throwSDLException(failure);
+		}
+	}
+
 	Controller(Chip8* processor, std::string game);
 	~Controller();
 

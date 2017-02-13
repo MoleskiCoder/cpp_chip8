@@ -75,9 +75,9 @@ void Controller::runGameLoop() {
 }
 
 void Controller::toggleFullscreen() {
-	auto wasFullscreen = ::SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN;
-	::SDL_SetWindowFullscreen(m_window, wasFullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
-	::SDL_ShowCursor(wasFullscreen);
+	auto wasFullscreen = ::SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN_DESKTOP;
+	verifySDLCall(::SDL_SetWindowFullscreen(m_window, wasFullscreen ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP), "Failed to modify the window full screen setting");
+	::SDL_ShowCursor(wasFullscreen ? 1 : 0);
 }
 
 void Controller::handleKeyDown(SDL_Keycode key) {
@@ -127,14 +127,28 @@ void Controller::stop() {
 
 void Controller::loadContent() {
 
-	::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	verifySDLCall(::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO), "Failed to initialise SDL: ");
 
 	m_processor->initialise();
 
 	m_window = ::SDL_CreateWindow("Chip-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, getScreenWidth(), getScreenHeight(), SDL_WINDOW_SHOWN);
+	if (m_window == nullptr) {
+		throwSDLException("Unable to create window: ");
+	}
+
 	m_renderer = ::SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (m_renderer == nullptr) {
+		throwSDLException("Unable to create renderer: ");
+	}
+
+	::SDL_RendererInfo rendererInfo;
+	verifySDLCall(::SDL_GetRendererInfo(m_renderer, &rendererInfo), "Unable to obtain renderer information: ");
+	auto vsync = (rendererInfo.flags & SDL_RENDERER_PRESENTVSYNC) != 0;
 
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
+	if (m_pixelFormat == nullptr) {
+		throwSDLException("Unable to allocate pixel format: ");
+	}
 	m_colours.load(m_pixelFormat);
 
 	m_processor->BeepStarting.connect(std::bind(&Controller::Processor_BeepStarting, this));
@@ -185,13 +199,16 @@ void Controller::createBitmapTexture() {
 	auto screenWidth = m_processor->getDisplay().getWidth();
 	auto screenHeight = m_processor->getDisplay().getHeight();
 	m_bitmapTexture = ::SDL_CreateTexture(m_renderer, m_pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
+	if (m_bitmapTexture == nullptr) {
+		throwSDLException("Unable to create bitmap texture");
+	}
 	m_pixels.resize(screenWidth * screenHeight);
 }
 
 void Controller::configureBackground() const {
 	Uint8 r, g, b;
 	::SDL_GetRGB(m_colours.getColour(0), m_pixelFormat, &r, &g, &b);
-	::SDL_SetRenderDrawColor(m_renderer, r, g, b, SDL_ALPHA_OPAQUE);
+	verifySDLCall(::SDL_SetRenderDrawColor(m_renderer, r, g, b, SDL_ALPHA_OPAQUE), "Unable to set render draw colour");
 }
 
 void Controller::draw() {
@@ -223,8 +240,8 @@ void Controller::drawFrame() {
 		}
 	}
 
-	::SDL_UpdateTexture(m_bitmapTexture, NULL, &m_pixels[0], screenWidth * sizeof(Uint32));
-	::SDL_RenderCopy(m_renderer, m_bitmapTexture, NULL, NULL);
+	verifySDLCall(::SDL_UpdateTexture(m_bitmapTexture, NULL, &m_pixels[0], screenWidth * sizeof(Uint32)), "Unable to update texture: ");
+	verifySDLCall(::SDL_RenderCopy(m_renderer, m_bitmapTexture, NULL, NULL), "Unable to copy texture to renderer");
 }
 
 void Controller::Processor_BeepStarting() {

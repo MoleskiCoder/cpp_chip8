@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "AudioDevice.h"
+#include "Controller.h"
 
 #include <cmath>
 
@@ -42,6 +43,9 @@ void AudioDevice::sinWave_StreamProvider(void *userdata, Uint8 *stream, int len)
 void AudioDevice::initialise() {
 
 	m_device = ::SDL_OpenAudioDevice(NULL, 0, &m_want, &m_have, SDL_AUDIO_ALLOW_ANY_CHANGE);
+	if (m_device == 0) {
+		Controller::throwSDLException("Unable to open audio device");
+	}
 
 	m_sinewave_length = m_have.freq * 5; /* 5 seconds */
 	m_sinewave_position = 0;
