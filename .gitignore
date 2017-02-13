@@ -8,6 +8,7 @@ ipch/
 *.sdf
 *.vsp
 *.VC.db
+*.vcxproj.user
 
 *.swp
 *~
