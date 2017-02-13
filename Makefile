@@ -1,7 +1,6 @@
 EXE = cpp_chip8
 
-CFLAGS   = -g `sdl2-config --cflags`
-CXXFLAGS = -Wall -Wextra -g `sdl2-config --cflags` -std=c++11
+CXXFLAGS = -Wall -g `sdl2-config --cflags` -std=c++11
 LDFLAGS  = `sdl2-config --libs` -lboost_program_options
 
 INCLUDE = -I"/usr/include/SDL"
@@ -19,9 +18,6 @@ $(EXE): $(OBJECTS)
 
 src/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -c -o $@
-
-src/%.o: src/%.c
-	$(CC) $(CFLAGS) $(INCLUDE) $< -c -o $@
 
 clean:
 	-rm -f $(EXE) $(OBJECTS)
