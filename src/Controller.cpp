@@ -16,6 +16,7 @@ Controller::Controller(Chip8* processor, std::string game)
   m_bitmapTexture(nullptr),
   m_pixelType(SDL_PIXELFORMAT_ARGB8888),
   m_pixelFormat(nullptr) {
+	m_fps = (float)m_processor->getConfiguration().getFramesPerSecond();
 }
 
 Controller::~Controller() {
@@ -56,9 +57,8 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 
 void Controller::runGameLoop() {
 
-	const float fps = (float)m_processor->getConfiguration().getFramesPerSecond();
-	auto frames = 0UL;
-	const auto startTicks = ::SDL_GetTicks();
+	m_frames = 0UL;
+	m_startTicks = ::SDL_GetTicks();
 
 	while (!m_processor->getFinished()) {
 		::SDL_Event e;
@@ -78,11 +78,13 @@ void Controller::runGameLoop() {
 
 		update();
 
-		const auto elapsedTicks = ::SDL_GetTicks() - startTicks;
-		const auto neededTicks = (++frames / fps) * 1000.0;
-		auto sleepNeeded = (int)(neededTicks - elapsedTicks);
-		if (sleepNeeded > 0) {
-			::SDL_Delay(sleepNeeded);
+		if (!m_vsync) {
+			const auto elapsedTicks = ::SDL_GetTicks() - m_startTicks;
+			const auto neededTicks = (++m_frames / m_fps) * 1000.0;
+			auto sleepNeeded = (int)(neededTicks - elapsedTicks);
+			if (sleepNeeded > 0) {
+				::SDL_Delay(sleepNeeded);
+			}
 		}
 	}
 }
@@ -149,9 +151,23 @@ void Controller::loadContent() {
 		throwSDLException("Unable to create window: ");
 	}
 
-	m_renderer = ::SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
+	m_vsync = m_processor->getConfiguration().getVsyncLocked();
+	Uint32 rendererFlags = SDL_RENDERER_ACCELERATED;
+	if (m_vsync) {
+		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+	}
+	m_renderer = ::SDL_CreateRenderer(m_window, -1, rendererFlags);
 	if (m_renderer == nullptr) {
 		throwSDLException("Unable to create renderer: ");
+	}
+
+	if (m_vsync) {
+		SDL_RendererInfo info;
+		verifySDLCall(::SDL_GetRendererInfo(m_renderer, &info), "Unable to obtain renderer information");
+		if ((info.flags & SDL_RENDERER_PRESENTVSYNC) == 0) {
+			std::cerr << "Renderer does not support VSYNC, reverting to timed delay loop." << std::endl;
+			m_vsync = false;
+		}
 	}
 
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);

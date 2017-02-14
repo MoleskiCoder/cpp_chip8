@@ -28,6 +28,14 @@ public:
 		m_allowMisalignedOpcodes = value;
 	}
 
+	bool getVsyncLocked() const {
+		return m_vsyncLocked;
+	}
+
+	void setVsyncLocked(bool value) {
+		m_vsyncLocked = value;
+	}
+
 	int getFramesPerSecond() const {
 		return m_framesPerSecond;
 	}
@@ -116,6 +124,7 @@ public:
 private:
 	ProcessorLevel m_type;
 	bool m_allowMisalignedOpcodes;
+	bool m_vsyncLocked;
 	int m_framesPerSecond;
 	int m_cyclesPerFrame;
 	uint16_t m_startAddress;

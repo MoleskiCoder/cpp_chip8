@@ -7,6 +7,7 @@
 Configuration::Configuration()
 : m_type(ProcessorChip8),
   m_allowMisalignedOpcodes(false),
+  m_vsyncLocked(true),
   m_framesPerSecond(60),
   m_cyclesPerFrame(13),
   m_startAddress(0x200),
