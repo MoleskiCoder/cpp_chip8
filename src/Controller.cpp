@@ -55,6 +55,11 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 }
 
 void Controller::runGameLoop() {
+
+	const auto fps = m_processor->getConfiguration().getFramesPerSecond();
+	auto frames = 0UL;
+	const auto startTicks = ::SDL_GetTicks();
+
 	while (!m_processor->getFinished()) {
 		::SDL_Event e;
 		while (::SDL_PollEvent(&e)) {
@@ -70,7 +75,15 @@ void Controller::runGameLoop() {
 				break;
 			}
 		}
+
 		update();
+
+		const auto elapsedTicks = ::SDL_GetTicks() - startTicks;
+		const auto neededTicks = (++frames / 60.0) * 1000.0;
+		if (elapsedTicks < neededTicks) {
+			auto sleepNeeded = (int)(neededTicks - elapsedTicks);
+			::SDL_Delay(sleepNeeded);
+		}
 	}
 }
 
@@ -136,14 +149,10 @@ void Controller::loadContent() {
 		throwSDLException("Unable to create window: ");
 	}
 
-	m_renderer = ::SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	m_renderer = ::SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
 	if (m_renderer == nullptr) {
 		throwSDLException("Unable to create renderer: ");
 	}
-
-	::SDL_RendererInfo rendererInfo;
-	verifySDLCall(::SDL_GetRendererInfo(m_renderer, &rendererInfo), "Unable to obtain renderer information: ");
-	auto vsync = (rendererInfo.flags & SDL_RENDERER_PRESENTVSYNC) != 0;
 
 	m_pixelFormat = ::SDL_AllocFormat(m_pixelType);
 	if (m_pixelFormat == nullptr) {

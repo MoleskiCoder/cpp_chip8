@@ -28,6 +28,14 @@ public:
 		m_allowMisalignedOpcodes = value;
 	}
 
+	int getFramesPerSecond() const {
+		return m_framesPerSecond;
+	}
+
+	void setFramesPerSecond(int value) {
+		m_framesPerSecond = value;
+	}
+
 	// https://github.com/Chromatophore/HP48-Superchip#platform-speed
 	// The HP48 calculator is much faster than the Cosmac VIP, but,
 	// there is still no solid understanding of how much faster it is for
@@ -108,6 +116,7 @@ public:
 private:
 	ProcessorLevel m_type;
 	bool m_allowMisalignedOpcodes;
+	int m_framesPerSecond;
 	int m_cyclesPerFrame;
 	uint16_t m_startAddress;
 	uint16_t m_loadAddress;
