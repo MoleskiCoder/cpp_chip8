@@ -44,3 +44,4 @@ ipch/
 *.exe
 *.out
 *.app
+cpp_chip8
