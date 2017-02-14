@@ -56,7 +56,7 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 
 void Controller::runGameLoop() {
 
-	const auto fps = m_processor->getConfiguration().getFramesPerSecond();
+	const float fps = (float)m_processor->getConfiguration().getFramesPerSecond();
 	auto frames = 0UL;
 	const auto startTicks = ::SDL_GetTicks();
 
@@ -79,9 +79,9 @@ void Controller::runGameLoop() {
 		update();
 
 		const auto elapsedTicks = ::SDL_GetTicks() - startTicks;
-		const auto neededTicks = (++frames / 60.0) * 1000.0;
-		if (elapsedTicks < neededTicks) {
-			auto sleepNeeded = (int)(neededTicks - elapsedTicks);
+		const auto neededTicks = (++frames / fps) * 1000.0;
+		auto sleepNeeded = (int)(neededTicks - elapsedTicks);
+		if (sleepNeeded > 0) {
 			::SDL_Delay(sleepNeeded);
 		}
 	}
