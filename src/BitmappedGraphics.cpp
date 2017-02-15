@@ -102,7 +102,7 @@ size_t BitmappedGraphics::draw(int plane, const Memory& memory, int address, int
 			auto clippedX = cellX % screenWidth;
 			auto skip = skipX && (clippedX != cellX);
 			if (!skip) {
-				auto cell = cellRowOffset + clippedX;
+				size_t cell = cellRowOffset + clippedX;
 				if (cell < numberOfCells) {
 					int highColumn = column > 7;
 					auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));

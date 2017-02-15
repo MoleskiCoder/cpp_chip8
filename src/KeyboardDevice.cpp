@@ -3,7 +3,7 @@
 
 bool KeyboardDevice::checkKeyPress(int& key) const {
 	key = -1;
-	for (int idx = 0; idx < m_mapping.size(); ++idx) {
+	for (auto idx = 0UL; idx < m_mapping.size(); ++idx) {
 		if (isKeyPressed(idx)) {
 			key = idx;
 			return true;
