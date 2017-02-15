@@ -11,14 +11,19 @@ CXXOBJECTS = $(CXXFILES:.cpp=.o)
 SOURCES = $(CXXFILES)
 OBJECTS = $(CXXOBJECTS)
 
+PCH = src/stdafx.h.gch
+
 all: $(EXE)
+
+$(PCH): src/stdafx.h
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -x c++-header $<
 
 $(EXE): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $(EXE) $(LDFLAGS)
 
-src/%.o: src/%.cpp
+src/%.o: src/%.cpp $(PCH)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -c -o $@
 
 .PHONY: clean
 clean:
-	-rm -f $(EXE) $(OBJECTS)
+	-rm -f $(EXE) $(OBJECTS) $(PCH)
