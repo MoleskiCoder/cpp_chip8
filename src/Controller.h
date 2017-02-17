@@ -72,7 +72,7 @@ private:
 
 	AudioDevice m_audio;
 
-	double m_fps;
+	int m_fps;
 	Uint32 m_startTicks;
 	Uint32 m_frames;
 	bool m_vsync;

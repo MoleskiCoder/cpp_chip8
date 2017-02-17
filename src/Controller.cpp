@@ -16,7 +16,7 @@ Controller::Controller(Chip8* processor, std::string game)
   m_bitmapTexture(nullptr),
   m_pixelType(SDL_PIXELFORMAT_ARGB8888),
   m_pixelFormat(nullptr) {
-	m_fps = (float)m_processor->getConfiguration().getFramesPerSecond();
+	m_fps = m_processor->getConfiguration().getFramesPerSecond();
 }
 
 Controller::~Controller() {
@@ -80,7 +80,7 @@ void Controller::runGameLoop() {
 
 		if (!m_vsync) {
 			const auto elapsedTicks = ::SDL_GetTicks() - m_startTicks;
-			const auto neededTicks = (++m_frames / m_fps) * 1000.0;
+			const auto neededTicks = (++m_frames / (float)m_fps) * 1000.0;
 			auto sleepNeeded = (int)(neededTicks - elapsedTicks);
 			if (sleepNeeded > 0) {
 				::SDL_Delay(sleepNeeded);
@@ -151,10 +151,22 @@ void Controller::loadContent() {
 		throwSDLException("Unable to create window: ");
 	}
 
-	m_vsync = m_processor->getConfiguration().getVsyncLocked();
+	::SDL_DisplayMode mode;
+	verifySDLCall(::SDL_GetWindowDisplayMode(m_window, &mode), "Unable to obtain window information");
+
+	const auto& configuration = m_processor->getConfiguration();
+
+	m_vsync = configuration.getVsyncLocked();
 	Uint32 rendererFlags = 0;
 	if (m_vsync) {
-		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+		auto required = configuration.getFramesPerSecond();
+		if (required == mode.refresh_rate) {
+			rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+			::SDL_Log("Attempting to use SDL_RENDERER_PRESENTVSYNC");
+		} else {
+			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Display refresh rate is incompatible with required rate (%d)", required);
+
+		}
 	}
 	m_renderer = ::SDL_CreateRenderer(m_window, -1, rendererFlags);
 	if (m_renderer == nullptr) {
