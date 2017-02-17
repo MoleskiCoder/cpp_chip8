@@ -95,4 +95,7 @@ private:
 
 	void Processor_BeepStarting();
 	void Processor_BeepStopped();
+
+	static void dumpRendererInformation();
+	static void dumpRendererInformation(::SDL_RendererInfo info);
 };

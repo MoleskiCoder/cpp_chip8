@@ -152,7 +152,7 @@ void Controller::loadContent() {
 	}
 
 	m_vsync = m_processor->getConfiguration().getVsyncLocked();
-	Uint32 rendererFlags = SDL_RENDERER_ACCELERATED;
+	Uint32 rendererFlags = 0;
 	if (m_vsync) {
 		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
 	}
@@ -161,9 +161,15 @@ void Controller::loadContent() {
 		throwSDLException("Unable to create renderer: ");
 	}
 
+	::SDL_Log("Available renderers:");
+	dumpRendererInformation();
+
+	::SDL_RendererInfo info;
+	verifySDLCall(::SDL_GetRendererInfo(m_renderer, &info), "Unable to obtain renderer information");
+	::SDL_Log("Using renderer:");
+	dumpRendererInformation(info);
+
 	if (m_vsync) {
-		SDL_RendererInfo info;
-		verifySDLCall(::SDL_GetRendererInfo(m_renderer, &info), "Unable to obtain renderer information");
 		if ((info.flags & SDL_RENDERER_PRESENTVSYNC) == 0) {
 			::SDL_LogWarn(::SDL_LOG_CATEGORY_APPLICATION, "Renderer does not support VSYNC, reverting to timed delay loop.");
 			m_vsync = false;
@@ -275,4 +281,23 @@ void Controller::Processor_BeepStarting() {
 
 void Controller::Processor_BeepStopped() {
 	m_audio.pause();
+}
+
+void Controller::dumpRendererInformation() {
+	auto count = ::SDL_GetNumRenderDrivers();
+	for (int i = 0; i < count; ++i) {
+		::SDL_RendererInfo info;
+		verifySDLCall(::SDL_GetRenderDriverInfo(i, &info), "Unable to obtain renderer information");
+		dumpRendererInformation(info);
+	}
+}
+
+void Controller::dumpRendererInformation(::SDL_RendererInfo info) {
+	auto name = info.name;
+	auto flags = info.flags;
+	int software = (flags & SDL_RENDERER_SOFTWARE) != 0;
+	int accelerated = (flags & SDL_RENDERER_ACCELERATED) != 0;
+	int vsync = (flags & SDL_RENDERER_PRESENTVSYNC) != 0;
+	int targetTexture = (flags & SDL_RENDERER_TARGETTEXTURE) != 0;
+	::SDL_Log("%s: software=%d, accelerated=%d, vsync=%d, target texture=%d", name, software, accelerated, vsync, targetTexture);
 }
