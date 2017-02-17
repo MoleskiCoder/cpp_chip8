@@ -1,7 +1,7 @@
 EXE = cpp_chip8
 
-CXXFLAGS = -Wall -g `sdl2-config --cflags` -std=c++11 -march=native -O2 -pipe
-LDFLAGS  = `sdl2-config --libs` -lboost_program_options
+CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -march=native -O2 -pipe
+LDFLAGS  = `sdl2-config --libs` -lboost_program_options -s
 
 INCLUDE = -I"/usr/include/SDL"
 
