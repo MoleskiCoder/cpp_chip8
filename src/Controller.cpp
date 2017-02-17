@@ -164,6 +164,7 @@ void Controller::loadContent() {
 			rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
 			::SDL_Log("Attempting to use SDL_RENDERER_PRESENTVSYNC");
 		} else {
+			m_vsync = false;
 			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Display refresh rate is incompatible with required rate (%d)", required);
 
 		}
