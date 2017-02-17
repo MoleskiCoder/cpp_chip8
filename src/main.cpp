@@ -33,7 +33,7 @@ static po::variables_map processCommandLine(int argc, char* argv[]) {
 	try {
 		po::notify(options);
 	} catch (std::exception& error) {
-		std::cerr << "Error: " << error.what() << std::endl;
+		::SDL_LogError(::SDL_LOG_CATEGORY_APPLICATION, "%s", error.what());
 		options.clear();
 	}
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 		controller.loadContent();
 		controller.runGameLoop();
 	} catch (std::exception& error) {
-		std::cerr << "Error: " << error.what() << std::endl;
+		::SDL_LogError(::SDL_LOG_CATEGORY_APPLICATION, "%s", error.what());
 		return 2;
 	}
 

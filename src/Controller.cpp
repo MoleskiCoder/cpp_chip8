@@ -165,7 +165,7 @@ void Controller::loadContent() {
 		SDL_RendererInfo info;
 		verifySDLCall(::SDL_GetRendererInfo(m_renderer, &info), "Unable to obtain renderer information");
 		if ((info.flags & SDL_RENDERER_PRESENTVSYNC) == 0) {
-			std::cerr << "Renderer does not support VSYNC, reverting to timed delay loop." << std::endl;
+			::SDL_LogWarn(::SDL_LOG_CATEGORY_APPLICATION, "Renderer does not support VSYNC, reverting to timed delay loop.");
 			m_vsync = false;
 		}
 	}
