@@ -240,13 +240,13 @@ void Controller::recreateBitmapTexture() {
 }
 
 void Controller::createBitmapTexture() {
-	auto screenWidth = m_processor->getDisplay().getWidth();
-	auto screenHeight = m_processor->getDisplay().getHeight();
-	m_bitmapTexture = ::SDL_CreateTexture(m_renderer, m_pixelType, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
+	auto displayWidth = getDisplayWidth();
+	auto displayHeight = getDisplayHeight();
+	m_bitmapTexture = ::SDL_CreateTexture(m_renderer, m_pixelType, SDL_TEXTUREACCESS_STREAMING, displayWidth, displayHeight);
 	if (m_bitmapTexture == nullptr) {
 		throwSDLException("Unable to create bitmap texture");
 	}
-	m_pixels.resize(screenWidth * screenHeight);
+	m_pixels.resize(displayWidth * displayHeight);
 }
 
 void Controller::configureBackground() const {
@@ -265,15 +265,15 @@ void Controller::draw() {
 
 void Controller::drawFrame() {
 
-	auto screenWidth = m_processor->getDisplay().getWidth();
-	auto screenHeight = m_processor->getDisplay().getHeight();
+	auto displayWidth = getDisplayWidth();
+	auto displayHeight = getDisplayHeight();
 
 	auto source = m_processor->getDisplay().getGraphics();
 	auto numberOfPlanes = m_processor->getDisplay().getNumberOfPlanes();
 
-	for (int y = 0; y < screenHeight; y++) {
-		auto rowOffset = y * screenWidth;
-		for (int x = 0; x < screenWidth; x++) {
+	for (int y = 0; y < displayHeight; y++) {
+		auto rowOffset = y * displayWidth;
+		for (int x = 0; x < displayWidth; x++) {
 			auto pixelIndex = x + rowOffset;
 			int colourIndex = 0;
 			for (int plane = 0; plane < numberOfPlanes; ++plane) {
@@ -284,7 +284,7 @@ void Controller::drawFrame() {
 		}
 	}
 
-	verifySDLCall(::SDL_UpdateTexture(m_bitmapTexture, NULL, &m_pixels[0], screenWidth * sizeof(Uint32)), "Unable to update texture: ");
+	verifySDLCall(::SDL_UpdateTexture(m_bitmapTexture, NULL, &m_pixels[0], displayWidth * sizeof(Uint32)), "Unable to update texture: ");
 	verifySDLCall(::SDL_RenderCopy(m_renderer, m_bitmapTexture, NULL, NULL), "Unable to copy texture to renderer");
 }
 
