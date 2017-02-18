@@ -162,7 +162,6 @@
     <ClInclude Include="ColourPalette.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Controller.h" />
-    <ClInclude Include="DisassemblyEventArgs.h" />
     <ClInclude Include="EventArgs.h" />
     <ClInclude Include="KeyboardDevice.h" />
     <ClInclude Include="Memory.h" />

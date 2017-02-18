@@ -10,21 +10,18 @@
 #include "KeyboardDevice.h"
 #include "Signal.h"
 #include "EventArgs.h"
-#include "DisassemblyEventArgs.h"
 
 class Configuration;
 
 class Chip8 {
 public:
-	Chip8(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, const Configuration& configuration);
+	Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 
 	Signal<EventArgs> BeepStarting;
 	Signal<EventArgs> BeepStopped;
 
 	Signal<EventArgs> EmulatingCycle;
 	Signal<EventArgs> EmulatedCycle;
-
-	Signal<DisassemblyEventArgs> DisassembleInstruction;
 
 	virtual void initialise();
 

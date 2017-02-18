@@ -4,8 +4,7 @@
 
 class Memory;
 
-class BitmappedGraphics
-{
+class BitmappedGraphics {
 public:
 	enum {
 		DefaultPlane = 0x1,

@@ -5,7 +5,7 @@
 
 #include "Configuration.h"
 
-Chip8::Chip8(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, const Configuration& configuration)
+Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
 : m_display(display),
   m_memory(memory),
   m_keyboard(keyboard),

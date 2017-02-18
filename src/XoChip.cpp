@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "XoChip.h"
 
-XoChip::XoChip(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, const Configuration& configuration)
+XoChip::XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
 : Schip(memory, keyboard, display, configuration) {
 }
 

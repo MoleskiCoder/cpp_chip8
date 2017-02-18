@@ -1,17 +1,18 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 
 #include "Schip.h"
-#include "Memory.h"
-#include "BitmappedGraphics.h"
-#include "KeyboardDevice.h"
 
+class Memory;
+class KeyboardDevice;
+class BitmappedGraphics;
 class Configuration;
 
 class XoChip : public Schip {
 public:
-	XoChip(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, const Configuration& configuration);
+	XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 
 protected:
 	bool emulateInstructions_0(int nnn, int nn, int n, int x, int y);

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Schip.h"
 
-Schip::Schip(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, const Configuration& configuration)
+Schip::Schip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
 : Chip8(memory, keyboard, display, configuration) {
 }
 

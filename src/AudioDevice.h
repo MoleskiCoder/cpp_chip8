@@ -3,8 +3,7 @@
 #include <cstdint>
 #include <SDL.h>
 
-class AudioDevice
-{
+class AudioDevice {
 public:
 	AudioDevice();
 	~AudioDevice();

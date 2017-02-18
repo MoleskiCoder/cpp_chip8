@@ -4,18 +4,17 @@
 #include <array>
 
 #include "Chip8.h"
-#include "Memory.h"
-#include "BitmappedGraphics.h"
-#include "KeyboardDevice.h"
-
 #include "Signal.h"
 #include "EventArgs.h"
 
+class Memory;
+class KeyboardDevice;
+class BitmappedGraphics;
 class Configuration;
 
 class Schip : public Chip8 {
 public:
-	Schip(Memory memory, KeyboardDevice keyboard, BitmappedGraphics display, const Configuration& configuration);
+	Schip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 
 	Signal<EventArgs> HighResolutionConfigured;
 	Signal<EventArgs> LowResolutionConfigured;

@@ -35,9 +35,6 @@
     <ClInclude Include="EventArgs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DisassemblyEventArgs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Schip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
