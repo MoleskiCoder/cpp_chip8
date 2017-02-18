@@ -14,7 +14,7 @@ Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const Bitmapp
 }
 
 void Chip8::initialise() {
-	m_finished = m_drawNeeded = false;
+	m_finished = false;
 
 	m_pc = m_configuration.getStartAddress();
 	m_i = 0;			// Reset index register
@@ -121,7 +121,6 @@ void Chip8::emulateCycle() {
 void Chip8::draw(int x, int y, int width, int height) {
 	auto hits = m_display.draw(m_memory, m_i, m_v[x], m_v[y], width, height);
 	m_v[0xf] = (uint8_t)hits;
-	m_drawNeeded = true;
 }
 
 bool Chip8::emulateInstruction(int nnn, int nn, int n, int x, int y) {
@@ -376,7 +375,6 @@ bool Chip8::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 
 void Chip8::CLS() {
 	m_display.clear();
-	m_drawNeeded = true;
 }
 
 void Chip8::RET() {

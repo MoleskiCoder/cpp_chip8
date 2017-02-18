@@ -19,6 +19,7 @@ void BitmappedGraphics::initialise() {
 	setHighResolution(false);
 	allocateMemory();
 	clear();
+	setDirty(true);
 }
 
 void BitmappedGraphics::allocateMemory() {
@@ -36,6 +37,7 @@ int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int dr
 			address += height * bytesPerRow;
 		}
 	}
+	setDirty(true);
 	if (!m_countRowHits)
 		hits = hits > 0 ? 1 : 0;
 	return (int)hits;
@@ -45,30 +47,35 @@ void BitmappedGraphics::scrollDown(int count) {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
 		maybeScrollDown(plane, count);
 	}
+	setDirty(true);
 }
 
 void BitmappedGraphics::scrollUp(int count) {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
 		maybeScrollUp(plane, count);
 	}
+	setDirty(true);
 }
 
 void BitmappedGraphics::scrollLeft() {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
 		maybeScrollLeft(plane);
 	}
+	setDirty(true);
 }
 
 void BitmappedGraphics::scrollRight() {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
 		maybeScrollRight(plane);
 	}
+	setDirty(true);
 }
 
 void BitmappedGraphics::clear() {
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
 		maybeClear(plane);
 	}
+	setDirty(true);
 }
 
 bool BitmappedGraphics::isPlaneSelected(int plane) const {

@@ -44,11 +44,11 @@ public:
 	}
 
 	bool getDrawNeeded() const {
-		return m_drawNeeded;
+		return m_display.getDirty();
 	}
 
 	void setDrawNeeded(bool value) {
-		m_drawNeeded = value;
+		m_display.setDirty(value);
 	}
 
 	bool getFinished() const {
@@ -67,8 +67,6 @@ protected:
 
 	uint16_t m_i;
 	uint16_t m_pc;
-
-	bool m_drawNeeded;
 
 	bool m_finished;
 

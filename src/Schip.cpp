@@ -161,7 +161,6 @@ void Schip::EXIT() {
 // Code generated: 0x00Cn
 void Schip::SCDOWN(int n) {
 	m_display.scrollDown(n);
-	m_drawNeeded = true;
 }
 
 // compatibility
@@ -180,7 +179,6 @@ void Schip::COMPATIBILITY() {
 // Code generated: 0x00FB
 void Schip::SCRIGHT() {
 	m_display.scrollRight();
-	m_drawNeeded = true;
 }
 
 // scleft
@@ -190,7 +188,6 @@ void Schip::SCRIGHT() {
 // Code generated: 0x00FC
 void Schip::SCLEFT() {
 	m_display.scrollLeft();
-	m_drawNeeded = true;
 }
 
 // low

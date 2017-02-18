@@ -58,6 +58,14 @@ public:
 		m_planeMask = value;
 	}
 
+	bool getDirty() const {
+		return m_dirty;
+	}
+
+	void setDirty(bool value) {
+		m_dirty = value;
+	}
+
 	void initialise();
 
 	void allocateMemory();
@@ -79,6 +87,7 @@ private:
 	bool m_clip;
 	bool m_countExceededRows;
 	bool m_countRowHits;
+	bool m_dirty;
 
 	bool isPlaneSelected(int plane) const;
 

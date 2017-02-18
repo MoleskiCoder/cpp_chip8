@@ -60,7 +60,6 @@ bool XoChip::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
 //// scroll-up n (0x00DN) scroll the contents of the display up by 0-15 pixels.
 void XoChip::SCUP(int n) {
 	m_display.scrollUp(n);
-	m_drawNeeded = true;
 }
 
 // save vx - vy (0x5XY2) save an inclusive range of registers to memory starting at i.
@@ -101,7 +100,6 @@ void XoChip::load_i_long() {
 ////plane n (0xFN01) select zero or more drawing planes by bitmask (0 <= n <= 3).
 void XoChip::plane(int n) {
 	m_display.setPlaneMask(n);
-	m_drawNeeded = true;
 }
 
 ////audio (0xF002) store 16 bytes starting at i in the audio pattern buffer.
