@@ -75,6 +75,12 @@ void Controller::runGameLoop() {
 			case SDL_KEYUP:
 				handleKeyUp(e.key.keysym.sym);
 				break;
+			case SDL_JOYDEVICEADDED:
+				openGameController();
+				break;
+			case SDL_JOYDEVICEREMOVED:
+				closeGameController();
+				break;
 			}
 		}
 
@@ -229,7 +235,7 @@ void Controller::loadContent() {
 		schip->LowResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
 	}
 
-	openGameController();
+	initialiseGameControllerMapping();
 
 	m_processor->loadGame(m_game);
 	configureBackground();
@@ -256,12 +262,12 @@ void Controller::openGameController() {
 		auto name = ::SDL_GameControllerName(m_gameController);
 		::SDL_Log("Game controller name: %s", name);
 	}
-	initialiseGameControllerMapping();
 }
 
 void Controller::closeGameController() {
 	if (m_gameController != nullptr) {
 		::SDL_GameControllerClose(m_gameController);
+		m_gameController = nullptr;
 	}
 }
 
