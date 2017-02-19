@@ -64,7 +64,8 @@ private:
 	ColourPalette m_colours;
 
 	SDL_GameController* m_gameController;
-	std::array<bool, 16> m_controllerButtons;
+	std::array<Uint8, 16> m_controllerButtons;
+	std::map<int, SDL_GameControllerButton> m_controllerMappings;
 
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
@@ -82,9 +83,6 @@ private:
 	Uint32 m_frames;
 	bool m_vsync;
 
-	void checkGameController();
-	void checkGameControllerButton(SDL_GameControllerButton button, int mapping);
-
 	void configureBackground() const;
 	void drawFrame();
 
@@ -96,7 +94,12 @@ private:
 	void createBitmapTexture();
 	void recreateBitmapTexture();
 
+	void openGameController();
 	void closeGameController();
+	void initialiseGameControllerMapping();
+
+	void checkGameController();
+	void checkGameControllerButton(SDL_GameControllerButton button, int mapping);
 
 	void destroyBitmapTexture();
 	void destroyPixelFormat();
