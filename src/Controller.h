@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <array>
+#include <vector>
 
 #include "ColourPalette.h"
 #include "Chip8.h"
@@ -61,6 +63,9 @@ private:
 	std::string m_game;
 	ColourPalette m_colours;
 
+	SDL_GameController* m_gameController;
+	std::array<bool, 16> m_controllerButtons;
+
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
 
@@ -77,6 +82,9 @@ private:
 	Uint32 m_frames;
 	bool m_vsync;
 
+	void checkGameController();
+	void checkGameControllerButton(SDL_GameControllerButton button, int mapping);
+
 	void configureBackground() const;
 	void drawFrame();
 
@@ -87,6 +95,8 @@ private:
 
 	void createBitmapTexture();
 	void recreateBitmapTexture();
+
+	void closeGameController();
 
 	void destroyBitmapTexture();
 	void destroyPixelFormat();

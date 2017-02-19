@@ -13,6 +13,7 @@ Controller::Controller(Chip8* processor, std::string game)
   m_colours(m_processor->getDisplay()),
   m_window(nullptr),
   m_renderer(nullptr),
+  m_gameController(nullptr),
   m_bitmapTexture(nullptr),
   m_pixelType(SDL_PIXELFORMAT_ARGB8888),
   m_pixelFormat(nullptr) {
@@ -20,6 +21,7 @@ Controller::Controller(Chip8* processor, std::string game)
 }
 
 Controller::~Controller() {
+	closeGameController();
 	destroyBitmapTexture();
 	destroyPixelFormat();
 	destroyRenderer();
@@ -118,9 +120,43 @@ void Controller::handleKeyUp(SDL_Keycode key) {
 }
 
 void Controller::update() {
+	checkGameController();
 	runFrame();
 	m_processor->updateTimers();
 	draw();
+}
+
+void Controller::checkGameController() {
+	if (m_gameController != nullptr) {
+		auto up = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_DPAD_UP);
+		auto down = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+
+		// ANT SPACEFIG
+		checkGameControllerButton(SDL_CONTROLLER_BUTTON_DPAD_LEFT, 3);
+		checkGameControllerButton(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, 0xc);
+		checkGameControllerButton(SDL_CONTROLLER_BUTTON_A, 0xa);
+
+		auto start = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_START);
+		auto back = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_BACK);
+		auto shoulderLeft = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+		auto shoulderRight = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+
+		auto buttonB = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_B);
+		auto buttonX = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_X);
+		auto buttonY = ::SDL_GameControllerGetButton(m_gameController, SDL_CONTROLLER_BUTTON_Y);
+	}
+}
+
+void Controller::checkGameControllerButton(SDL_GameControllerButton button, int mapping) {
+	auto activated = ::SDL_GameControllerGetButton(m_gameController, button);
+	if (activated != m_controllerButtons[mapping]) {
+		if (activated) {
+			handleKeyDown(m_processor->getKeyboard().getMapping()[mapping]);
+		} else {
+			handleKeyUp(m_processor->getKeyboard().getMapping()[mapping]);
+		}
+		m_controllerButtons[mapping] = activated;
+	}
 }
 
 void Controller::runFrame() {
@@ -142,13 +178,31 @@ void Controller::stop() {
 
 void Controller::loadContent() {
 
-	verifySDLCall(::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO), "Failed to initialise SDL: ");
+	verifySDLCall(::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER), "Failed to initialise SDL: ");
 
 	m_processor->initialise();
 
 	m_window = ::SDL_CreateWindow("Chip-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, getScreenWidth(), getScreenHeight(), SDL_WINDOW_SHOWN);
 	if (m_window == nullptr) {
 		throwSDLException("Unable to create window: ");
+	}
+
+	if (::SDL_NumJoysticks() == 0) {
+		::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "No joystick attached");
+	} else {
+		if (::SDL_IsGameController(0)) {
+			::SDL_Log("Opening joystick 0 as a game controller");
+			m_gameController = ::SDL_GameControllerOpen(0);
+			if (m_gameController == nullptr) {
+				::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unable to open joystick: %s", ::SDL_GetError());
+			}
+		} else {
+			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Joystick 0 is not a game controller");
+		}
+	}
+	if (m_gameController != nullptr) {
+		auto name = ::SDL_GameControllerName(m_gameController);
+		::SDL_Log("Game controller name: %s", name);
 	}
 
 	::SDL_DisplayMode mode;
@@ -208,6 +262,12 @@ void Controller::loadContent() {
 	createBitmapTexture();
 
 	m_audio.initialise();
+}
+
+void Controller::closeGameController() {
+	if (m_gameController != nullptr) {
+		::SDL_GameControllerClose(m_gameController);
+	}
 }
 
 void Controller::destroyBitmapTexture() {

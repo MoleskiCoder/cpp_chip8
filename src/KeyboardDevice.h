@@ -12,6 +12,11 @@ public:
 	void pokeKey(SDL_Keycode raw);
 	void pullKey(SDL_Keycode raw);
 
+	// For game controller keyboard mapping
+	const std::array<int, 16>& getMapping() const {
+		return m_mapping;
+	}
+
 private:
 	std::unordered_set<SDL_Keycode> m_raw;
 
@@ -21,7 +26,7 @@ private:
 	//  7   8   9   E
 	//  A   0   B   F
 	std::array<int, 16> m_mapping = { {
-		SDLK_x,
+					SDLK_x,
 
 		SDLK_1,		SDLK_2,		SDLK_3,
 		SDLK_q,     SDLK_w,     SDLK_e,

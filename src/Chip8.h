@@ -39,6 +39,10 @@ public:
 		return m_display;
 	}
 
+	const KeyboardDevice& getKeyboard() const {
+		return m_keyboard;
+	}
+
 	KeyboardDevice& getKeyboardMutable() {
 		return m_keyboard;
 	}
