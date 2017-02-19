@@ -14,6 +14,8 @@ Controller::Controller(Chip8* processor, std::string game)
   m_window(nullptr),
   m_renderer(nullptr),
   m_gameController(nullptr),
+  m_hapticController(nullptr),
+  m_hapticRumbleSupported(false),
   m_bitmapTexture(nullptr),
   m_pixelType(SDL_PIXELFORMAT_ARGB8888),
   m_pixelFormat(nullptr) {
@@ -21,6 +23,7 @@ Controller::Controller(Chip8* processor, std::string game)
 }
 
 Controller::~Controller() {
+	closeHapticController();
 	closeGameController();
 	destroyBitmapTexture();
 	destroyPixelFormat();
@@ -174,7 +177,7 @@ void Controller::stop() {
 
 void Controller::loadContent() {
 
-	verifySDLCall(::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER), "Failed to initialise SDL: ");
+	verifySDLCall(::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC), "Failed to initialise SDL: ");
 
 	m_processor->initialise();
 
@@ -198,7 +201,6 @@ void Controller::loadContent() {
 		} else {
 			m_vsync = false;
 			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Display refresh rate is incompatible with required rate (%d)", required);
-
 		}
 	}
 	m_renderer = ::SDL_CreateRenderer(m_window, -1, rendererFlags);
@@ -252,8 +254,9 @@ void Controller::openGameController() {
 			::SDL_Log("Opening joystick 0 as a game controller");
 			m_gameController = ::SDL_GameControllerOpen(0);
 			if (m_gameController == nullptr) {
-				::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unable to open joystick: %s", ::SDL_GetError());
+				throwSDLException("Unable to open game controller: ");
 			}
+			openHapticController();
 		} else {
 			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Joystick 0 is not a game controller");
 		}
@@ -261,6 +264,31 @@ void Controller::openGameController() {
 	if (m_gameController != nullptr) {
 		auto name = ::SDL_GameControllerName(m_gameController);
 		::SDL_Log("Game controller name: %s", name);
+	}
+}
+
+void Controller::openHapticController() {
+	auto hapticCount = ::SDL_NumHaptics();
+	if (hapticCount > 0) {
+		::SDL_Log("Opening first haptic device");
+		m_hapticController = ::SDL_HapticOpen(0);
+		if (m_hapticController == nullptr) {
+			throwSDLException("Unable to open haptic controller: ");
+		}
+		verifySDLCall(::SDL_HapticRumbleInit(m_hapticController), "Unable to initialise haptic controller: ");
+		m_hapticRumbleSupported = ::SDL_HapticRumbleSupported(m_hapticController) != SDL_FALSE;
+		if (m_hapticRumbleSupported) {
+			::SDL_Log("Haptic rumble is supported");
+		} else {
+			::SDL_Log("Haptic rumble is not supported");
+		}
+	}
+}
+
+void Controller::closeHapticController() {
+	if (m_hapticController != nullptr) {
+		::SDL_HapticClose(m_hapticController);
+		m_hapticController = nullptr;
 	}
 }
 
@@ -357,9 +385,15 @@ void Controller::drawFrame() {
 
 void Controller::Processor_BeepStarting() {
 	m_audio.play();
+	if (m_hapticRumbleSupported) {
+		::SDL_HapticRumblePlay(m_hapticController, 1.0, 1000);
+	}
 }
 
 void Controller::Processor_BeepStopped() {
+	if (m_hapticRumbleSupported) {
+		::SDL_HapticRumbleStop(m_hapticController);
+	}
 	m_audio.pause();
 }
 

@@ -67,6 +67,9 @@ private:
 	std::array<Uint8, 16> m_controllerButtons;
 	std::map<int, SDL_GameControllerButton> m_controllerMappings;
 
+	SDL_Haptic* m_hapticController;
+	bool m_hapticRumbleSupported;
+
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
 
@@ -100,6 +103,9 @@ private:
 
 	void checkGameController();
 	void checkGameControllerButton(SDL_GameControllerButton button, int mapping);
+
+	void openHapticController();
+	void closeHapticController();
 
 	void destroyBitmapTexture();
 	void destroyPixelFormat();
