@@ -2,18 +2,14 @@
 
 #include <vector>
 
+#include "GraphicsPlane.h"
+
 class Memory;
 
 class BitmappedGraphics {
 public:
 	enum {
 		DefaultPlane = 0x1,
-
-		ScreenWidthLow = 64,
-		ScreenHeightLow = 32,
-
-		ScreenWidthHigh = 128,
-		ScreenHeightHigh = 64
 	};
 
 	BitmappedGraphics(int numberOfPlanes, bool clip, bool countExceededRows, bool countRowHits);
@@ -26,8 +22,8 @@ public:
 		return 1 << m_numberOfPlanes;
 	}
 
-	const std::vector<std::vector<int>>& getGraphics() const {
-		return m_graphics;
+	const std::vector<GraphicsPlane>& getPlanes() const {
+		return m_planes;
 	}
 
 	bool getHighResolution() const {
@@ -36,7 +32,9 @@ public:
 
 	void setHighResolution(bool value) {
 		m_highResolution = value;
-		allocateMemory();
+		for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
+			m_planes[plane].setHighResolution(value);
+		}
 	}
 
 	bool getLowResolution() const {
@@ -44,11 +42,11 @@ public:
 	}
 
 	int getWidth() const {
-		return getHighResolution() ? ScreenWidthHigh : ScreenWidthLow;
+		return getHighResolution() ? GraphicsPlane::ScreenWidthHigh : GraphicsPlane::ScreenWidthLow;
 	}
 
 	int getHeight() const {
-		return getHighResolution() ? ScreenHeightHigh : ScreenHeightLow;
+		return getHighResolution() ? GraphicsPlane::ScreenHeightHigh : GraphicsPlane::ScreenHeightLow;
 	}
 
 	int getPlaneMask() const {
@@ -80,11 +78,9 @@ public:
 
 private:
 	int m_numberOfPlanes;
-	std::vector<std::vector<int>> m_graphics;
+	std::vector<GraphicsPlane> m_planes;
 	int m_planeMask;
 	bool m_highResolution;
-	bool m_clip;
-	bool m_countExceededRows;
 	bool m_countRowHits;
 	bool m_dirty;
 
@@ -92,26 +88,10 @@ private:
 
 	size_t draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height);
 
-	void allocateMemory();
-	void allocateMemory(int plane);
-
 	void maybeScrollUp(int plane, int count);
-	void scrollUp(int plane, int count);
-
 	void maybeScrollDown(int plane, int count);
-	void scrollDown(int plane, int count);
-
 	void maybeScrollLeft(int plane);
-	void scrollLeft(int plane);
-
 	void maybeScrollRight(int plane);
-	void scrollRight(int plane);
 
 	void maybeClear(int plane);
-	void clear(int plane);
-
-	void clearRow(int plane, int row);
-	void clearColumn(int plane, int column);
-	void copyRow(int plane, int source, int destination);
-	void copyColumn(int plane, int source, int destination);
 };

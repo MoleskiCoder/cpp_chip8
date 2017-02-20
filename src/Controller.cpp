@@ -279,7 +279,7 @@ void Controller::drawFrame() {
 	auto displayWidth = getDisplayWidth();
 	auto displayHeight = getDisplayHeight();
 
-	auto source = m_processor->getDisplay().getGraphics();
+	auto source = m_processor->getDisplay().getPlanes();
 	auto numberOfPlanes = m_processor->getDisplay().getNumberOfPlanes();
 
 	for (int y = 0; y < displayHeight; y++) {
@@ -288,7 +288,7 @@ void Controller::drawFrame() {
 			auto pixelIndex = x + rowOffset;
 			int colourIndex = 0;
 			for (int plane = 0; plane < numberOfPlanes; ++plane) {
-				auto bit = source[plane][pixelIndex];
+				auto bit = source[plane].getGraphics()[pixelIndex];
 				colourIndex |= bit << plane;
 			}
 			m_pixels[pixelIndex] = m_colours.getColour(colourIndex);
