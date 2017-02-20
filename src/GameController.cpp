@@ -37,23 +37,18 @@ void GameController::checkButton(SDL_GameControllerButton button, int mapping) {
 }
 
 void GameController::open() {
-	if (::SDL_NumJoysticks() == 0) {
-		::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "No joystick attached");
-	} else {
-		if (::SDL_IsGameController(0)) {
-			::SDL_Log("Opening joystick 0 as a game controller");
-			m_gameController = ::SDL_GameControllerOpen(0);
-			if (m_gameController == nullptr) {
-				Controller::throwSDLException("Unable to open game controller: ");
-			}
-			openHapticController();
-		} else {
-			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Joystick 0 is not a game controller");
+	SDL_assert(::SDL_NumJoysticks() > 0);
+	if (::SDL_IsGameController(0)) {
+		::SDL_Log("Opening joystick 0 as a game controller");
+		m_gameController = ::SDL_GameControllerOpen(0);
+		if (m_gameController == nullptr) {
+			Controller::throwSDLException("Unable to open game controller: ");
 		}
-	}
-	if (m_gameController != nullptr) {
+		openHapticController();
 		auto name = ::SDL_GameControllerName(m_gameController);
 		::SDL_Log("Game controller name: %s", name);
+	} else {
+		::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Joystick 0 is not a game controller");
 	}
 }
 
