@@ -28,9 +28,8 @@ static po::variables_map processCommandLine(int argc, char* argv[]) {
 	po::command_line_parser poCommandLineParser(argc, argv);
 
 	po::variables_map options;
-	po::store(poCommandLineParser.options(poOptionsDescription).positional(poPositionalOptions).run(), options);
-
 	try {
+		po::store(poCommandLineParser.options(poOptionsDescription).positional(poPositionalOptions).run(), options);
 		po::notify(options);
 	} catch (std::exception& error) {
 		::SDL_LogError(::SDL_LOG_CATEGORY_APPLICATION, "%s", error.what());
