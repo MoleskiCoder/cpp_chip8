@@ -16,8 +16,11 @@ Controller::Controller(Chip8* processor, std::string game)
   m_renderer(nullptr),
   m_bitmapTexture(nullptr),
   m_pixelType(SDL_PIXELFORMAT_ARGB8888),
-  m_pixelFormat(nullptr) {
-	m_fps = m_processor->getConfiguration().getFramesPerSecond();
+  m_pixelFormat(nullptr),
+  m_fps(m_processor->getConfiguration().getFramesPerSecond()),
+  m_startTicks(0),
+  m_frames(0),
+  m_vsync(false) {
 }
 
 Controller::~Controller() {
