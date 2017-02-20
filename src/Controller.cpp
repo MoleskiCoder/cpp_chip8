@@ -134,16 +134,17 @@ void Controller::update() {
 }
 
 void Controller::runFrame() {
-	auto cycles = m_processor->getConfiguration().getCyclesPerFrame();
-	for (int i = 0; i < cycles && !finishedCycling(); ++i) {
+	for (int cycles = 0; !finishedCycling(cycles); ++cycles) {
 		m_processor->step();
 	}
 }
 
-bool Controller::finishedCycling() const {
+bool Controller::finishedCycling(int cycles) const {
+	auto limit = m_processor->getConfiguration().getCyclesPerFrame();
+	auto exhausted = cycles > limit;
 	auto finished = m_processor->getFinished();
 	auto draw = m_processor->getDisplay().getLowResolution() && m_processor->getDrawNeeded();
-	return finished || draw;
+	return exhausted || finished || draw;
 }
 
 void Controller::stop() {

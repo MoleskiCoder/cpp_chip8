@@ -54,7 +54,7 @@ public:
 protected:
 	virtual void update();
 	virtual void runFrame();
-	virtual bool finishedCycling() const;
+	virtual bool finishedCycling(int cycles) const;
 	virtual void draw();
 
 	void stop();
