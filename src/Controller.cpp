@@ -271,11 +271,14 @@ void Controller::configureBackground() const {
 }
 
 void Controller::draw() {
-	if (m_processor->getDrawNeeded()) {
+	auto drawNeeded = m_processor->getDrawNeeded();
+	if (drawNeeded) {
 		drawFrame();
 		m_processor->setDrawNeeded(false);
 	}
-	::SDL_RenderPresent(m_renderer);
+	if (m_vsync || drawNeeded) {
+		::SDL_RenderPresent(m_renderer);
+	}
 }
 
 void Controller::drawFrame() {
