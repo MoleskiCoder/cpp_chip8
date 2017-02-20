@@ -39,8 +39,7 @@ void GameController::checkButton(SDL_GameControllerButton button, int mapping) {
 void GameController::open() {
 	if (::SDL_NumJoysticks() == 0) {
 		::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "No joystick attached");
-	}
-	else {
+	} else {
 		if (::SDL_IsGameController(0)) {
 			::SDL_Log("Opening joystick 0 as a game controller");
 			m_gameController = ::SDL_GameControllerOpen(0);
@@ -48,8 +47,7 @@ void GameController::open() {
 				Controller::throwSDLException("Unable to open game controller: ");
 			}
 			openHapticController();
-		}
-		else {
+		} else {
 			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Joystick 0 is not a game controller");
 		}
 	}
@@ -71,8 +69,7 @@ void GameController::openHapticController() {
 		m_hapticRumbleSupported = ::SDL_HapticRumbleSupported(m_hapticController) != SDL_FALSE;
 		if (m_hapticRumbleSupported) {
 			::SDL_Log("Haptic rumble is supported");
-		}
-		else {
+		} else {
 			::SDL_Log("Haptic rumble is not supported");
 		}
 	}
