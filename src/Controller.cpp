@@ -11,11 +11,9 @@ Controller::Controller(Chip8* processor, std::string game)
 : m_processor(processor),
   m_game(game),
   m_colours(m_processor->getDisplay()),
+  m_gameController(m_processor->getKeyboardMutable()),
   m_window(nullptr),
   m_renderer(nullptr),
-  m_gameController(nullptr),
-  m_hapticController(nullptr),
-  m_hapticRumbleSupported(false),
   m_bitmapTexture(nullptr),
   m_pixelType(SDL_PIXELFORMAT_ARGB8888),
   m_pixelFormat(nullptr) {
@@ -23,8 +21,6 @@ Controller::Controller(Chip8* processor, std::string game)
 }
 
 Controller::~Controller() {
-	closeHapticController();
-	closeGameController();
 	destroyBitmapTexture();
 	destroyPixelFormat();
 	destroyRenderer();
@@ -79,10 +75,12 @@ void Controller::runGameLoop() {
 				handleKeyUp(e.key.keysym.sym);
 				break;
 			case SDL_JOYDEVICEADDED:
-				openGameController();
+				SDL_Log("Joystick device added");
+				m_gameController.open();
 				break;
 			case SDL_JOYDEVICEREMOVED:
-				closeGameController();
+				SDL_Log("Joystick device removed");
+				m_gameController.close();
 				break;
 			}
 		}
@@ -129,33 +127,10 @@ void Controller::handleKeyUp(SDL_Keycode key) {
 }
 
 void Controller::update() {
-	checkGameController();
+	m_gameController.check();
 	runFrame();
 	m_processor->updateTimers();
 	draw();
-}
-
-void Controller::checkGameController() {
-	if (m_gameController != nullptr) {
-		for (int i = 0; i < 0x10; ++i) {
-			auto mapping = m_controllerMappings.find(i);
-			if (mapping != m_controllerMappings.end()) {
-				checkGameControllerButton(mapping->second, i);
-			}
-		}
-	}
-}
-
-void Controller::checkGameControllerButton(SDL_GameControllerButton button, int mapping) {
-	auto activated = ::SDL_GameControllerGetButton(m_gameController, button);
-	if (activated != m_controllerButtons[mapping]) {
-		if (activated) {
-			handleKeyDown(m_processor->getKeyboard().getMapping()[mapping]);
-		} else {
-			handleKeyUp(m_processor->getKeyboard().getMapping()[mapping]);
-		}
-		m_controllerButtons[mapping] = activated;
-	}
 }
 
 void Controller::runFrame() {
@@ -237,72 +212,13 @@ void Controller::loadContent() {
 		schip->LowResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
 	}
 
-	initialiseGameControllerMapping();
+	m_gameController.initialise();
 
 	m_processor->loadGame(m_game);
 	configureBackground();
 	createBitmapTexture();
 
 	m_audio.initialise();
-}
-
-void Controller::openGameController() {
-	if (::SDL_NumJoysticks() == 0) {
-		::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "No joystick attached");
-	} else {
-		if (::SDL_IsGameController(0)) {
-			::SDL_Log("Opening joystick 0 as a game controller");
-			m_gameController = ::SDL_GameControllerOpen(0);
-			if (m_gameController == nullptr) {
-				throwSDLException("Unable to open game controller: ");
-			}
-			openHapticController();
-		} else {
-			::SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Joystick 0 is not a game controller");
-		}
-	}
-	if (m_gameController != nullptr) {
-		auto name = ::SDL_GameControllerName(m_gameController);
-		::SDL_Log("Game controller name: %s", name);
-	}
-}
-
-void Controller::openHapticController() {
-	auto hapticCount = ::SDL_NumHaptics();
-	if (hapticCount > 0) {
-		::SDL_Log("Opening first haptic device");
-		m_hapticController = ::SDL_HapticOpen(0);
-		if (m_hapticController == nullptr) {
-			throwSDLException("Unable to open haptic controller: ");
-		}
-		verifySDLCall(::SDL_HapticRumbleInit(m_hapticController), "Unable to initialise haptic controller: ");
-		m_hapticRumbleSupported = ::SDL_HapticRumbleSupported(m_hapticController) != SDL_FALSE;
-		if (m_hapticRumbleSupported) {
-			::SDL_Log("Haptic rumble is supported");
-		} else {
-			::SDL_Log("Haptic rumble is not supported");
-		}
-	}
-}
-
-void Controller::closeHapticController() {
-	if (m_hapticController != nullptr) {
-		::SDL_HapticClose(m_hapticController);
-		m_hapticController = nullptr;
-	}
-}
-
-void Controller::closeGameController() {
-	if (m_gameController != nullptr) {
-		::SDL_GameControllerClose(m_gameController);
-		m_gameController = nullptr;
-	}
-}
-
-void Controller::initialiseGameControllerMapping() {
-	m_controllerMappings[0x3] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-	m_controllerMappings[0xa] = SDL_CONTROLLER_BUTTON_A;
-	m_controllerMappings[0xc] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
 }
 
 void Controller::destroyBitmapTexture() {
@@ -385,15 +301,11 @@ void Controller::drawFrame() {
 
 void Controller::Processor_BeepStarting() {
 	m_audio.play();
-	if (m_hapticRumbleSupported) {
-		::SDL_HapticRumblePlay(m_hapticController, 1.0, 1000);
-	}
+	m_gameController.startRumble();
 }
 
 void Controller::Processor_BeepStopped() {
-	if (m_hapticRumbleSupported) {
-		::SDL_HapticRumbleStop(m_hapticController);
-	}
+	m_gameController.stopRumble();
 	m_audio.pause();
 }
 

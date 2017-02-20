@@ -7,6 +7,7 @@
 #include "ColourPalette.h"
 #include "Chip8.h"
 #include "AudioDevice.h"
+#include "GameController.h"
 
 class Configuration;
 
@@ -63,12 +64,7 @@ private:
 	std::string m_game;
 	ColourPalette m_colours;
 
-	SDL_GameController* m_gameController;
-	std::array<Uint8, 16> m_controllerButtons;
-	std::map<int, SDL_GameControllerButton> m_controllerMappings;
-
-	SDL_Haptic* m_hapticController;
-	bool m_hapticRumbleSupported;
+	GameController m_gameController;
 
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
@@ -96,16 +92,6 @@ private:
 
 	void createBitmapTexture();
 	void recreateBitmapTexture();
-
-	void openGameController();
-	void closeGameController();
-	void initialiseGameControllerMapping();
-
-	void checkGameController();
-	void checkGameControllerButton(SDL_GameControllerButton button, int mapping);
-
-	void openHapticController();
-	void closeHapticController();
 
 	void destroyBitmapTexture();
 	void destroyPixelFormat();

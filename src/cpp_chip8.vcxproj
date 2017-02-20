@@ -163,6 +163,7 @@
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="EventArgs.h" />
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="KeyboardDevice.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Schip.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="ColourPalette.cpp" />
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="GameController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="KeyboardDevice.cpp" />
     <ClCompile Include="Memory.cpp" />
