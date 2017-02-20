@@ -36,6 +36,7 @@ public:
 
 	void setHighResolution(bool value) {
 		m_highResolution = value;
+		allocateMemory();
 	}
 
 	bool getLowResolution() const {
@@ -68,8 +69,6 @@ public:
 
 	void initialise();
 
-	void allocateMemory();
-	
 	int draw(const Memory& memory, int address, int drawX, int drawY, int width, int height);
 
 	void scrollUp(int count);
@@ -93,6 +92,7 @@ private:
 
 	size_t draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height);
 
+	void allocateMemory();
 	void allocateMemory(int plane);
 
 	void maybeScrollUp(int plane, int count);

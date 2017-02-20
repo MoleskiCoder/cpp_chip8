@@ -12,13 +12,11 @@ void Schip::initialise() {
 
 void Schip::onHighResolution() {
 	m_display.setHighResolution(true);
-	m_display.allocateMemory();
 	HighResolutionConfigured.fire(EventArgs());
 }
 
 void Schip::onLowResolution() {
 	m_display.setHighResolution(false);
-	m_display.allocateMemory();
 	LowResolutionConfigured.fire(EventArgs());
 }
 
