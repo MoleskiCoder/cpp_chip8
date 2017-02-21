@@ -3,6 +3,7 @@ Debug/
 Release/
 x64/
 ipch/
+cov-int/
 
 *.opendb
 *.sdf
