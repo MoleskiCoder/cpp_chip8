@@ -1,4 +1,7 @@
-# cpp_chip8
+#cpp_chip8
+
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/11833/badge.svg)](https://scan.coverity.com/projects/moleskicoder-cpp_chip8)
+
 CHIP-8, SuperChip and XO-Chip Emulator written in C++
 
 Uses SDL2 to provide graphics and audio processing.
