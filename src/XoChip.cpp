@@ -2,7 +2,8 @@
 #include "XoChip.h"
 
 XoChip::XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
-: Schip(memory, keyboard, display, configuration) {
+: Schip(memory, keyboard, display, configuration),
+  m_nnnn(-1) {
 }
 
 XoChip::~XoChip() {

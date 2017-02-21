@@ -6,7 +6,8 @@ BitmappedGraphics::BitmappedGraphics(int numberOfPlanes, bool clip, bool countEx
   m_planes(numberOfPlanes, GraphicsPlane(clip, countExceededRows)),
   m_planeMask(DefaultPlane),
   m_highResolution(false),
-  m_countRowHits(countRowHits) {
+  m_countRowHits(countRowHits),
+  m_dirty(false) {
 }
 
 void BitmappedGraphics::initialise() {
