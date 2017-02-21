@@ -13,6 +13,9 @@ Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const Bitmapp
   m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
 }
 
+Chip8::~Chip8() {
+}
+
 void Chip8::initialise() {
 	m_finished = false;
 

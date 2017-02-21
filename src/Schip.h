@@ -15,6 +15,7 @@ class Configuration;
 class Schip : public Chip8 {
 public:
 	Schip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
+	virtual ~Schip();
 
 	Signal<EventArgs> HighResolutionConfigured;
 	Signal<EventArgs> LowResolutionConfigured;

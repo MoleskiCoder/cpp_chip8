@@ -13,6 +13,7 @@ class Configuration;
 class XoChip : public Schip {
 public:
 	XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
+	virtual ~XoChip();
 
 protected:
 	bool emulateInstructions_0(int nnn, int nn, int n, int x, int y);

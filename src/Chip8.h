@@ -16,6 +16,7 @@ class Configuration;
 class Chip8 {
 public:
 	Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
+	virtual ~Chip8();
 
 	Signal<EventArgs> BeepStarting;
 	Signal<EventArgs> BeepStopped;

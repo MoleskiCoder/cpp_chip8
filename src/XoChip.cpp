@@ -5,6 +5,9 @@ XoChip::XoChip(const Memory& memory, const KeyboardDevice& keyboard, const Bitma
 : Schip(memory, keyboard, display, configuration) {
 }
 
+XoChip::~XoChip() {
+}
+
 bool XoChip::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 	switch (y) {
 	case 0xd:
