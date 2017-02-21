@@ -20,7 +20,10 @@
 #include <cmath>
 
 #include <SDL.h>
+
 #include <boost/program_options.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL2.lib")

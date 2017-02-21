@@ -3,10 +3,12 @@
 #include <cstdint>
 
 enum ProcessorLevel {
-	ProcessorChip8,
-	ProcessorSuperChip,
-	ProcessorXoChip
+	chip8,
+	superChip,
+	xoChip
 };
+
+class ConfigurationReader;
 
 class Configuration {
 public:
@@ -118,6 +120,8 @@ public:
 		m_graphicsCountRowHits = value;
 	}
 
+	void read(std::string path);
+
 	static Configuration buildSuperChipConfiguration();
 	static Configuration buildXoChipConfiguration();
 
@@ -134,4 +138,7 @@ private:
 	bool m_graphicsClip;
 	bool m_graphicsCountExceededRows;
 	bool m_graphicsCountRowHits;
+
+	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, std::string path, ProcessorLevel defaultValue) const;
+	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, std::string path) const;
 };

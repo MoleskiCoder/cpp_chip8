@@ -161,6 +161,7 @@
     <ClInclude Include="Chip8.h" />
     <ClInclude Include="ColourPalette.h" />
     <ClInclude Include="Configuration.h" />
+    <ClInclude Include="ConfigurationReader.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="EventArgs.h" />
     <ClInclude Include="GameController.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Chip8.cpp" />
     <ClCompile Include="ColourPalette.cpp" />
     <ClCompile Include="Configuration.cpp" />
+    <ClCompile Include="ConfigurationReader.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GraphicsPlane.cpp" />

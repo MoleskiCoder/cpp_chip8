@@ -45,13 +45,13 @@ Chip8* Controller::buildProcessor(const Configuration& configuration) {
 	KeyboardDevice keyboard;
 
 	switch (configuration.getType()) {
-	case ProcessorChip8:
+	case chip8:
 		return new Chip8(memory, keyboard, graphics, configuration);
 
-	case ProcessorSuperChip:
+	case superChip:
 		return new Schip(memory, keyboard, graphics, configuration);
 
-	case ProcessorXoChip:
+	case xoChip:
 		return new XoChip(memory, keyboard, graphics, configuration);
 
 	default:
