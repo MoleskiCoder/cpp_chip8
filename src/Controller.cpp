@@ -10,7 +10,7 @@
 Controller::Controller(Chip8* processor, std::string game)
 : m_processor(processor),
   m_game(game),
-  m_colours(m_processor->getDisplay()),
+  m_colours(m_processor->getDisplay().getNumberOfPlanes()),
   m_gameController(m_processor->getKeyboardMutable()),
   m_window(nullptr),
   m_renderer(nullptr),

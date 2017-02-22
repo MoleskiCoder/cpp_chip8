@@ -4,12 +4,13 @@
 #include <stdexcept>
 #include <SDL.h>
 
-#include "BitmappedGraphics.h"
+ColourPalette::ColourPalette(int numberOfPlanes)
+:	m_numberOfPlanes(numberOfPlanes),
+	m_colours(getNumberOfColours(numberOfPlanes)) {
+}
 
-
-ColourPalette::ColourPalette(const BitmappedGraphics& device)
-:	m_device(device),
-	m_colours(device.getNumberOfColours()) {
+int ColourPalette::getNumberOfColours(int numberOfPlanes) {
+	return 1 << numberOfPlanes;
 }
 
 void ColourPalette::load(SDL_PixelFormat* hardware) {
@@ -19,7 +20,7 @@ void ColourPalette::load(SDL_PixelFormat* hardware) {
 	auto red = ::SDL_MapRGBA(hardware, 0xff, 0x00, 0x00, SDL_ALPHA_OPAQUE);
 	auto yellow = ::SDL_MapRGBA(hardware, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
 
-	switch (m_device.getNumberOfPlanes()) {
+	switch (m_numberOfPlanes) {
 	case 1:
 		m_colours[0] = black;
 		m_colours[1] = white;

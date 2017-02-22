@@ -18,10 +18,6 @@ public:
 		return m_numberOfPlanes;
 	}
 
-	int getNumberOfColours() const {
-		return 1 << m_numberOfPlanes;
-	}
-
 	const std::vector<GraphicsPlane>& getPlanes() const {
 		return m_planes;
 	}

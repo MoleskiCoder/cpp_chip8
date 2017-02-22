@@ -4,11 +4,10 @@
 #include <cstdint>
 
 struct SDL_PixelFormat;
-class BitmappedGraphics;
 
 class ColourPalette {
 public:
-	ColourPalette(const BitmappedGraphics& device);
+	ColourPalette(int numberOfPlanes);
 
 	const std::vector<uint32_t>& getColours() const {
 		return m_colours;
@@ -21,6 +20,8 @@ public:
 	void load(SDL_PixelFormat* hardware);
 
 private:
-	const BitmappedGraphics& m_device;
+	static int getNumberOfColours(int numberOfPlanes);
+
+	int m_numberOfPlanes;
 	std::vector<uint32_t> m_colours;
 };
