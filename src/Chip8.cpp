@@ -8,6 +8,16 @@
 Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
 : m_display(display),
   m_memory(memory),
+  m_i(0),
+  m_pc(0),
+  m_finished(false),
+  m_delayTimer(0),
+  m_soundTimer(0),
+  m_sp(0),
+  m_opcode(0),
+  m_soundPlaying(false),
+  m_waitingForKeyPress(false),
+  m_waitingForKeyPressRegister(-1),
   m_keyboard(keyboard),
   m_configuration(configuration),
   m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
@@ -77,7 +87,7 @@ void Chip8::onEmulatingCycle(uint16_t, uint16_t, int, int, int, int, int) {
 	onEmulatingCycle();
 }
 
-void Chip8::onEmulatedCycle(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y) {
+void Chip8::onEmulatedCycle(uint16_t, uint16_t, int, int, int, int, int) {
 	onEmulatedCycle();
 }
 
@@ -182,7 +192,7 @@ bool Chip8::emulateInstruction(int nnn, int nn, int n, int x, int y) {
 	}
 }
 
-bool Chip8::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_F(int, int nn, int, int x, int) {
 	switch (nn) {
 	case 0x07:
 		LD_Vx_DT(x);
@@ -227,7 +237,7 @@ bool Chip8::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
 	return true;
 }
 
-bool Chip8::emulateInstructions_E(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_E(int, int nn, int, int x, int) {
 	switch (nn) {
 	case 0x9E:
 		SKP(x);
@@ -244,27 +254,27 @@ bool Chip8::emulateInstructions_E(int nnn, int nn, int n, int x, int y) {
 	return true;
 }
 
-bool Chip8::emulateInstructions_D(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_D(int, int, int n, int x, int y) {
 	DRW(x, y, n);
 	return true;
 }
 
-bool Chip8::emulateInstructions_C(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_C(int, int nn, int, int x, int) {
 	RND(x, nn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_B(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_B(int nnn, int, int, int x, int) {
 	JP_V0(x, nnn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_A(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_A(int nnn, int, int, int, int) {
 	LD_I(nnn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_9(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_9(int, int, int n, int x, int y) {
 	switch (n) {
 	case 0:
 		SNE(x, y);
@@ -277,7 +287,7 @@ bool Chip8::emulateInstructions_9(int nnn, int nn, int n, int x, int y) {
 	return true;
 }
 
-bool Chip8::emulateInstructions_8(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_8(int, int, int n, int x, int y) {
 	switch (n) {
 	case 0x0:
 		LD(x, y);
@@ -322,42 +332,42 @@ bool Chip8::emulateInstructions_8(int nnn, int nn, int n, int x, int y) {
 	return true;
 }
 
-bool Chip8::emulateInstructions_7(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_7(int, int nn, int, int x, int) {
 	ADD_REG_IMM(x, nn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_6(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_6(int, int nn, int, int x, int) {
 	LD_REG_IMM(x, nn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_5(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_5(int, int, int, int x, int y) {
 	SE(x, y);
 	return true;
 }
 
-bool Chip8::emulateInstructions_4(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_4(int, int nn, int, int x, int) {
 	SNE_REG_IMM(x, nn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_3(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_3(int, int nn, int, int x, int) {
 	SE_REG_IMM(x, nn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_2(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_2(int nnn, int, int, int, int) {
 	CALL(nnn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_1(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_1(int nnn, int, int, int, int) {
 	JP(nnn);
 	return true;
 }
 
-bool Chip8::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
+bool Chip8::emulateInstructions_0(int, int nn, int, int, int) {
 	switch (nn) {
 	case 0xe0:
 		CLS();
@@ -476,7 +486,7 @@ void Chip8::LD_I(int nnn) {
 	m_i = (uint16_t)nnn;
 }
 
-void Chip8::JP_V0(int x, int nnn) {
+void Chip8::JP_V0(int, int nnn) {
 	// https://github.com/Chromatophore/HP48-Superchip#bnnn
 	// Sets PC to address NNN + v0 -
 	//  VIP: correctly jumps based on v0
