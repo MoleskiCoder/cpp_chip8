@@ -7,7 +7,7 @@ struct SDL_PixelFormat;
 
 class ColourPalette {
 public:
-	ColourPalette(int numberOfPlanes);
+	ColourPalette(int numberOfColours);
 
 	const std::vector<uint32_t>& getColours() const {
 		return m_colours;
@@ -20,8 +20,6 @@ public:
 	void load(SDL_PixelFormat* hardware);
 
 private:
-	static int getNumberOfColours(int numberOfPlanes);
-
-	int m_numberOfPlanes;
+	int m_numberOfColours;
 	std::vector<uint32_t> m_colours;
 };
