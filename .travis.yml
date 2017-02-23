@@ -1,0 +1,10 @@
+language: cpp
+sudo: required
+compiler:
+- gcc
+os:
+- linux
+dist: xenial
+before_install:
+  - sudo apt-get install -y build-essential libsdl2-dev libboost-all-dev
+script: make all
