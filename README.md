@@ -1,6 +1,7 @@
 #cpp_chip8
 
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/11833/badge.svg)](https://scan.coverity.com/projects/moleskicoder-cpp_chip8)
+[![Build Status](https://travis-ci.org/MoleskiCoder/cpp_chip8.svg?branch=master)](https://travis-ci.org/MoleskiCoder/cpp_chip8)
 
 CHIP-8, SuperChip and XO-Chip Emulator written in C++
 
