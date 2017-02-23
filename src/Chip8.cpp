@@ -11,6 +11,8 @@ Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const Bitmapp
   m_i(0),
   m_pc(0),
   m_finished(false),
+  m_keyboard(keyboard),
+  m_configuration(configuration),
   m_delayTimer(0),
   m_soundTimer(0),
   m_sp(0),
@@ -18,8 +20,6 @@ Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const Bitmapp
   m_soundPlaying(false),
   m_waitingForKeyPress(false),
   m_waitingForKeyPressRegister(-1),
-  m_keyboard(keyboard),
-  m_configuration(configuration),
   m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
 }
 
