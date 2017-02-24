@@ -3,7 +3,7 @@ EXE = cpp_chip8
 CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -march=native -O2 -pipe
 LDFLAGS  = `sdl2-config --libs` -lboost_program_options -s
 
-INCLUDE = -I"/usr/include/SDL"
+INCLUDE = -I"/usr/include/SDL" -I"modules/cereal/include"
 
 CXXFILES   = $(shell find src -maxdepth 1 -type f -name '*.cpp')
 CXXOBJECTS = $(CXXFILES:.cpp=.o)
