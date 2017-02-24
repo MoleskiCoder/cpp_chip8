@@ -344,20 +344,22 @@ void Controller::dumpRendererInformation(::SDL_RendererInfo info) {
 }
 
 void Controller::saveState() const {
-	std::ofstream ofs("state");
 #ifdef _DEBUG
+	std::ofstream ofs("state");
 	cereal::JSONOutputArchive archive(ofs);
 #else
+	std::ofstream ofs("state", std::ios::binary);
 	cereal::BinaryOutputArchive archive(ofs);
 #endif
 	archive(*this);
 }
 
 void Controller::loadState() {
-	std::ifstream ifs("state");
 #ifdef _DEBUG
+	std::ifstream ifs("state");
 	cereal::JSONInputArchive archive(ifs);
 #else
+	std::ifstream ifs("state", std::ios::binary);
 	cereal::BinaryInputArchive archive(ifs);
 #endif
 	archive(*this);
