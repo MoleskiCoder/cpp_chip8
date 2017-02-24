@@ -99,8 +99,6 @@ private:
 
 	bool isPlaneSelected(int plane) const;
 
-	size_t draw(int plane, const Memory& memory, int address, int drawX, int drawY, int width, int height);
-
 	void maybeScrollUp(int plane, int count);
 	void maybeScrollDown(int plane, int count);
 	void maybeScrollLeft(int plane);
