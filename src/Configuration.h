@@ -126,6 +126,25 @@ public:
 	static Configuration buildXoChipConfiguration();
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(
+			m_type,
+			m_allowMisalignedOpcodes,
+			m_vsyncLocked,
+			m_framesPerSecond,
+			m_cyclesPerFrame,
+			m_startAddress,
+			m_loadAddress,
+			m_memorySize,
+			m_graphicPlanes,
+			m_graphicsClip,
+			m_graphicsCountExceededRows,
+			m_graphicsCountRowHits
+		);
+	}
+
 	ProcessorLevel m_type;
 	bool m_allowMisalignedOpcodes;
 	bool m_vsyncLocked;

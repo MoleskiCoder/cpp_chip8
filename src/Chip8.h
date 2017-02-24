@@ -14,7 +14,7 @@
 
 class Chip8 {
 public:
-	Chip8() {}
+	Chip8();
 	Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 	virtual ~Chip8();
 
@@ -152,6 +152,7 @@ private:
 			m_pc,
 			m_finished,
 			m_keyboard,
+			m_configuration,
 			m_stack,
 			m_delayTimer,
 			m_soundTimer,

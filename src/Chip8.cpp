@@ -5,6 +5,20 @@
 
 #include "Configuration.h"
 
+Chip8::Chip8()
+: m_i(0),
+  m_pc(0),
+  m_finished(false),
+  m_delayTimer(0),
+  m_soundTimer(0),
+  m_sp(0),
+  m_opcode(0),
+  m_soundPlaying(false),
+  m_waitingForKeyPress(false),
+  m_waitingForKeyPressRegister(-1),
+  m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
+}
+
 Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
 : m_display(display),
   m_memory(memory),
