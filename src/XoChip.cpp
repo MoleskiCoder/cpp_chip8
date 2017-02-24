@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "XoChip.h"
 
+XoChip::XoChip()
+: m_nnnn(0) {
+}
+
 XoChip::XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
 : Schip(memory, keyboard, display, configuration),
   m_nnnn(-1) {

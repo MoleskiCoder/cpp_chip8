@@ -12,7 +12,7 @@ class Configuration;
 
 class XoChip : public Schip {
 public:
-	XoChip() {}
+	XoChip();
 	XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 	virtual ~XoChip();
 

@@ -12,7 +12,7 @@ public:
 		DefaultPlane = 0x1,
 	};
 
-	BitmappedGraphics() {}
+	BitmappedGraphics();
 	BitmappedGraphics(int numberOfPlanes, bool clip, bool countExceededRows, bool countRowHits);
 
 	int getNumberOfPlanes() const {

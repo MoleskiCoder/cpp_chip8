@@ -1,6 +1,14 @@
 #include "stdafx.h"
 #include "BitmappedGraphics.h"
 
+BitmappedGraphics::BitmappedGraphics()
+: m_numberOfPlanes(1),
+  m_planeMask(1),
+  m_highResolution(false),
+  m_countRowHits(false),
+  m_dirty(false) {
+}
+
 BitmappedGraphics::BitmappedGraphics(int numberOfPlanes, bool clip, bool countExceededRows, bool countRowHits)
 : m_numberOfPlanes(numberOfPlanes),
   m_planes(numberOfPlanes, GraphicsPlane(clip, countExceededRows)),

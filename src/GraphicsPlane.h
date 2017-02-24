@@ -14,7 +14,7 @@ public:
 		ScreenHeightHigh = 64
 	};
 
-	GraphicsPlane() {};
+	GraphicsPlane();
 	GraphicsPlane(bool clip, bool countExceededRows);
 
 	const std::vector<int>& getGraphics() const {

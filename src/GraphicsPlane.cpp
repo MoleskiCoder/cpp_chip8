@@ -4,6 +4,12 @@
 
 #include <algorithm>
 
+GraphicsPlane::GraphicsPlane()
+: m_highResolution(false),
+  m_clip(false),
+  m_countExceededRows(false) {
+}
+
 GraphicsPlane::GraphicsPlane(bool clip, bool countExceededRows)
 : m_highResolution(false),
   m_clip(clip),
