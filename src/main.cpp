@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 
 	// Because this option is required, we don't need to check whether it's there or not.
 	auto game = options["rom"].as<std::string>();
-	Controller controller(processor.get(), game);
+	Controller controller(processor, game);
 
 	try {
 		controller.loadContent();

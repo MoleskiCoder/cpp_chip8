@@ -12,6 +12,7 @@ class Configuration;
 
 class XoChip : public Schip {
 public:
+	XoChip() {}
 	XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 	virtual ~XoChip();
 
@@ -21,6 +22,15 @@ protected:
 	bool emulateInstructions_F(int nnn, int nn, int n, int x, int y);
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(
+			cereal::base_class<Schip>(this),
+			m_audoPatternBuffer,
+			m_nnnn);
+	}
+
 	std::array<uint8_t, 16> m_audoPatternBuffer;
 	int m_nnnn;
 
@@ -31,3 +41,6 @@ private:
 	void plane(int n);
 	void audio();
 };
+
+CEREAL_REGISTER_TYPE(XoChip);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Schip, XoChip)

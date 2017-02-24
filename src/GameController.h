@@ -22,6 +22,12 @@ public:
 	void stopRumble();
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(m_controllerButtons);
+	}
+
 	KeyboardDevice& m_keyboard;
 	SDL_GameController* m_gameController;
 	std::array<Uint8, 16> m_controllerButtons;

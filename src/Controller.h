@@ -3,6 +3,7 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <memory>
 
 #include "ColourPalette.h"
 #include "Chip8.h"
@@ -29,7 +30,7 @@ public:
 		}
 	}
 
-	Controller(Chip8* processor, std::string game);
+	Controller(std::shared_ptr<Chip8> processor, std::string game);
 	~Controller();
 
 	virtual void runGameLoop();
@@ -60,7 +61,16 @@ protected:
 	void stop();
 
 private:
-	Chip8* m_processor;
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(
+			m_processor,
+			m_gameController
+		);
+	}
+
+	std::shared_ptr<Chip8> m_processor;
 	std::string m_game;
 	ColourPalette m_colours;
 
@@ -103,4 +113,7 @@ private:
 
 	static void dumpRendererInformation();
 	static void dumpRendererInformation(::SDL_RendererInfo info);
+
+	void saveState() const;
+	void loadState();
 };

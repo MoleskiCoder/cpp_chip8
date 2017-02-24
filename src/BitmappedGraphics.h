@@ -12,6 +12,7 @@ public:
 		DefaultPlane = 0x1,
 	};
 
+	BitmappedGraphics() {}
 	BitmappedGraphics(int numberOfPlanes, bool clip, bool countExceededRows, bool countRowHits);
 
 	int getNumberOfPlanes() const {
@@ -77,6 +78,18 @@ public:
 	void clear();
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(
+			m_numberOfPlanes,
+			m_planes,
+			m_planeMask,
+			m_highResolution,
+			m_countRowHits,
+			m_dirty);
+	}
+
 	int m_numberOfPlanes;
 	std::vector<GraphicsPlane> m_planes;
 	int m_planeMask;

@@ -14,6 +14,7 @@ public:
 		ScreenHeightHigh = 64
 	};
 
+	GraphicsPlane() {};
 	GraphicsPlane(bool clip, bool countExceededRows);
 
 	const std::vector<int>& getGraphics() const {
@@ -35,6 +36,16 @@ public:
 	void clear();
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(
+			m_graphics,
+			m_highResolution,
+			m_clip,
+			m_countExceededRows);
+	}
+
 	std::vector<int> m_graphics;
 	bool m_highResolution;
 	bool m_clip;

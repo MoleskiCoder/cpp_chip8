@@ -6,6 +6,7 @@
 
 class Memory {
 public:
+	Memory() {}
 	Memory(int size);
 
 	const std::vector<uint8_t>& getBus() const;
@@ -20,5 +21,11 @@ public:
 	void loadRom(std::string path, uint16_t offset);
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(m_bus);
+	}
+
 	std::vector<uint8_t> m_bus;
 };

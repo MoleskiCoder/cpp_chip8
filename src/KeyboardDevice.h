@@ -18,6 +18,12 @@ public:
 	}
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(m_raw);
+	}
+
 	std::unordered_set<SDL_Keycode> m_raw;
 
 	// CHIP-8 Keyboard layout

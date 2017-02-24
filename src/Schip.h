@@ -14,6 +14,7 @@ class Configuration;
 
 class Schip : public Chip8 {
 public:
+	Schip() {}
 	Schip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 	virtual ~Schip();
 
@@ -37,6 +38,15 @@ protected:
 	virtual void LD_II_Vx(int x);
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(
+			cereal::base_class<Chip8>(this),
+			m_r,
+			m_compatibility);
+	}
+
 	enum {
 		HighFontOffset = 0x110
 	};
@@ -76,3 +86,6 @@ private:
 	void LD_R_Vx(int x);
 	void LD_Vx_R(int x);
 };
+
+CEREAL_REGISTER_TYPE(Schip);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Chip8, Schip)

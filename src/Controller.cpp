@@ -7,7 +7,7 @@
 
 #include "Configuration.h"
 
-Controller::Controller(Chip8* processor, std::string game)
+Controller::Controller(std::shared_ptr<Chip8> processor, std::string game)
 : m_processor(processor),
   m_game(game),
   m_colours(m_processor->getDisplay().getNumberOfColours()),
@@ -109,8 +109,10 @@ void Controller::toggleFullscreen() {
 
 void Controller::handleKeyDown(SDL_Keycode key) {
 	switch (key) {
+	case SDLK_F10:
+	case SDLK_F11:
 	case SDLK_F12:
-		// Don't let it get poked.  The key up will handle the full-screen toggle
+		// Don't let it get poked.
 		break;
 	default:
 		m_processor->getKeyboardMutable().pokeKey(key);
@@ -120,6 +122,12 @@ void Controller::handleKeyDown(SDL_Keycode key) {
 
 void Controller::handleKeyUp(SDL_Keycode key) {
 	switch (key) {
+	case SDLK_F10:
+		saveState();
+		break;
+	case SDLK_F11:
+		loadState();
+		break;
 	case SDLK_F12:
 		toggleFullscreen();
 		break;
@@ -211,7 +219,7 @@ void Controller::loadContent() {
 	m_processor->BeepStarting.connect(std::bind(&Controller::Processor_BeepStarting, this));
 	m_processor->BeepStopped.connect(std::bind(&Controller::Processor_BeepStopped, this));
 
-	if (auto schip = dynamic_cast<Schip*>(m_processor)) {
+	if (auto schip = dynamic_cast<Schip*>(m_processor.get())) {
 		schip->HighResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
 		schip->LowResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
 	}
@@ -333,4 +341,24 @@ void Controller::dumpRendererInformation(::SDL_RendererInfo info) {
 	int vsync = (flags & SDL_RENDERER_PRESENTVSYNC) != 0;
 	int targetTexture = (flags & SDL_RENDERER_TARGETTEXTURE) != 0;
 	::SDL_Log("%s: software=%d, accelerated=%d, vsync=%d, target texture=%d", name, software, accelerated, vsync, targetTexture);
+}
+
+void Controller::saveState() const {
+	std::ofstream ofs("state");
+#ifdef _DEBUG
+	cereal::JSONOutputArchive archive(ofs);
+#else
+	cereal::BinaryOutputArchive archive(ofs);
+#endif
+	archive(*this);
+}
+
+void Controller::loadState() {
+	std::ifstream ifs("state");
+#ifdef _DEBUG
+	cereal::JSONInputArchive archive(ifs);
+#else
+	cereal::BinaryInputArchive archive(ifs);
+#endif
+	archive(*this);
 }

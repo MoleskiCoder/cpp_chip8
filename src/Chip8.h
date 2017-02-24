@@ -8,13 +8,13 @@
 #include "Memory.h"
 #include "BitmappedGraphics.h"
 #include "KeyboardDevice.h"
+#include "Configuration.h"
 #include "Signal.h"
 #include "EventArgs.h"
 
-class Configuration;
-
 class Chip8 {
 public:
+	Chip8() {}
 	Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 	virtual ~Chip8();
 
@@ -141,6 +141,27 @@ protected:
 	virtual void LD_Vx_DT(int x);
 
 private:
+	friend class cereal::access;
+
+	template<class Archive> void serialize(Archive& archive) {
+		archive(
+			m_display,
+			m_memory,
+			m_v,
+			m_i,
+			m_pc,
+			m_finished,
+			m_keyboard,
+			m_stack,
+			m_delayTimer,
+			m_soundTimer,
+			m_sp,
+			m_opcode,
+			m_soundPlaying,
+			m_waitingForKeyPress,
+			m_waitingForKeyPressRegister);
+	}
+
 	enum {
 		StandardFontOffset = 0x1b0
 	};
@@ -165,7 +186,7 @@ private:
 	} };
 
 	KeyboardDevice m_keyboard;
-	const Configuration& m_configuration;
+	Configuration m_configuration;
 
 	std::array<uint16_t, 16> m_stack;
 
