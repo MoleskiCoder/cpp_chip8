@@ -344,6 +344,7 @@ void Controller::dumpRendererInformation(::SDL_RendererInfo info) {
 }
 
 void Controller::saveState() const {
+	::SDL_Log("Saving state");
 #ifdef _DEBUG
 	std::ofstream ofs("state");
 	cereal::JSONOutputArchive archive(ofs);
@@ -355,6 +356,7 @@ void Controller::saveState() const {
 }
 
 void Controller::loadState() {
+	::SDL_Log("Loading state");
 #ifdef _DEBUG
 	std::ifstream ifs("state");
 	cereal::JSONInputArchive archive(ifs);
