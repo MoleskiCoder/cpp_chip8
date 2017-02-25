@@ -6,6 +6,10 @@
 
 class Memory;
 
+namespace cereal {
+	class access;
+}
+
 class BitmappedGraphics {
 public:
 	enum {

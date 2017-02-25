@@ -2,28 +2,26 @@
 #pragma once
 #endif
 
-#include <array>
-#include <vector>
-#include <unordered_set>
-
 #include <string>
-
+#include <cstdint>
+#include <random>
 #include <memory>
 #include <functional>
-#include <algorithm>
-#include <cstdint>
-#include <iostream>
-#include <fstream>
-#include <random>
+#include <cmath>
 #include <limits>
 #include <stdexcept>
-#include <cmath>
+#include <algorithm>
 
-#include <SDL.h>
+#include <iostream>
+#include <fstream>
 
-#include <boost/program_options.hpp>
-#include <boost/property_tree/ptree.hpp>
+#include <array>
+#include <vector>
+#include <map>
+#include <unordered_set>
+
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 #include <cereal/types/polymorphic.hpp>
 #ifdef _DEBUG
@@ -34,6 +32,8 @@
 #include <cereal/types/array.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/unordered_set.hpp>
+
+#include <SDL.h>
 
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL2.lib")

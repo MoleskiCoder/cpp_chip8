@@ -4,6 +4,10 @@
 #include <cstdint>
 #include <string>
 
+namespace cereal {
+	class access;
+}
+
 class Memory {
 public:
 	Memory() {}

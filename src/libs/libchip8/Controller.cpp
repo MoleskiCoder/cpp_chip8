@@ -7,6 +7,18 @@
 
 #include "Configuration.h"
 
+#include <fstream>
+
+#include <cereal/types/polymorphic.hpp>
+#ifdef _DEBUG
+#	include <cereal/archives/json.hpp>
+#else
+#	include <cereal/archives/binary.hpp>
+#endif
+#include <cereal/types/array.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/unordered_set.hpp>
+
 Controller::Controller(std::shared_ptr<Chip8> processor, std::string game)
 : m_processor(processor),
   m_game(game),

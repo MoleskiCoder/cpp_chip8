@@ -1,6 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+
+namespace cereal {
+	class access;
+}
 
 enum ProcessorLevel {
 	chip8,

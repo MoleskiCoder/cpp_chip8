@@ -4,6 +4,10 @@
 #include <unordered_set>
 #include <SDL.h>
 
+namespace cereal {
+	class access;
+}
+
 class KeyboardDevice {
 public:
 	bool checkKeyPress(int& key) const;

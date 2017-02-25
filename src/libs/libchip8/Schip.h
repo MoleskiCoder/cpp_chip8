@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <array>
 
+#include <cereal/types/polymorphic.hpp>
+
 #include "Chip8.h"
 #include "Signal.h"
 #include "EventArgs.h"

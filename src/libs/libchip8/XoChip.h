@@ -3,6 +3,8 @@
 #include <array>
 #include <cstdint>
 
+#include <cereal/types/polymorphic.hpp>
+
 #include "Schip.h"
 
 class Memory;

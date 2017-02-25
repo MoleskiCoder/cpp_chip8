@@ -4,6 +4,10 @@
 
 class Memory;
 
+namespace cereal {
+	class access;
+}
+
 class GraphicsPlane {
 public:
 	enum {

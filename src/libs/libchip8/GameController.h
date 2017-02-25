@@ -6,6 +6,10 @@
 
 class KeyboardDevice;
 
+namespace cereal {
+	class access;
+}
+
 class GameController {
 public:
 	GameController(KeyboardDevice& keyboard);
