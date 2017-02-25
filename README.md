@@ -1,7 +1,8 @@
 #cpp_chip8
 
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/11833/badge.svg)](https://scan.coverity.com/projects/moleskicoder-cpp_chip8)
 [![Build Status](https://travis-ci.org/MoleskiCoder/cpp_chip8.svg?branch=master)](https://travis-ci.org/MoleskiCoder/cpp_chip8)
+[![Build status](https://ci.appveyor.com/api/projects/status/t5mkfrup0b2ahq93?svg=true)](https://ci.appveyor.com/project/MoleskiCoder/cpp-chip8)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/11833/badge.svg)](https://scan.coverity.com/projects/moleskicoder-cpp_chip8)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/be66def8640745b99c430f7c5cc568fa)](https://www.codacy.com/app/MoleskiCoder/cpp_chip8?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MoleskiCoder/cpp_chip8&amp;utm_campaign=Badge_Grade)
 
 CHIP-8, SuperChip and XO-Chip Emulator written in C++
