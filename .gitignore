@@ -4,6 +4,7 @@ Release/
 x64/
 ipch/
 cov-int/
+packages/
 
 *.opendb
 *.sdf
@@ -46,3 +47,5 @@ cov-int/
 *.out
 *.app
 cpp_chip8
+
+src/state
