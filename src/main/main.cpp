@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "Controller.h"
-#include "Configuration.h"
-#include "Chip8.h"
+#include <Controller.h>
+#include <Configuration.h>
+#include <Chip8.h>
 
 #include <boost/program_options.hpp>
 
