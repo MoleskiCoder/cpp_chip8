@@ -23,7 +23,7 @@ SCENARIO("registers can be loaded with literal values", "[Chip8]") {
 			processor->step();
 
 			THEN("the value of V0 becomes 0xFF") {
-				REQUIRE(processor->getRegisters()[0] == 0xFF);
+				REQUIRE(registers[0] == 0xFF);
 			}
 		}
 	}
