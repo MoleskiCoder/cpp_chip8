@@ -31,6 +31,11 @@ void Memory::set(int address, uint8_t value) {
 	m_bus[address] = value;
 }
 
+void Memory::setWord(int address, uint16_t value) {
+	set(address, value >> 8);
+	set(address + 1, value & 0xFF);
+}
+
 void Memory::clear() {
 	std::fill(m_bus.begin(), m_bus.end(), 0);
 }

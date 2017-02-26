@@ -20,6 +20,7 @@ public:
 	uint16_t getWord(int address) const;
 
 	void set(int address, uint8_t value);
+	void setWord(int address, uint16_t value);
 
 	void clear();
 	void loadRom(std::string path, uint16_t offset);

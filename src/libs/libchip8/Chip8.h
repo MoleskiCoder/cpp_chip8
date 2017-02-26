@@ -32,6 +32,18 @@ public:
 
 	void updateTimers();
 
+	const auto& getRegisters() const {
+		return m_v;
+	}
+
+	const auto& getMemory() const {
+		return m_memory;
+	}
+
+	auto& getMemoryMutable() {
+		return m_memory;
+	}
+
 	const Configuration& getConfiguration() const {
 		return m_configuration;
 	}
