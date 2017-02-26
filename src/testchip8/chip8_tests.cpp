@@ -35,6 +35,28 @@ SCENARIO("registers can be loaded with literal values", "[Chip8]") {
 			}
 		}
 
+		WHEN("a subroutine returns") {
+
+			memory.setWord(0x200, 0x2400);	// CALL subroutine
+			memory.setWord(0x400, 0x00ee);	// RET
+			processor->step();
+			processor->step();
+
+			THEN("the program counter should be set to execute the next statement past the original call") {
+				REQUIRE(processor->getProgramCounter() == 0x202);
+			}
+		}
+
+		WHEN("a jump is made") {
+
+			memory.setWord(0x200, 0x1400);	// JP 0x400
+			processor->step();
+
+			THEN("the program counter should be set to the jump destination") {
+				REQUIRE(processor->getProgramCounter() == 0x400);
+			}
+		}
+
 		WHEN("register V0 is loaded with 0xFF") {
 
 			memory.setWord(0x200, 0x60FF);	// LD V0, 0xFF

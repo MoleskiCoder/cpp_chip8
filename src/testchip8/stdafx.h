@@ -3,6 +3,7 @@
 #endif
 
 #include <memory>
+#include <algorithm>
 
 #include <catch.hpp>
 

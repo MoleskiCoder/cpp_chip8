@@ -32,6 +32,14 @@ public:
 
 	void updateTimers();
 
+	uint16_t getProgramCounter() const {
+		return m_pc;
+	}
+	
+	void setProgramCounter(uint16_t value) {
+		m_pc = value;
+	}
+
 	const std::array<uint8_t, 16>& getRegisters() const {
 		return m_v;
 	}
