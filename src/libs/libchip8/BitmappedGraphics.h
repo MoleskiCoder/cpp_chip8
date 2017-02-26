@@ -31,6 +31,10 @@ public:
 		return m_planes;
 	}
 
+	std::vector<GraphicsPlane>& getPlanesMutable() {
+		return m_planes;
+	}
+
 	bool getHighResolution() const {
 		return m_highResolution;
 	}

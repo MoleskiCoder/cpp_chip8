@@ -25,6 +25,10 @@ public:
 		return m_graphics;
 	}
 
+	std::vector<int>& getGraphicsMutable() {
+		return m_graphics;
+	}
+
 	void setHighResolution(bool value) {
 		m_highResolution = value;
 		allocateMemory();

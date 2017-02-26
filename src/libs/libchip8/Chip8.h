@@ -52,6 +52,10 @@ public:
 		return m_display;
 	}
 
+	BitmappedGraphics& getDisplayMutable() {
+		return m_display;
+	}
+
 	const KeyboardDevice& getKeyboard() const {
 		return m_keyboard;
 	}

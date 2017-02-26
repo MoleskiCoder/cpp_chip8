@@ -5,6 +5,8 @@
 #include <Configuration.h>
 #include <Controller.h>
 
+#include <algorithm>
+
 SCENARIO("registers can be loaded with literal values", "[Chip8]") {
 
 	GIVEN("An initialised Chip8 instance") {
@@ -15,7 +17,23 @@ SCENARIO("registers can be loaded with literal values", "[Chip8]") {
 		processor->initialise();
 
 		auto& memory = processor->getMemoryMutable();
-		auto& registers = processor->getRegisters();
+		const auto& registers = processor->getRegisters();
+		auto& display = processor->getDisplayMutable();
+		auto& plane = display.getPlanesMutable()[0];
+		auto& bitmap = plane.getGraphicsMutable();
+
+		WHEN("the screen is cleared") {
+
+			// The equivalent of a fully filled screen
+			std::fill(bitmap.begin(), bitmap.end(), 1);
+
+			memory.setWord(0x200, 0x00E0);	// CLS
+			processor->step();
+
+			THEN("all bits in the display are set to zero") {
+				REQUIRE(bitmap[0] == 0);
+			}
+		}
 
 		WHEN("register V0 is loaded with 0xFF") {
 
