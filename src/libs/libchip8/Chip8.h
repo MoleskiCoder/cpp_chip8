@@ -32,15 +32,15 @@ public:
 
 	void updateTimers();
 
-	const auto& getRegisters() const {
+	const std::array<uint8_t, 16>& getRegisters() const {
 		return m_v;
 	}
 
-	const auto& getMemory() const {
+	const Memory& getMemory() const {
 		return m_memory;
 	}
 
-	auto& getMemoryMutable() {
+	Memory& getMemoryMutable() {
 		return m_memory;
 	}
 
