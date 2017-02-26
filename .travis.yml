@@ -5,7 +5,7 @@ compiler:
 os:
 - linux
 dist: xenial
-script: make all
+script: make all && make test
 
 env:
   global:
