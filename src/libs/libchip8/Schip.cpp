@@ -99,8 +99,8 @@ bool Schip::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 // https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 // Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
 void Schip::SHR(int x, int) {
-	m_v[x] >>= 1;
 	m_v[0xf] = m_v[x] & 0x1;
+	m_v[x] >>= 1;
 }
 
 // https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye

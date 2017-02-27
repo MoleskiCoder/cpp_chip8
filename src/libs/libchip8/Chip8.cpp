@@ -472,9 +472,9 @@ void Chip8::SUB(int x, int y) {
 void Chip8::SHR(int x, int y) {
 	// https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 	// Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
+	m_v[0xf] = (uint8_t)(m_v[y] & 0x1);
 	m_v[y] >>= 1;
 	m_v[x] = m_v[y];
-	m_v[0xf] = (uint8_t)(m_v[x] & 0x1);
 }
 
 void Chip8::SUBN(int x, int y) {
@@ -485,7 +485,7 @@ void Chip8::SUBN(int x, int y) {
 void Chip8::SHL(int x, int y) {
 	// https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 	// Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
-	m_v[0xf] = (uint8_t)((m_v[x] & 0x80) == 0 ? 0 : 1);
+	m_v[0xf] = (uint8_t)((m_v[y] & 0x80) == 0 ? 0 : 1);
 	m_v[y] <<= 1;
 	m_v[x] = m_v[y];
 }
