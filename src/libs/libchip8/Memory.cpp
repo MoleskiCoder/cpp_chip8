@@ -65,5 +65,5 @@ void Memory::loadRom(std::string path, uint16_t offset) {
 		throw std::runtime_error("Game is too large (is this an XoChip game?)");
 	}
 
-	std::copy(buffer.begin() + header, buffer.end(), m_bus.begin() + offset);
+	std::copy(buffer.cbegin() + header, buffer.cend(), m_bus.begin() + offset);
 }

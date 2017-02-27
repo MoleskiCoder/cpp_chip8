@@ -112,5 +112,5 @@ void XoChip::plane(int n) {
 
 ////audio (0xF002) store 16 bytes starting at i in the audio pattern buffer.
 void XoChip::audio() {
-	std::copy_n(m_memory.getBus().begin() + m_i, m_audoPatternBuffer.size(), m_audoPatternBuffer.begin());
+	std::copy_n(m_memory.getBus().cbegin() + m_i, m_audoPatternBuffer.size(), m_audoPatternBuffer.begin());
 }

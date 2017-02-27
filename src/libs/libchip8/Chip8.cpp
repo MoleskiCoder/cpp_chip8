@@ -59,7 +59,7 @@ void Chip8::initialise() {
 	m_memory.clear();
 
 	// Load fonts
-	std::copy_n(m_standardFont.begin(), m_standardFont.size(), m_memory.getBusMutable().begin() + StandardFontOffset);
+	std::copy_n(m_standardFont.cbegin(), m_standardFont.size(), m_memory.getBusMutable().begin() + StandardFontOffset);
 
 	// Reset timers
 	m_delayTimer = m_soundTimer = 0;
@@ -533,14 +533,14 @@ void Chip8::SKNP(int x) {
 void Chip8::LD_Vx_II(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
-	std::copy_n(m_memory.getBus().begin() + m_i, x + 1, m_v.begin());
+	std::copy_n(m_memory.getBus().cbegin() + m_i, x + 1, m_v.begin());
 	m_i += (uint16_t)(x + 1);
 }
 
 void Chip8::LD_II_Vx(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
-	std::copy_n(m_v.begin(), x + 1, m_memory.getBusMutable().begin() + m_i);
+	std::copy_n(m_v.cbegin(), x + 1, m_memory.getBusMutable().begin() + m_i);
 	m_i += (uint16_t)(x + 1);
 }
 

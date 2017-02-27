@@ -10,7 +10,7 @@ Schip::~Schip() {
 
 void Schip::initialise() {
 	Chip8::initialise();
-	std::copy_n(m_highFont.begin(), m_highFont.size(), m_memory.getBusMutable().begin() + HighFontOffset);
+	std::copy_n(m_highFont.cbegin(), m_highFont.size(), m_memory.getBusMutable().begin() + HighFontOffset);
 }
 
 void Schip::onHighResolution() {
@@ -125,7 +125,7 @@ void Schip::LD_Vx_II(int x) {
 	if (m_compatibility) {
 		Chip8::LD_Vx_II(x);
 	} else {
-		std::copy_n(m_memory.getBus().begin() + m_i, x + 1, m_v.begin());
+		std::copy_n(m_memory.getBus().cbegin() + m_i, x + 1, m_v.begin());
 	}
 }
 
@@ -135,7 +135,7 @@ void Schip::LD_II_Vx(int x) {
 	if (m_compatibility) {
 		Chip8::LD_II_Vx(x);
 	} else {
-		std::copy_n(m_v.begin(), x + 1, m_memory.getBusMutable().begin() + m_i);
+		std::copy_n(m_v.cbegin(), x + 1, m_memory.getBusMutable().begin() + m_i);
 	}
 }
 
@@ -210,7 +210,7 @@ void Schip::HIGH() {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX75
 void Schip::LD_R_Vx(int x) {
-	std::copy_n(m_v.begin(), x + 1, m_r.begin());
+	std::copy_n(m_v.cbegin(), x + 1, m_r.begin());
 }
 
 // flags.restore vX
@@ -218,5 +218,5 @@ void Schip::LD_R_Vx(int x) {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX85
 void Schip::LD_Vx_R(int x) {
-	std::copy_n(m_r.begin(), x + 1, m_v.begin());
+	std::copy_n(m_r.cbegin(), x + 1, m_v.begin());
 }

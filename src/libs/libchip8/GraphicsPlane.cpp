@@ -66,7 +66,7 @@ size_t GraphicsPlane::draw(const Memory& memory, int address, int drawX, int dra
 		}
 		cellRowOffset += screenWidth;
 	}
-	return std::count_if(rowHits.begin(), rowHits.end(), [](int hits) { return hits > 0; });
+	return std::count_if(rowHits.cbegin(), rowHits.cend(), [](int hits) { return hits > 0; });
 }
 
 void GraphicsPlane::allocateMemory() {
@@ -79,7 +79,7 @@ void GraphicsPlane::allocateMemory() {
 	// columns, so odd patterns can be created.
 	if (!previous.empty()) {
 		auto length = std::min(previous.size(), m_graphics.size());
-		std::copy(previous.begin(), previous.begin() + length, m_graphics.begin());
+		std::copy(previous.cbegin(), previous.cbegin() + length, m_graphics.begin());
 	}
 }
 

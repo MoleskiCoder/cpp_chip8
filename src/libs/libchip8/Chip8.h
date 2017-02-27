@@ -44,12 +44,24 @@ public:
 		return m_v;
 	}
 
+	std::array<uint8_t, 16>& getRegistersMutable() {
+		return m_v;
+	}
+
 	const Memory& getMemory() const {
 		return m_memory;
 	}
 
 	Memory& getMemoryMutable() {
 		return m_memory;
+	}
+
+	const std::array<uint16_t, 16>& getStack() const {
+		return m_stack;
+	}
+
+	uint16_t getStackPointer() const {
+		return m_sp;
 	}
 
 	const Configuration& getConfiguration() const {
