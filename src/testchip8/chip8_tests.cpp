@@ -68,13 +68,9 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 
 			THEN("the program counter should be set to execute the subroutine") {
 				REQUIRE(processor->getProgramCounter() == 0x400);
-			}
-
-			THEN("the stack should contain an extra word") {
+			} AND_THEN("the stack should contain an extra word") {
 				REQUIRE(processor->getStackPointer() == sp + 1);
-			}
-
-			THEN("the new value on the stack should be the return address") {
+			} AND_THEN("the new value on the stack should be the return address") {
 				const auto& stack = processor->getStack();
 				REQUIRE(stack[processor->getStackPointer() - 1] == 0x202);
 			}
@@ -136,15 +132,298 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("register V0 is loaded with 0xFF (LD VX,NN: 0x6XNN)") {
+		WHEN("a positive SE instruction is executed (SE VX,VY: 0x5XY0)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xFF;
+			registers[1] = 0xFF;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x5010);	// SE V0,V1
+			processor->step();
+
+			THEN("the program counter should skip the following instruction") {
+				REQUIRE(processor->getProgramCounter() == 0x204);
+			}
+		}
+
+		WHEN("a negative SE instruction is executed (SE VX,VY: 0x5XY0)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xFF;
+			registers[1] = 0xFE;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x5010);	// SE V0,V1
+			processor->step();
+
+			THEN("the program counter should move forward normally") {
+				REQUIRE(processor->getProgramCounter() == 0x202);
+			}
+		}
+
+		WHEN("a register is loaded with an immediate value (LD VX,NN: 0x6XNN)") {
 
 			auto& memory = processor->getMemoryMutable();
 			memory.setWord(0x200, 0x60FF);	// LD V0,FF
 			processor->step();
 
-			THEN("the value of V0 becomes 0xFF") {
+			THEN("the register takes the new value") {
 				const auto& registers = processor->getRegisters();
 				REQUIRE(registers[0] == 0xFF);
+			}
+		}
+
+		WHEN("a register has an immediate value added (ADD VX,NN: 0x7XNN)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 1;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x7001);	// ADD V0,1
+			processor->step();
+
+			THEN("the value of the register increases by the immediate value") {
+				REQUIRE(registers[0] == 2);
+			}
+		}
+
+		WHEN("one register is loaded with another (LD VX,VY: 0x8XY0)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[1] = 1;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8010);	// LD V0,V1
+			processor->step();
+
+			THEN("the first register equals the second") {
+				REQUIRE(registers[0] == registers[1]);
+			} AND_THEN("the destination register equals the source value") {
+				REQUIRE(registers[0] == 1);
+			}
+		}
+
+		WHEN("one register is logically ORed with another (OR VX,VY: 0x8XY1)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0x10;
+			registers[1] = 0x1;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8011);	// OR V0,V1
+			processor->step();
+
+			THEN("the first register is logically ORed the second") {
+				REQUIRE(registers[0] == 0x11);
+			}
+		}
+
+		WHEN("one register is logically ANDed another (AND VX,VY: 0x8XY2)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xfe;
+			registers[1] = 0xf;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8012);	// AND V0,V1
+			processor->step();
+
+			THEN("the first register is logically ANDed the second") {
+				REQUIRE(registers[0] == 0xe);
+			}
+		}
+
+		WHEN("one register is logically XORed with another (XOR VX,VY: 0x8XY3)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0b01010101;
+			registers[1] = 0b01110111;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8013);	// XOR V0,V1
+			processor->step();
+
+			THEN("the first register is logically XORed with the second") {
+				REQUIRE(registers[0] == 0x22);
+			}
+		}
+
+		WHEN("one register is added to another with no carry (ADD VX,VY: 0x8XY4)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 2;
+			registers[1] = 3;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8014);	// ADD V0,V1
+			processor->step();
+
+			THEN("the second register is added to the first") {
+				REQUIRE(registers[0] == 5);
+			} AND_THEN("carry is not set") {
+				REQUIRE(registers[0xf] == 0);
+			}
+		}
+
+		WHEN("one register is added to another with carry (ADD VX,VY: 0x8XY4)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xff;
+			registers[1] = 1;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8014);	// ADD V0,V1
+			processor->step();
+
+			THEN("the second register is added to the first (modulo 0xff) with carry") {
+				REQUIRE(registers[0] == 0);
+			} AND_THEN("carry is set") {
+				REQUIRE(registers[0xf] == 1);
+			}
+		}
+
+		WHEN("one register is subtracted from another with no borrow (SUB VX,VY: 0x8XY5)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 3;
+			registers[1] = 2;	// x > y
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8015);	// SUB V0,V1
+			processor->step();
+
+			THEN("the second register is subtracted from the first with no borrow") {
+				REQUIRE(registers[0] == 1);
+			} AND_THEN("borrow is not set") {
+				REQUIRE(registers[0xf] == 1);
+			}
+		}
+
+		WHEN("one register is subtracted from another with borrow (SUB VX,VY: 0x8XY5)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 2;
+			registers[1] = 3;	// x < y
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8015);	// SUB V0,V1
+			processor->step();
+
+			THEN("the second register is subtracted from the first (modulo 0xff) with borrow") {
+				REQUIRE(registers[0] == 0xff);
+			} AND_THEN("borrow is set") {
+				REQUIRE(registers[0xf] == 0);
+			}
+		}
+
+		WHEN("a register is shifted right by one bit generating carry (SHR VX,VY: 0x8XY6)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xff;
+			registers[1] = 3;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8016);	// SHR VX,VY
+			processor->step();
+
+			THEN("the Y register is shifted right by one") {
+				REQUIRE(registers[1] == 1);
+			} AND_THEN("the X and Y registers are equal") {
+				REQUIRE(registers[0] == registers[1]);
+			} AND_THEN("carry has been generated") {
+				REQUIRE(registers[0xf] == 1);
+			}
+		}
+
+		WHEN("a register is shifted right by one bit without generating carry (SHR VX,VY: 0x8XY6)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xff;
+			registers[1] = 2;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8016);	// SHR VX,VY
+			processor->step();
+
+			THEN("the Y register is shifted right by one bit") {
+				REQUIRE(registers[1] == 1);
+			} AND_THEN("the X and Y registers are equal") {
+				REQUIRE(registers[0] == registers[1]);
+			} AND_THEN("carry has not been generated") {
+				REQUIRE(registers[0xf] == 0);
+			}
+		}
+
+		WHEN("one register is subtracted from another with no borrow (SUBN VX,VY: 0x8XY7") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 1;
+			registers[1] = 4;	// x < y
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8017);	// SUBN V0,V1
+			processor->step();
+
+			THEN("the first register is subtracted from the second with no borrow") {
+				REQUIRE(registers[0] == 3);
+			} AND_THEN("borrow is not set") {
+				REQUIRE(registers[0xf] == 1);
+			}
+		}
+
+		WHEN("one register is subtracted from another with borrow (SUBN VX,VY: 0x8XY7)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 4;
+			registers[1] = 1;	// x > y
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x8017);	// SUBN V0,V1
+			processor->step();
+
+			THEN("the second register is subtracted from the first (modulo 0xff) with borrow") {
+				REQUIRE(registers[0] == 0xfd);
+			} AND_THEN("borrow is set") {
+				REQUIRE(registers[0xf] == 0);
+			}
+		}
+
+		WHEN("a register is shifted left by one bit generating carry (SHL VX,VY: 0x8XYE)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xff;
+			registers[1] = 0x81;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x801E);	// SHL VX,VY
+			processor->step();
+
+			THEN("the Y register is shifted left by one") {
+				REQUIRE(registers[1] == 2);
+			} AND_THEN("the X and Y registers are equal") {
+				REQUIRE(registers[0] == registers[1]);
+			} AND_THEN("carry has been generated") {
+				REQUIRE(registers[0xf] == 1);
+			}
+		}
+
+		WHEN("a register is shifted left by one bit without generating carry (SHL VX,VY: 0x8XYE)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xff;
+			registers[1] = 1;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x801E);	// SHL VX,VY
+			processor->step();
+
+			THEN("the Y register is shifted right by one bit") {
+				REQUIRE(registers[1] == 2);
+			} AND_THEN("the X and Y registers are equal") {
+				REQUIRE(registers[0] == registers[1]);
+			} AND_THEN("carry has not been generated") {
+				REQUIRE(registers[0xf] == 0);
 			}
 		}
 	}
