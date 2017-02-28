@@ -48,6 +48,14 @@ public:
 		return m_v;
 	}
 
+	uint16_t getIndirector() const {
+		return m_i;
+	}
+
+	void setIndirector(uint16_t value) {
+		m_i = value;
+	}
+
 	const Memory& getMemory() const {
 		return m_memory;
 	}

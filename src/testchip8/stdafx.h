@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <bitset>
 
 #include <catch.hpp>
 

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include <memory>
-
 #include <Configuration.h>
 #include <Controller.h>
 
+#include <memory>
 #include <algorithm>
+#include <bitset>
 
 SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[Chip8]") {
 
@@ -418,12 +418,151 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			memory.setWord(0x200, 0x801E);	// SHL VX,VY
 			processor->step();
 
-			THEN("the Y register is shifted right by one bit") {
+			THEN("the Y register is shifted left by one bit") {
 				REQUIRE(registers[1] == 2);
 			} AND_THEN("the X and Y registers are equal") {
 				REQUIRE(registers[0] == registers[1]);
 			} AND_THEN("carry has not been generated") {
 				REQUIRE(registers[0xf] == 0);
+			}
+		}
+
+		WHEN("a positive SNE instruction is executed (SNE VX,VY: 0x9XY0)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 1;
+			registers[1] = 2;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x9010);	// SNE VX,VY
+			processor->step();
+
+			THEN("the program counter should skip the following instruction") {
+				REQUIRE(processor->getProgramCounter() == 0x204);
+			}
+		}
+
+		WHEN("a negative SNE instruction is executed (SNE VX,VY: 0x9XY0)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 1;
+			registers[1] = 1;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0x9010);	// SNE VX,VY
+			processor->step();
+
+			THEN("the program counter should move forward normally") {
+				REQUIRE(processor->getProgramCounter() == 0x202);
+			}
+		}
+
+		WHEN("the indirection register is loaded with an immediate value (LD I,NNN: 0xANNN)") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xA111);	// LD I,NNN
+			processor->step();
+
+			THEN("the I register is loaded with the new value") {
+				REQUIRE(processor->getIndirector() == 0x111);
+			}
+		}
+
+		WHEN("an indexed jump is executed (JP V0,NNN: 0xBNNN)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0x10;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xB100);	// JP V0,100
+			processor->step();
+
+			THEN("the program counter is set to the address plus V0") {
+				REQUIRE(processor->getProgramCounter() == 0x110);
+			}
+		}
+
+		WHEN("a masked random number is generated (RND X,NN: 0xCXNN)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0x10;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xC00F);	// RND 0,0F
+			processor->step();
+
+			THEN("the X register is set to a random value, no larger than 0xF") {
+				REQUIRE(registers[0] < 0x10);
+			}
+		}
+
+		WHEN("a draw command is executed with no hits (DRW X,Y,N: 0xDXYN)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0;
+			registers[1] = 0;
+
+			auto& memory = processor->getMemoryMutable();
+
+			auto sprite = 0x400;
+			memory.set(sprite, 0b10101010);
+			memory.set(sprite + 1, 0b01010101);
+			memory.set(sprite + 2, 0b10101010);
+			memory.set(sprite + 3, 0b01010101);
+
+			processor->setIndirector(sprite);
+
+			memory.setWord(0x200, 0xD014);	// DRW 0,1,4
+			processor->step();
+
+			THEN("the display will have the sprite pattern placed at 0,0") {
+				auto& display = processor->getDisplayMutable();
+				auto& planes = display.getPlanesMutable();
+				auto& plane = planes[0];
+				auto& bitmap = plane.getGraphicsMutable();
+				for (int y = 0; y < 4; ++y) {
+					std::bitset<8> displayRow;
+					for (int x = 0; x < 8; ++x) {
+						auto on = bitmap[x + y * display.getWidth()];
+						displayRow[7 - x] = on ? true : false;
+					}
+					std::bitset<8> spriteRow(memory.get(sprite + y));
+					REQUIRE(displayRow == spriteRow);
+				}
+			} AND_THEN("there have been no hits") {
+				REQUIRE(registers[0xf] == 0);
+			}
+		}
+
+		WHEN("a draw command is executed with complete hits (DRW X,Y,N: 0xDXYN)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0;
+			registers[1] = 0;
+
+			auto& memory = processor->getMemoryMutable();
+
+			auto sprite = 0x400;
+			memory.set(sprite, 0b10101010);
+			memory.set(sprite + 1, 0b01010101);
+			memory.set(sprite + 2, 0b10101010);
+			memory.set(sprite + 3, 0b01010101);
+
+			processor->setIndirector(sprite);
+
+			memory.setWord(0x200, 0xD014);	// DRW 0,1,4
+			memory.setWord(0x202, 0xD014);	// DRW 0,1,4 Executing the same sprite drawing twice will generate only hits
+			processor->step();
+			processor->step();
+
+			THEN("all bits in the display are set to zero") {
+				auto& display = processor->getDisplayMutable();
+				auto& planes = display.getPlanesMutable();
+				auto& plane = planes[0];
+				auto& bitmap = plane.getGraphicsMutable();
+				REQUIRE(std::all_of(bitmap.cbegin(), bitmap.cend(), [](int bit) { return bit == 0; }));
+			} AND_THEN("there have been hits") {
+				REQUIRE(registers[0xf] == 1);
 			}
 		}
 	}
