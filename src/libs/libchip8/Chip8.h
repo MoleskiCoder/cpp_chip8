@@ -72,6 +72,14 @@ public:
 		return m_sp;
 	}
 
+	uint8_t getDelayTimer() const {
+		return m_delayTimer;
+	}
+
+	void setDelayTimer(uint8_t value) {
+		m_delayTimer = value;
+	}
+
 	const Configuration& getConfiguration() const {
 		return m_configuration;
 	}

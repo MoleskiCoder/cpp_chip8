@@ -565,5 +565,111 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 				REQUIRE(registers[0xf] == 1);
 			}
 		}
+
+		WHEN("a positive skip on key pressed instruction is executed (SKP VX: 0xEX9E)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xA;
+
+			auto& keyboard = processor->getKeyboardMutable();
+			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xE09E);	// SKP V0
+			processor->step();
+
+			THEN("the program counter should skip the following instruction") {
+				REQUIRE(processor->getProgramCounter() == 0x204);
+			}
+		}
+
+		WHEN("a negative skip on key pressed instruction is executed (SKP VX: 0xEX9E)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xB;
+
+			auto& keyboard = processor->getKeyboardMutable();
+			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xE09E);	// SKP V0
+			processor->step();
+
+			THEN("the program counter should skip the following instruction") {
+				REQUIRE(processor->getProgramCounter() == 0x202);
+			}
+		}
+
+		WHEN("a positive skip on key not pressed instruction is executed (SKNP VX: 0xEXA1)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xB;
+
+			auto& keyboard = processor->getKeyboardMutable();
+			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xE0A1);	// SKNP V0
+			processor->step();
+
+			THEN("the program counter should skip the following instruction") {
+				REQUIRE(processor->getProgramCounter() == 0x204);
+			}
+		}
+
+		WHEN("a negative skip on key not pressed instruction is executed (SKNP VX: 0xEXA1)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xA;
+
+			auto& keyboard = processor->getKeyboardMutable();
+			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xE0A1);	// SKP V0
+			processor->step();
+
+			THEN("the program counter should skip the following instruction") {
+				REQUIRE(processor->getProgramCounter() == 0x202);
+			}
+		}
+
+		WHEN("the V0 register is loaded with the contents of the delay timer (LD VX,DT: 0xFX07)") {
+
+			processor->setDelayTimer(0x10);
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(0x200, 0xF007);	// SKP V0
+			processor->step();
+
+			THEN("V0 should be set to the contents of the delay timer") {
+				const auto& registers = processor->getRegisters();
+				REQUIRE(registers[0] == 0x10);
+			}
+		}
+
+		//WHEN("XXXX (LD_Vx_K: 0xFX0A)") {
+		//}
+
+		//WHEN("XXXX (LD_DT_Vx: 0xFX15)") {
+		//}
+
+		//WHEN("XXXX (LD_ST_Vx: 0xFX18)") {
+		//}
+
+		//WHEN("XXXX (ADD_I_Vx: 0xFX1E)") {
+		//}
+
+		//WHEN("XXXX (LD_F_Vx: 0xFX29)") {
+		//}
+
+		//WHEN("XXXX (LD_B_Vx: 0xFX33)") {
+		//}
+
+		//WHEN("XXXX (LD_II_Vx: 0xFX55)") {
+		//}
+
+		//WHEN("XXXX (LD_Vx_II: 0xFX65)") {
+		//}
 	}
 }
