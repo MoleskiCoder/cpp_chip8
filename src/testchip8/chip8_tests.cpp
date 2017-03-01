@@ -516,10 +516,10 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			processor->step();
 
 			THEN("the display will have the sprite pattern placed at 0,0") {
-				auto& display = processor->getDisplayMutable();
-				auto& planes = display.getPlanesMutable();
+				auto& display = processor->getDisplay();
+				auto& planes = display.getPlanes();
 				auto& plane = planes[0];
-				auto& bitmap = plane.getGraphicsMutable();
+				auto& bitmap = plane.getGraphics();
 				for (int y = 0; y < 4; ++y) {
 					std::bitset<8> displayRow;
 					for (int x = 0; x < 8; ++x) {
@@ -556,10 +556,10 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			processor->step();
 
 			THEN("all bits in the display are set to zero") {
-				auto& display = processor->getDisplayMutable();
-				auto& planes = display.getPlanesMutable();
+				auto& display = processor->getDisplay();
+				auto& planes = display.getPlanes();
 				auto& plane = planes[0];
-				auto& bitmap = plane.getGraphicsMutable();
+				auto& bitmap = plane.getGraphics();
 				REQUIRE(std::all_of(bitmap.cbegin(), bitmap.cend(), [](int bit) { return bit == 0; }));
 			} AND_THEN("there have been hits") {
 				REQUIRE(registers[0xf] == 1);
