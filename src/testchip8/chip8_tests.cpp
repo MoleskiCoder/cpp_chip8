@@ -732,16 +732,104 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		//WHEN("XXXX (LD_F_Vx: 0xFX29)") {
-		//}
+		WHEN("the instruction to load the indirector register with the location of a number in the font table (LD_F_Vx: 0xFX29)") {
 
-		//WHEN("XXXX (LD_B_Vx: 0xFX33)") {
-		//}
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xA;
 
-		//WHEN("XXXX (LD_II_Vx: 0xFX55)") {
-		//}
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF029);	// LD F,V0
+			processor->step();
 
-		//WHEN("XXXX (LD_Vx_II: 0xFX65)") {
-		//}
+			THEN("the indirector should be set to location of the A character in the font table") {
+				REQUIRE(processor->getIndirector() == (Chip8::StandardFontOffset + 0xA * Chip8::StandardFontSize));
+			}
+		}
+
+		WHEN("the instruction to convert the contents of a register to decimal in executed (LD_B_Vx: 0xFX33)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0xFF;
+
+			processor->setIndirector(0x400);
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF033);	// LD B,V0
+			processor->step();
+
+			THEN("the first digit should be 2") {
+				REQUIRE(memory.get(0x400) == 2);
+			} AND_THEN("the second digit should be 5") {
+				REQUIRE(memory.get(0x401) == 5);
+			} AND_THEN("the third digit should be 5") {
+				REQUIRE(memory.get(0x402) == 5);
+			}
+		}
+
+		WHEN("the instruction to save X registers is executed (LD_II_Vx: 0xFX55)") {
+
+			processor->setIndirector(0x400);
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0x1;
+			registers[1] = 0x2;
+			registers[2] = 0x3;
+			registers[3] = 0x4;
+
+			auto& memory = processor->getMemoryMutable();
+
+			memory.set(0x400, 0);
+			memory.set(0x401, 0);
+			memory.set(0x402, 0);
+			memory.set(0x403, 0);
+
+			memory.setWord(startAddress, 0xF255);	// LD [I],V2
+			processor->step();
+
+			THEN("the contents of the first location should be 1") {
+				REQUIRE(memory.get(0x400) == 1);
+			} AND_THEN("the contents of the second location should be 2") {
+				REQUIRE(memory.get(0x401) == 2);
+			} AND_THEN("the contents of the third location should be 3") {
+				REQUIRE(memory.get(0x402) == 3);
+			} AND_THEN("the contents of the fourth location should be 0 (i.e. unchanged)") {
+				REQUIRE(memory.get(0x403) == 0);
+			} AND_THEN("the value of the indirector should be the base location plus the number of registers saved") {
+				REQUIRE(processor->getIndirector() == 0x402);
+			}
+		}
+
+		WHEN("the instruction to load X registers is executed (LD_Vx_II: 0xFX65)") {
+
+			processor->setIndirector(0x400);
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0x0;
+			registers[1] = 0x0;
+			registers[2] = 0x0;
+			registers[3] = 0x0;
+
+			auto& memory = processor->getMemoryMutable();
+
+			memory.set(0x400, 1);
+			memory.set(0x401, 2);
+			memory.set(0x402, 3);
+			memory.set(0x403, 4);
+
+			memory.setWord(startAddress, 0xF265);	// LD V2,[I]
+			processor->step();
+
+			THEN("the contents of V0 should be 1") {
+				REQUIRE(registers[0] == 1);
+			} AND_THEN("the contents of V1 should be 2") {
+				REQUIRE(registers[1] == 2);
+			} AND_THEN("the contents of V2 should be 3") {
+				REQUIRE(registers[2] == 3);
+			} AND_THEN("the contents of V3 should be 0 (i.e. unchanged)") {
+				REQUIRE(registers[3] == 0);
+			} AND_THEN("the value of the indirector should be the base location plus the number of registers saved") {
+				REQUIRE(processor->getIndirector() == 0x402);
+			}
+		}
 	}
 }

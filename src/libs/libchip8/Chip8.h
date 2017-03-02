@@ -14,6 +14,11 @@
 
 class Chip8 {
 public:
+	enum {
+		StandardFontOffset = 0x1b0,
+		StandardFontSize = 5,
+	};
+
 	Chip8();
 	Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 	virtual ~Chip8();
@@ -238,10 +243,6 @@ private:
 			m_waitingForKeyPress,
 			m_waitingForKeyPressRegister);
 	}
-
-	enum {
-		StandardFontOffset = 0x1b0
-	};
 
 	std::array<uint8_t, 5 * 16> m_standardFont = { {
 		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
