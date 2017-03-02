@@ -5,7 +5,7 @@ LDFLAGS  = -s -L../libs/libchip8 -lchip8 `sdl2-config --libs` -lboost_program_op
 
 INCLUDE = -I"/usr/include/SDL" -I../libs/libchip8 -I../../modules/catch/single_include/
 
-CXXFILES   = testchip8.cpp chip8_tests.cpp
+CXXFILES   = testchip8.cpp chip8_tests.cpp schip_tests.cpp
 CXXOBJECTS = $(CXXFILES:.cpp=.o)
 
 SOURCES = $(CXXFILES)
