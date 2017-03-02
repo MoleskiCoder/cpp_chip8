@@ -534,7 +534,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("a draw command is executed with complete hits (DRW X,Y,N: 0xDXYN)") {
+		WHEN("a draw command is executed with complete hits (DRW VX,VY,N: 0xDXYN)") {
 
 			auto& registers = processor->getRegistersMutable();
 			registers[0] = 0;
@@ -550,8 +550,8 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 
 			processor->setIndirector(sprite);
 
-			memory.setWord(0x200, 0xD014);	// DRW 0,1,4
-			memory.setWord(0x202, 0xD014);	// DRW 0,1,4 Executing the same sprite drawing twice will generate only hits
+			memory.setWord(0x200, 0xD014);	// DRW V0,V1,4
+			memory.setWord(0x202, 0xD014);	// DRW V0,V1,4 Executing the same sprite drawing twice will generate only hits
 			processor->step();
 			processor->step();
 
@@ -595,7 +595,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			memory.setWord(0x200, 0xE09E);	// SKP V0
 			processor->step();
 
-			THEN("the program counter should skip the following instruction") {
+			THEN("the program counter should move forward normally") {
 				REQUIRE(processor->getProgramCounter() == 0x202);
 			}
 		}
@@ -626,10 +626,10 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xE0A1);	// SKP V0
+			memory.setWord(0x200, 0xE0A1);	// SKNP V0
 			processor->step();
 
-			THEN("the program counter should skip the following instruction") {
+			THEN("the program counter should move forward normally") {
 				REQUIRE(processor->getProgramCounter() == 0x202);
 			}
 		}
@@ -639,7 +639,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			processor->setDelayTimer(0x10);
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xF007);	// SKP V0
+			memory.setWord(0x200, 0xF007);	// LD V0,DT
 			processor->step();
 
 			THEN("V0 should be set to the contents of the delay timer") {
