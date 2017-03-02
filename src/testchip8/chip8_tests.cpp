@@ -12,6 +12,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 	GIVEN("An initialised Chip8 instance") {
 
 		const Configuration configuration;
+		const auto startAddress = configuration.getStartAddress();
 		std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
 		processor->initialise();
 
@@ -26,7 +27,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			std::fill(bitmap.begin(), bitmap.end(), 1);
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x00E0);	// CLS
+			memory.setWord(startAddress, 0x00E0);	// CLS
 			processor->step();
 
 			THEN("all bits in the display are set to zero") {
@@ -37,20 +38,20 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 		WHEN("a subroutine returns (RET: 0x00EE)") {
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x2400);	// CALL subroutine
+			memory.setWord(startAddress, 0x2400);	// CALL subroutine
 			memory.setWord(0x400, 0x00EE);	// RET
 			processor->step();
 			processor->step();
 
 			THEN("the program counter should be set to execute the next statement past the original call") {
-				REQUIRE(processor->getProgramCounter() == 0x202);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
 			}
 		}
 
 		WHEN("a jump is made (JP NNN: 0x1NNN)") {
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x1400);	// JP 400
+			memory.setWord(startAddress, 0x1400);	// JP 400
 			processor->step();
 
 			THEN("the program counter should be set to the jump destination") {
@@ -63,7 +64,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			const auto sp = processor->getStackPointer();
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x2400);	// CALL subroutine
+			memory.setWord(startAddress, 0x2400);	// CALL subroutine
 			processor->step();
 
 			THEN("the program counter should be set to execute the subroutine") {
@@ -82,11 +83,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[0] = 0xFF;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x30FF);	// SE V0,FF
+			memory.setWord(startAddress, 0x30FF);	// SE V0,FF
 			processor->step();
 
 			THEN("the program counter should skip the following instruction") {
-				REQUIRE(processor->getProgramCounter() == 0x204);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 4));
 			}
 		}
 
@@ -96,11 +97,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[0] = 0xFF;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x30FE);	// SE V0,FE
+			memory.setWord(startAddress, 0x30FE);	// SE V0,FE
 			processor->step();
 
 			THEN("the program counter should move forward normally") {
-				REQUIRE(processor->getProgramCounter() == 0x202);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
 			}
 		}
 
@@ -110,11 +111,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[0] = 0xFF;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x40FE);	// SNE V0,FE
+			memory.setWord(startAddress, 0x40FE);	// SNE V0,FE
 			processor->step();
 
 			THEN("the program counter should skip the following instruction") {
-				REQUIRE(processor->getProgramCounter() == 0x204);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 4));
 			}
 		}
 
@@ -124,11 +125,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[0] = 0xFF;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x40FF);	// SNE V0,FF
+			memory.setWord(startAddress, 0x40FF);	// SNE V0,FF
 			processor->step();
 
 			THEN("the program counter should move forward normally") {
-				REQUIRE(processor->getProgramCounter() == 0x202);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
 			}
 		}
 
@@ -139,11 +140,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 0xFF;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x5010);	// SE V0,V1
+			memory.setWord(startAddress, 0x5010);	// SE V0,V1
 			processor->step();
 
 			THEN("the program counter should skip the following instruction") {
-				REQUIRE(processor->getProgramCounter() == 0x204);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 4));
 			}
 		}
 
@@ -154,18 +155,18 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 0xFE;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x5010);	// SE V0,V1
+			memory.setWord(startAddress, 0x5010);	// SE V0,V1
 			processor->step();
 
 			THEN("the program counter should move forward normally") {
-				REQUIRE(processor->getProgramCounter() == 0x202);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
 			}
 		}
 
 		WHEN("a register is loaded with an immediate value (LD VX,NN: 0x6XNN)") {
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x60FF);	// LD V0,FF
+			memory.setWord(startAddress, 0x60FF);	// LD V0,FF
 			processor->step();
 
 			THEN("the register takes the new value") {
@@ -180,7 +181,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[0] = 1;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x7001);	// ADD V0,1
+			memory.setWord(startAddress, 0x7001);	// ADD V0,1
 			processor->step();
 
 			THEN("the value of the register increases by the immediate value") {
@@ -194,7 +195,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 1;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8010);	// LD V0,V1
+			memory.setWord(startAddress, 0x8010);	// LD V0,V1
 			processor->step();
 
 			THEN("the first register equals the second") {
@@ -211,7 +212,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 0x1;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8011);	// OR V0,V1
+			memory.setWord(startAddress, 0x8011);	// OR V0,V1
 			processor->step();
 
 			THEN("the first register is logically ORed the second") {
@@ -226,7 +227,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 0xf;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8012);	// AND V0,V1
+			memory.setWord(startAddress, 0x8012);	// AND V0,V1
 			processor->step();
 
 			THEN("the first register is logically ANDed the second") {
@@ -241,7 +242,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 0b01110111;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8013);	// XOR V0,V1
+			memory.setWord(startAddress, 0x8013);	// XOR V0,V1
 			processor->step();
 
 			THEN("the first register is logically XORed with the second") {
@@ -256,7 +257,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 3;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8014);	// ADD V0,V1
+			memory.setWord(startAddress, 0x8014);	// ADD V0,V1
 			processor->step();
 
 			THEN("the second register is added to the first") {
@@ -273,7 +274,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 1;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8014);	// ADD V0,V1
+			memory.setWord(startAddress, 0x8014);	// ADD V0,V1
 			processor->step();
 
 			THEN("the second register is added to the first (modulo 0xff) with carry") {
@@ -290,7 +291,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 2;	// x > y
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8015);	// SUB V0,V1
+			memory.setWord(startAddress, 0x8015);	// SUB V0,V1
 			processor->step();
 
 			THEN("the second register is subtracted from the first with no borrow") {
@@ -307,7 +308,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 3;	// x < y
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8015);	// SUB V0,V1
+			memory.setWord(startAddress, 0x8015);	// SUB V0,V1
 			processor->step();
 
 			THEN("the second register is subtracted from the first (modulo 0xff) with borrow") {
@@ -324,7 +325,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 3;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8016);	// SHR VX,VY
+			memory.setWord(startAddress, 0x8016);	// SHR VX,VY
 			processor->step();
 
 			THEN("the Y register is shifted right by one") {
@@ -343,7 +344,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 2;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8016);	// SHR VX,VY
+			memory.setWord(startAddress, 0x8016);	// SHR VX,VY
 			processor->step();
 
 			THEN("the Y register is shifted right by one bit") {
@@ -362,7 +363,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 4;	// x < y
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8017);	// SUBN V0,V1
+			memory.setWord(startAddress, 0x8017);	// SUBN V0,V1
 			processor->step();
 
 			THEN("the first register is subtracted from the second with no borrow") {
@@ -379,7 +380,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 1;	// x > y
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x8017);	// SUBN V0,V1
+			memory.setWord(startAddress, 0x8017);	// SUBN V0,V1
 			processor->step();
 
 			THEN("the second register is subtracted from the first (modulo 0xff) with borrow") {
@@ -396,7 +397,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 0x81;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x801E);	// SHL VX,VY
+			memory.setWord(startAddress, 0x801E);	// SHL VX,VY
 			processor->step();
 
 			THEN("the Y register is shifted left by one") {
@@ -415,7 +416,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 1;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x801E);	// SHL VX,VY
+			memory.setWord(startAddress, 0x801E);	// SHL VX,VY
 			processor->step();
 
 			THEN("the Y register is shifted left by one bit") {
@@ -434,11 +435,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 2;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x9010);	// SNE VX,VY
+			memory.setWord(startAddress, 0x9010);	// SNE VX,VY
 			processor->step();
 
 			THEN("the program counter should skip the following instruction") {
-				REQUIRE(processor->getProgramCounter() == 0x204);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 4));
 			}
 		}
 
@@ -449,18 +450,18 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[1] = 1;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0x9010);	// SNE VX,VY
+			memory.setWord(startAddress, 0x9010);	// SNE VX,VY
 			processor->step();
 
 			THEN("the program counter should move forward normally") {
-				REQUIRE(processor->getProgramCounter() == 0x202);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
 			}
 		}
 
 		WHEN("the indirection register is loaded with an immediate value (LD I,NNN: 0xANNN)") {
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xA111);	// LD I,NNN
+			memory.setWord(startAddress, 0xA111);	// LD I,NNN
 			processor->step();
 
 			THEN("the I register is loaded with the new value") {
@@ -474,7 +475,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[0] = 0x10;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xB100);	// JP V0,100
+			memory.setWord(startAddress, 0xB100);	// JP V0,100
 			processor->step();
 
 			THEN("the program counter is set to the address plus V0") {
@@ -488,7 +489,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			registers[0] = 0x10;
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xC00F);	// RND 0,0F
+			memory.setWord(startAddress, 0xC00F);	// RND 0,0F
 			processor->step();
 
 			THEN("the X register is set to a random value, no larger than 0xF") {
@@ -512,7 +513,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 
 			processor->setIndirector(sprite);
 
-			memory.setWord(0x200, 0xD014);	// DRW 0,1,4
+			memory.setWord(startAddress, 0xD014);	// DRW 0,1,4
 			processor->step();
 
 			THEN("the display will have the sprite pattern placed at 0,0") {
@@ -550,7 +551,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 
 			processor->setIndirector(sprite);
 
-			memory.setWord(0x200, 0xD014);	// DRW V0,V1,4
+			memory.setWord(startAddress, 0xD014);	// DRW V0,V1,4
 			memory.setWord(0x202, 0xD014);	// DRW V0,V1,4 Executing the same sprite drawing twice will generate only hits
 			processor->step();
 			processor->step();
@@ -575,11 +576,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xE09E);	// SKP V0
+			memory.setWord(startAddress, 0xE09E);	// SKP V0
 			processor->step();
 
 			THEN("the program counter should skip the following instruction") {
-				REQUIRE(processor->getProgramCounter() == 0x204);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 4));
 			}
 		}
 
@@ -592,11 +593,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xE09E);	// SKP V0
+			memory.setWord(startAddress, 0xE09E);	// SKP V0
 			processor->step();
 
 			THEN("the program counter should move forward normally") {
-				REQUIRE(processor->getProgramCounter() == 0x202);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
 			}
 		}
 
@@ -609,11 +610,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xE0A1);	// SKNP V0
+			memory.setWord(startAddress, 0xE0A1);	// SKNP V0
 			processor->step();
 
 			THEN("the program counter should skip the following instruction") {
-				REQUIRE(processor->getProgramCounter() == 0x204);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 4));
 			}
 		}
 
@@ -626,11 +627,11 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			keyboard.pokeKey(SDLK_z);	// Mapped Z -> A on Chip-8
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xE0A1);	// SKNP V0
+			memory.setWord(startAddress, 0xE0A1);	// SKNP V0
 			processor->step();
 
 			THEN("the program counter should move forward normally") {
-				REQUIRE(processor->getProgramCounter() == 0x202);
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
 			}
 		}
 
@@ -639,7 +640,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			processor->setDelayTimer(0x10);
 
 			auto& memory = processor->getMemoryMutable();
-			memory.setWord(0x200, 0xF007);	// LD V0,DT
+			memory.setWord(startAddress, 0xF007);	// LD V0,DT
 			processor->step();
 
 			THEN("V0 should be set to the contents of the delay timer") {
