@@ -560,8 +560,9 @@ void Chip8::ADD_I_Vx(int x) {
 	// VF is set to 1 when there is a range overflow (I+VX>0xFFF), and to 0
 	// when there isn't. This is an undocumented feature of the CHIP-8 and used by the Spacefight 2091! game
 	auto sum = m_i + m_v[x];
-	m_v[0xf] = (uint8_t)(sum > 0xfff ? 1 : 0);
-	m_i += m_v[x];
+	auto masked = sum & 0xFFF;
+	m_v[0xf] = sum == masked ? 0 : 1;
+	m_i = masked;
 }
 
 void Chip8::LD_ST_Vx(int x) {
