@@ -649,17 +649,88 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		//WHEN("XXXX (LD_Vx_K: 0xFX0A)") {
-		//}
+		WHEN("an instruction to wait for the next key pressed and place it in the secified register (LD_Vx_K: 0xFX0A)") {
 
-		//WHEN("XXXX (LD_DT_Vx: 0xFX15)") {
-		//}
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF00A);	// LD V0,K
+			processor->step();
 
-		//WHEN("XXXX (LD_ST_Vx: 0xFX18)") {
-		//}
+			auto& keyboard = processor->getKeyboardMutable();
+			keyboard.pokeKey(SDLK_z);
 
-		//WHEN("XXXX (ADD_I_Vx: 0xFX1E)") {
-		//}
+			processor->step();
+
+			THEN("V0 should be set to the mapped key") {
+				const auto& registers = processor->getRegisters();
+				REQUIRE(registers[0] == 0xA);
+			} AND_THEN("the program counter should have moved forward by just one instruction") {
+				REQUIRE(processor->getProgramCounter() == (startAddress + 2));
+			}
+		}
+
+		WHEN("the delay timer is loaded with the contents of a register (LD_DT_Vx: 0xFX15)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0x10;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF015);	// LD DT,V0
+			processor->step();
+
+			THEN("the delay timer should be set to the contents of the specified register") {
+				REQUIRE(processor->getDelayTimer() == 0x10);
+			}
+		}
+
+		WHEN("the sound timer is loaded with the contents of a register (LD_ST_Vx: 0xFX18)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 0x10;
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF018);	// LD ST,V0
+			processor->step();
+
+			THEN("the sound timer should be set to the contents of the specified register") {
+				REQUIRE(processor->getSoundTimer() == 0x10);
+			}
+		}
+
+		WHEN("the instruction to add a register to the indirector, with no range overflow, is executed (ADD_I_Vx: 0xFX1E)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 1;
+
+			processor->setIndirector(0x100);
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF01E);	// ADD I,V0
+			processor->step();
+
+			THEN("the indirector should be set to the sum of the indirector plus V0, masked to 0xFFF") {
+				REQUIRE(processor->getIndirector() == 0x101);
+			} AND_THEN("the carry flag should not be set") {
+				REQUIRE(registers[0xf] == 0);
+			}
+		}
+
+		WHEN("the instruction to add a register to the indirector, with range overflow, is executed (ADD_I_Vx: 0xFX1E)") {
+
+			auto& registers = processor->getRegistersMutable();
+			registers[0] = 1;
+
+			processor->setIndirector(0xFFF);
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF01E);	// ADD I,V0
+			processor->step();
+
+			THEN("the indirector should be set to the sum of the indirector plus V0, masked to 0xFFF") {
+				REQUIRE(processor->getIndirector() == 0);
+			} AND_THEN("the carry flag should be set") {
+				REQUIRE(registers[0xf] == 1);
+			}
+		}
 
 		//WHEN("XXXX (LD_F_Vx: 0xFX29)") {
 		//}

@@ -80,6 +80,30 @@ public:
 		m_delayTimer = value;
 	}
 
+	uint8_t getSoundTimer() const {
+		return m_soundTimer;
+	}
+
+	void setSoundTimer(uint8_t value) {
+		m_soundTimer = value;
+	}
+
+	bool isWaitingForKeyPress() const {
+		return m_waitingForKeyPress;
+	}
+
+	void setWaitingForKeyPress(bool value) {
+		m_waitingForKeyPress = value;
+	}
+
+	int getWaitingForKeyPressRegister() const {
+		return m_waitingForKeyPressRegister;
+	}
+
+	void setWaitingForKeyPressRegister(int value) {
+		m_waitingForKeyPressRegister = value;
+	}
+
 	const Configuration& getConfiguration() const {
 		return m_configuration;
 	}
