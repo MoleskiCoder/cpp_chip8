@@ -210,7 +210,7 @@ void Schip::HIGH() {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX75
 void Schip::LD_R_Vx(int x) {
-	std::copy_n(m_v.cbegin(), x + 1, m_r.begin());
+	std::copy_n(m_v.cbegin(), (x & 7) + 1, m_r.begin());
 }
 
 // flags.restore vX
@@ -218,5 +218,5 @@ void Schip::LD_R_Vx(int x) {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX85
 void Schip::LD_Vx_R(int x) {
-	std::copy_n(m_r.cbegin(), x + 1, m_v.begin());
+	std::copy_n(m_r.cbegin(), (x & 7) + 1, m_v.begin());
 }

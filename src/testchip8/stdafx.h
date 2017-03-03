@@ -10,3 +10,4 @@
 
 #include <Configuration.h>
 #include <Controller.h>
+#include <Schip.h>
