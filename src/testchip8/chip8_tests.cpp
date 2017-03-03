@@ -795,7 +795,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			} AND_THEN("the contents of the fourth location should be 0 (i.e. unchanged)") {
 				REQUIRE(memory.get(0x403) == 0);
 			} AND_THEN("the value of the indirector should be the base location plus the number of registers saved") {
-				REQUIRE(processor->getIndirector() == 0x402);
+				REQUIRE(processor->getIndirector() == 0x403);
 			}
 		}
 
@@ -828,7 +828,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			} AND_THEN("the contents of V3 should be 0 (i.e. unchanged)") {
 				REQUIRE(registers[3] == 0);
 			} AND_THEN("the value of the indirector should be the base location plus the number of registers saved") {
-				REQUIRE(processor->getIndirector() == 0x402);
+				REQUIRE(processor->getIndirector() == 0x403);
 			}
 		}
 	}

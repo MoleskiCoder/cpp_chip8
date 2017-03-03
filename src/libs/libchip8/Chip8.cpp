@@ -534,14 +534,14 @@ void Chip8::LD_Vx_II(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
 	std::copy_n(m_memory.getBus().cbegin() + m_i, x + 1, m_v.begin());
-	m_i += x;
+	m_i += x + 1;
 }
 
 void Chip8::LD_II_Vx(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
 	std::copy_n(m_v.cbegin(), x + 1, m_memory.getBusMutable().begin() + m_i);
-	m_i += x;
+	m_i += x + 1;
 }
 
 void Chip8::LD_B_Vx(int x) {
