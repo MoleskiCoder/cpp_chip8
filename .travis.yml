@@ -4,6 +4,7 @@ compiler:
 - gcc
 os:
 - linux
+dist: xenial
 script: make -j 4 all && make test
 
 env:
