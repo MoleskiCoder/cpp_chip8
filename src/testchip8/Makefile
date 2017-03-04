@@ -1,7 +1,7 @@
 EXE = testchip8
 
-CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -march=native -O2 -pipe
-LDFLAGS  = -s -L../libs/libchip8 -lchip8 `sdl2-config --libs` -lboost_program_options
+CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe
+LDFLAGS  = -L../libs/libchip8 -lchip8 `sdl2-config --libs` -lboost_program_options
 
 INCLUDE = -I"/usr/include/SDL" -I../libs/libchip8 -I../../modules/catch/single_include/
 
@@ -13,7 +13,19 @@ OBJECTS = $(CXXOBJECTS)
 
 PCH = stdafx.h.gch
 
-all: $(EXE)
+all: opt
+
+opt: CXXFLAGS += -DNDEBUG -march=native -O2
+opt: LDFLAGS += -s
+opt: $(EXE)
+
+debug: CXXFLAGS += -g -DDEBUG
+debug: LDFLAGS += -g
+debug: $(EXE)
+
+coverage: CXXFLAGS += -g -DDEBUG -fprofile-arcs -ftest-coverage
+coverage: LDFLAGS += -g -lgcov
+coverage: $(EXE)
 
 $(PCH): stdafx.h
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -x c++-header $<
@@ -26,4 +38,4 @@ $(EXE): $(OBJECTS)
 
 .PHONY: clean
 clean:
-	-rm -f $(EXE) $(OBJECTS) $(PCH)
+	-rm -f $(EXE) $(OBJECTS) $(PCH) *.gcov *.gcda *.gcno

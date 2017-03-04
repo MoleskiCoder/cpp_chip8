@@ -1,7 +1,20 @@
 .PHONY: all
-all:
-	$(MAKE) -C src/libs/libchip8 all
-	$(MAKE) -C src/main all
+all: opt
+
+opt:
+	$(MAKE) -C src/libs/libchip8 opt
+	$(MAKE) -C src/main opt
+
+debug:
+	$(MAKE) -C src/libs/libchip8 debug
+	$(MAKE) -C src/main debug
+	$(MAKE) -C src/testchip8 debug
+	src/testchip8/testchip8
+
+coverage:
+	$(MAKE) -C src/libs/libchip8 coverage
+	$(MAKE) -C src/main coverage
+	$(MAKE) -C src/testchip8 coverage
 
 .PHONY: test
 test:
