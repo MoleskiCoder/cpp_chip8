@@ -649,7 +649,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("an instruction to wait for the next key pressed and place it in the secified register (LD_Vx_K: 0xFX0A)") {
+		WHEN("an instruction to wait for the next key pressed and place it in the secified register (LD VX,K: 0xFX0A)") {
 
 			auto& memory = processor->getMemoryMutable();
 			memory.setWord(startAddress, 0xF00A);	// LD V0,K
@@ -668,7 +668,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the delay timer is loaded with the contents of a register (LD_DT_Vx: 0xFX15)") {
+		WHEN("the delay timer is loaded with the contents of a register (LD DT,VX: 0xFX15)") {
 
 			auto& registers = processor->getRegistersMutable();
 			registers[0] = 0x10;
@@ -682,7 +682,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the sound timer is loaded with the contents of a register (LD_ST_Vx: 0xFX18)") {
+		WHEN("the sound timer is loaded with the contents of a register (LD ST,VX: 0xFX18)") {
 
 			auto& registers = processor->getRegistersMutable();
 			registers[0] = 0x10;
@@ -696,7 +696,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the instruction to add a register to the indirector, with no range overflow, is executed (ADD_I_Vx: 0xFX1E)") {
+		WHEN("the instruction to add a register to the indirector, with no range overflow, is executed (ADD I,VX: 0xFX1E)") {
 
 			auto& registers = processor->getRegistersMutable();
 			registers[0] = 1;
@@ -714,7 +714,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the instruction to add a register to the indirector, with range overflow, is executed (ADD_I_Vx: 0xFX1E)") {
+		WHEN("the instruction to add a register to the indirector, with range overflow, is executed (ADD I,VX: 0xFX1E)") {
 
 			auto& registers = processor->getRegistersMutable();
 			registers[0] = 1;
@@ -732,7 +732,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the instruction to load the indirector register with the location of a number in the font table (LD_F_Vx: 0xFX29)") {
+		WHEN("the instruction to load the indirector register with the location of a number in the font table (LD F,VX: 0xFX29)") {
 
 			auto& registers = processor->getRegistersMutable();
 			registers[0] = 0xA;
@@ -746,7 +746,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the instruction to convert the contents of a register to decimal in executed (LD_B_Vx: 0xFX33)") {
+		WHEN("the instruction to convert the contents of a register to decimal in executed (LD B,VX: 0xFX33)") {
 
 			auto& registers = processor->getRegistersMutable();
 			registers[0] = 0xFF;
@@ -766,7 +766,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the instruction to save X registers is executed (LD_II_Vx: 0xFX55)") {
+		WHEN("the instruction to save X registers is executed (LD [I],VX: 0xFX55)") {
 
 			processor->setIndirector(0x400);
 
@@ -799,7 +799,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 			}
 		}
 
-		WHEN("the instruction to load X registers is executed (LD_Vx_II: 0xFX65)") {
+		WHEN("the instruction to load X registers is executed (LD VX,[I]: 0xFX65)") {
 
 			processor->setIndirector(0x400);
 
