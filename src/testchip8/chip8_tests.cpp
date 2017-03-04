@@ -833,3 +833,197 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 		}
 	}
 }
+
+SCENARIO("The Chip-8 interpreter rejects invalid instructions", "[Chip8][!throws])") {
+
+	GIVEN("An initialised Chip8 instance") {
+
+		const Configuration configuration;
+		const auto startAddress = configuration.getStartAddress();
+		std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
+		processor->initialise();
+
+		WHEN("an unknown instruction from 0 is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0x0000);	// ??? Unknown instruction
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("a runtime error is thrown") {
+				REQUIRE(runtimeErrorThrown);
+			}
+		}
+
+		WHEN("an unknown instruction from 8 is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0x8008);	// ??? Unknown instruction
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("a runtime error is thrown") {
+				REQUIRE(runtimeErrorThrown);
+			}
+		}
+
+		WHEN("an unknown instruction from 9 is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0x9009);	// ??? Unknown instruction
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("a runtime error is thrown") {
+				REQUIRE(runtimeErrorThrown);
+			}
+		}
+
+		WHEN("an unknown instruction from E is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xE000);	// ??? Unknown instruction
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("a runtime error is thrown") {
+				REQUIRE(runtimeErrorThrown);
+			}
+		}
+
+		WHEN("an unknown instruction from F is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0xF000);	// ??? Unknown instruction
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("a runtime error is thrown") {
+				REQUIRE(runtimeErrorThrown);
+			}
+		}
+	}
+}
+
+SCENARIO("The Chip-8 interpreter handles instructions on even or odd boundaries", "[Chip8][!throws])") {
+
+	GIVEN("An initialised Chip8 instance that does not allow misaligned instructions") {
+
+		const Configuration configuration;
+		REQUIRE(!configuration.getAllowMisalignedOpcodes());
+
+		const auto startAddress = configuration.getStartAddress();
+		std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
+		processor->initialise();
+
+		WHEN("an aligned instruction is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0x00E0);	// CLS
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("no runtime error is thrown") {
+				REQUIRE(!runtimeErrorThrown);
+			}
+		}
+
+		WHEN("a misaligned instruction is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0x1401);	// JP 401
+			memory.setWord(0x401, 0x00E0);	// CLS
+
+			processor->step();	// 1st step is the JP instruction
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();	// the 2nd step takes us to the misaligned CLS instruction
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("a runtime error is thrown") {
+				REQUIRE(runtimeErrorThrown);
+			}
+		}
+	}
+
+	GIVEN("An initialised Chip8 instance that allows misaligned instructions") {
+
+		Configuration configuration;
+		configuration.setAllowMisalignedOpcodes(true);
+		REQUIRE(configuration.getAllowMisalignedOpcodes());
+
+		const auto startAddress = configuration.getStartAddress();
+		std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
+		processor->initialise();
+
+		WHEN("an aligned instruction is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0x00E0);	// CLS
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("no runtime error is thrown") {
+				REQUIRE(!runtimeErrorThrown);
+			}
+		}
+
+		WHEN("a misaligned instruction is interpreted") {
+
+			auto& memory = processor->getMemoryMutable();
+			memory.setWord(startAddress, 0x1401);	// JP 401
+			memory.setWord(0x401, 0x00E0);	// CLS
+
+			processor->step();	// 1st step is the JP instruction
+
+			bool runtimeErrorThrown = false;
+			try {
+				processor->step();	// the 2nd step takes us to the misaligned CLS instruction
+			} catch (const std::runtime_error&) {
+				runtimeErrorThrown = true;
+			}
+
+			THEN("no runtime error is thrown") {
+				REQUIRE(!runtimeErrorThrown);
+			}
+		}
+	}
+}
