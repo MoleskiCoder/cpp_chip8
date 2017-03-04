@@ -16,6 +16,11 @@ class Configuration;
 
 class Schip : public Chip8 {
 public:
+	enum {
+		HighFontOffset = 0x110,
+		HighFontSize = 10,
+	};
+
 	Schip() {}
 	Schip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
 	virtual ~Schip();
@@ -56,10 +61,6 @@ private:
 			m_r,
 			m_compatibility);
 	}
-
-	enum {
-		HighFontOffset = 0x110
-	};
 
 	std::array<uint8_t, 10 * 16> m_highFont = { {
 		0x7C, 0x82, 0x82, 0x82, 0x82, 0x82, 0x82, 0x82, 0x7C, 0x00, // 0

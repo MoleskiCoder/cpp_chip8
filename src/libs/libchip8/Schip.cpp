@@ -140,7 +140,7 @@ void Schip::LD_II_Vx(int x) {
 }
 
 void Schip::LD_HF_Vx(int x) {
-	m_i = HighFontOffset + (10 * m_v[x]);
+	m_i = HighFontOffset + (HighFontSize * m_v[x]);
 }
 
 void Schip::XDRW(int x, int y) {
