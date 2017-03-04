@@ -94,6 +94,8 @@
       <SDLCheck>true</SDLCheck>
       <EnablePREfast>false</EnablePREfast>
       <AdditionalIncludeDirectories>$(SolutionDir)modules\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -108,6 +110,8 @@
       <SDLCheck>true</SDLCheck>
       <EnablePREfast>false</EnablePREfast>
       <AdditionalIncludeDirectories>$(SolutionDir)modules\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,6 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <EnablePREfast>false</EnablePREfast>
       <AdditionalIncludeDirectories>$(SolutionDir)modules\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +147,7 @@
       <SDLCheck>true</SDLCheck>
       <EnablePREfast>false</EnablePREfast>
       <AdditionalIncludeDirectories>$(SolutionDir)modules\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
