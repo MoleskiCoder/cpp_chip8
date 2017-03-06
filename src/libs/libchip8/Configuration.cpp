@@ -7,7 +7,8 @@
 #include "ConfigurationReader.h"
 
 Configuration::Configuration()
-: m_type(chip8),
+: m_debugMode(false),
+  m_type(chip8),
   m_allowMisalignedOpcodes(false),
   m_vsyncLocked(true),
   m_framesPerSecond(60),

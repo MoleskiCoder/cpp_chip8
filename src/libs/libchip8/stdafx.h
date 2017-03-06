@@ -20,6 +20,8 @@
 #include <map>
 #include <unordered_set>
 
+#include <boost/format.hpp>
+
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 

@@ -2,6 +2,8 @@
 #pragma once
 #endif
 
+#include <iostream>
+
 #include <boost/program_options.hpp>
 
 #include <Controller.h>

@@ -18,10 +18,10 @@ all: opt
 opt: CXXFLAGS += -DNDEBUG -march=native -O2
 opt: $(LIB)
 
-debug: CXXFLAGS += -g -DDEBUG
+debug: CXXFLAGS += -g -D_DEBUG
 debug: $(LIB)
 
-coverage: CXXFLAGS += -g -DDEBUG -fprofile-arcs -ftest-coverage
+coverage: CXXFLAGS += -g -D_DEBUG -fprofile-arcs -ftest-coverage
 coverage: $(LIB)
 
 $(PCH): stdafx.h

@@ -4,6 +4,7 @@
 #include <Configuration.h>
 #include <Chip8.h>
 
+#include <iostream>
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
@@ -12,7 +13,14 @@ static po::variables_map processCommandLine(int argc, char* argv[]) {
 
 	po::options_description poOptionsDescription("Allowed options");
 
+#ifdef _DEBUG
+	const bool DefaultDebugMode = true;
+#else
+	const bool DefaultDebugMode = false;
+#endif
+
 	poOptionsDescription.add_options()
+		("debug",						po::value<bool>()->default_value(DefaultDebugMode),		"debug mode")
 		("processor-type",				po::value<std::string>()->default_value("schip"),		"Processor type.  Can be one of chip, schip or xochip")
 		("allow-misaligned-opcodes",	po::value<bool>(),										"Allow instuctions to be loaded from odd addresses")
 		("rom",							po::value<std::string>()->required(),					"ROM to use")
@@ -39,6 +47,10 @@ static po::variables_map processCommandLine(int argc, char* argv[]) {
 	return options;
 }
 
+void Processor_DisassemblyOutput(const DisassemblyEventArgs& event) {
+	std::cout << event.getOutput() << std::endl;
+}
+
 int main(int argc, char* argv[]) {
 
 	auto options = processCommandLine(argc, argv);
@@ -53,6 +65,8 @@ int main(int argc, char* argv[]) {
 	} else if (processorTypeOption == "xochip") {
 		configuration = Configuration::buildXoChipConfiguration();
 	}
+
+	configuration.setDebugMode(options["debug"].as<bool>());
 
 	auto allowMisalignedOpCodesOption = options["allow-misaligned-opcodes"];
 	if (!allowMisalignedOpCodesOption.empty()) {
@@ -84,6 +98,9 @@ int main(int argc, char* argv[]) {
 	// Because this option is required, we don't need to check whether it's there or not.
 	auto game = options["rom"].as<std::string>();
 	Controller controller(processor, game);
+
+	if (configuration.isDebugMode())
+		controller.DisassemblyOutput.connect(std::bind(&Processor_DisassemblyOutput, std::placeholders::_1));
 
 	try {
 		controller.loadContent();

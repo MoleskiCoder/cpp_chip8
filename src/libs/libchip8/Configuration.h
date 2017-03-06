@@ -19,6 +19,14 @@ class Configuration {
 public:
 	Configuration();
 
+	bool isDebugMode() const {
+		return m_debugMode;
+	}
+
+	void setDebugMode(bool value) {
+		m_debugMode = value;
+	}
+
 	ProcessorLevel getType() const {
 		return m_type;
 	}
@@ -135,6 +143,7 @@ private:
 
 	template<class Archive> void serialize(Archive& archive) {
 		archive(
+			m_debugMode,
 			m_type,
 			m_allowMisalignedOpcodes,
 			m_vsyncLocked,
@@ -149,6 +158,8 @@ private:
 			m_graphicsCountRowHits
 		);
 	}
+
+	bool m_debugMode;
 
 	ProcessorLevel m_type;
 	bool m_allowMisalignedOpcodes;

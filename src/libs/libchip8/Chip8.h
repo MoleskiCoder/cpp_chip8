@@ -11,6 +11,7 @@
 #include "Configuration.h"
 #include "Signal.h"
 #include "EventArgs.h"
+#include "InstructionEventArgs.h"
 
 class Chip8 {
 public:
@@ -26,8 +27,8 @@ public:
 	Signal<EventArgs> BeepStarting;
 	Signal<EventArgs> BeepStopped;
 
-	Signal<EventArgs> EmulatingCycle;
-	Signal<EventArgs> EmulatedCycle;
+	Signal<InstructionEventArgs> EmulatingCycle;
+	Signal<InstructionEventArgs> EmulatedCycle;
 
 	virtual void initialise();
 
@@ -145,6 +146,10 @@ public:
 		m_finished = value;
 	}
 
+	std::string getMnemomicFormat() const {
+		return m_mnemomicFormat;
+	}
+
 protected:
 	BitmappedGraphics m_display;
 	Memory m_memory;
@@ -156,14 +161,14 @@ protected:
 
 	bool m_finished;
 
+	std::string m_mnemomicFormat;
+
 	void onBeepStarting();
 	void onBeepStopped();
 
 	virtual void onEmulatingCycle(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y);
 	virtual void onEmulatedCycle(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y);
 
-	virtual void onEmulatingCycle();
-	virtual void onEmulatedCycle();
 	virtual void emulateCycle();
 
 	virtual void draw(int x, int y, int width, int height);
@@ -232,6 +237,7 @@ private:
 			m_i,
 			m_pc,
 			m_finished,
+			m_mnemomicFormat,
 			m_keyboard,
 			m_configuration,
 			m_stack,
