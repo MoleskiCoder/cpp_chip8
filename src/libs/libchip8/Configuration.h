@@ -133,6 +133,30 @@ public:
 		m_graphicsCountRowHits = value;
 	}
 
+	bool getChip8Shifts() const {
+		return m_chip8Shifts;
+	}
+
+	void setChip8Shifts(bool value) {
+		m_chip8Shifts = value;
+	}
+
+	bool getChip8LoadAndSave() const {
+		return m_chip8LoadAndSave;
+	}
+
+	void setChip8LoadAndSave(bool value) {
+		m_chip8LoadAndSave = value;
+	}
+
+	bool getChip8IndexedJumps() const {
+		return m_chip8IndexedJumps;
+	}
+
+	void setChip8IndexedJumps(bool value) {
+		m_chip8IndexedJumps = value;
+	}
+
 	void read(std::string path);
 
 	static Configuration buildSuperChipConfiguration();
@@ -155,7 +179,10 @@ private:
 			m_graphicPlanes,
 			m_graphicsClip,
 			m_graphicsCountExceededRows,
-			m_graphicsCountRowHits
+			m_graphicsCountRowHits,
+			m_chip8Shifts,
+			m_chip8LoadAndSave,
+			m_chip8IndexedJumps
 		);
 	}
 
@@ -173,6 +200,10 @@ private:
 	bool m_graphicsClip;
 	bool m_graphicsCountExceededRows;
 	bool m_graphicsCountRowHits;
+
+	bool m_chip8Shifts;
+	bool m_chip8LoadAndSave;
+	bool m_chip8IndexedJumps;
 
 	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, std::string path, ProcessorLevel defaultValue) const;
 	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, std::string path) const;

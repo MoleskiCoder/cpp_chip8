@@ -19,7 +19,10 @@ Configuration::Configuration()
   m_graphicPlanes(1),
   m_graphicsClip(true),
   m_graphicsCountExceededRows(false),
-  m_graphicsCountRowHits(false) {
+  m_graphicsCountRowHits(false),
+  m_chip8Shifts(false),
+  m_chip8LoadAndSave(false),
+  m_chip8IndexedJumps(false) {
 }
 
 Configuration Configuration::buildSuperChipConfiguration() {

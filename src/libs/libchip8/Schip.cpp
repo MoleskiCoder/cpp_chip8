@@ -11,6 +11,8 @@ Schip::~Schip() {
 void Schip::initialise() {
 	Chip8::initialise();
 	std::copy_n(m_highFont.cbegin(), m_highFont.size(), m_memory.getBusMutable().begin() + HighFontOffset);
+	if (getConfiguration().getChip8LoadAndSave())
+		m_compatibility = true;
 }
 
 void Schip::onHighResolution() {
@@ -98,18 +100,26 @@ bool Schip::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 
 // https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 // Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
-void Schip::SHR(int x, int) {
-	m_mnemomicFormat = "(S) SHR V%4$01X";
-	m_v[0xf] = m_v[x] & 0x1;
-	m_v[x] >>= 1;
+void Schip::SHR(int x, int y) {
+	if (getConfiguration().getChip8Shifts()) {
+		Chip8::SHR(x, y);
+	} else {
+		m_mnemomicFormat = "(S) SHR V%4$01X";
+		m_v[0xf] = m_v[x] & 0x1;
+		m_v[x] >>= 1;
+	}
 }
 
 // https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 // Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
-void Schip::SHL(int x, int) {
-	m_mnemomicFormat = "(S) SHL V%4$01X";
-	m_v[0xf] = (m_v[x] & 0x80) == 0 ? 0 : 1;
-	m_v[x] <<= 1;
+void Schip::SHL(int x, int y) {
+	if (getConfiguration().getChip8Shifts()) {
+		Chip8::SHL(x, y);
+	} else {
+		m_mnemomicFormat = "(S) SHL V%4$01X";
+		m_v[0xf] = (m_v[x] & 0x80) == 0 ? 0 : 1;
+		m_v[x] <<= 1;
+	}
 }
 
 // https://github.com/Chromatophore/HP48-Superchip#bnnn
@@ -118,8 +128,12 @@ void Schip::SHL(int x, int) {
 //  HP48 -SC: reads highest nibble of address to select
 //      register to apply to address (high nibble pulls double duty)
 void Schip::JP_V0(int x, int nnn) {
-	m_mnemomicFormat = "(S) JP V%4$01X,%1$03X";
-	m_pc = (uint16_t)(m_v[x] + nnn);
+	if (getConfiguration().getChip8IndexedJumps()) {
+		Chip8::JP_V0(x, nnn);
+	} else {
+		m_mnemomicFormat = "(S) JP V%4$01X,%1$03X";
+		m_pc = (uint16_t)(m_v[x] + nnn);
+	}
 }
 
 // https://github.com/Chromatophore/HP48-Superchip#fx55--fx65

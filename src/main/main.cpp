@@ -26,8 +26,11 @@ static po::variables_map processCommandLine(int argc, char* argv[]) {
 		("rom",							po::value<std::string>()->required(),					"ROM to use")
 		("graphics-count-row-hits",		po::value<bool>(),										"Graphics: count row hits")
 		("graphics-count-exceeded-rows",po::value<bool>(),										"Graphics: count exceeded rows")
-		("graphics-clip",				po::value<bool>(),										"Graphics: clip")
 		("cycles-per-frame",			po::value<int>(),										"cycles per frame")
+		("graphics-clip",				po::value<bool>()->default_value(true),					"Graphics: clip")
+		("chip8-shifts",				po::value<bool>()->default_value(false),				"use chip8 shifts (uses VY)")
+		("chip8-load-save",				po::value<bool>()->default_value(false),				"use chip8 load and save (modifies I)")
+		("chip8-indexed-jumps",			po::value<bool>()->default_value(false),				"use chip8 indexed jumps (uses V0)")
 	;
 
 	po::positional_options_description poPositionalOptions;
@@ -83,15 +86,16 @@ int main(int argc, char* argv[]) {
 		configuration.setGraphicsCountExceededRows(graphicsCountExceededRowsOption.as<bool>());
 	}
 
-	auto graphicsClipOption = options["graphics-clip"];
-	if (!graphicsClipOption.empty()) {
-		configuration.setGraphicsClip(graphicsClipOption.as<bool>());
-	}
-
 	auto cyclesPerFrameOption = options["cycles-per-frame"];
 	if (!cyclesPerFrameOption.empty()) {
 		configuration.setCyclesPerFrame(cyclesPerFrameOption.as<int>());
 	}
+
+	configuration.setGraphicsClip(options["graphics-clip"].as<bool>());
+
+	configuration.setChip8Shifts(options["chip8-shifts"].as<bool>());
+	configuration.setChip8LoadAndSave(options["chip8-load-save"].as<bool>());
+	configuration.setChip8IndexedJumps(options["chip8-indexed-jumps"].as<bool>());
 
 	std::shared_ptr<Chip8> processor(Controller::buildProcessor(configuration));
 
