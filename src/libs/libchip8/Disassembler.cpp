@@ -62,8 +62,9 @@ std::string Disassembler::disassemble(std::string mnemomicFormat, const Instruct
 	auto n = event.getN();
 	auto x = event.getX();
 	auto y = event.getY();
+	auto longAddress = memory.getWord(event.getProgramCounter() + 2);
 	m_formatter.parse(mnemomicFormat);
-	output << m_formatter % address % operand % n % x % y;
+	output << m_formatter % address % operand % n % x % y % longAddress;
 
 	return output.str();
 }
