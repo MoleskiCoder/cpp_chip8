@@ -422,7 +422,7 @@ void Chip8::SE_REG_IMM(int x, int nn) {
 }
 
 void Chip8::SNE_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "SNE V%4$01X,V%5$02X";
+	m_mnemomicFormat = "SNE V%4$01X,%2$02X";
 	if (m_v[x] != nn) {
 		m_pc += 2;
 	}
