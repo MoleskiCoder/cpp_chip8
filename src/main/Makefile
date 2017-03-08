@@ -3,7 +3,7 @@ EXE = chip8
 CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe
 LDFLAGS  = `sdl2-config --libs` -lboost_program_options -L../libs/libchip8 -lchip8
 
-INCLUDE = -I"/usr/include/SDL" -I../libs/libchip8
+INCLUDE = -I../libs/libchip8
 
 CXXFILES   = main.cpp
 CXXOBJECTS = $(CXXFILES:.cpp=.o)

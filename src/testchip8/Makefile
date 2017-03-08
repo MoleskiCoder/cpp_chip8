@@ -3,7 +3,7 @@ EXE = testchip8
 CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe
 LDFLAGS  = -L../libs/libchip8 -lchip8 `sdl2-config --libs` -lboost_program_options
 
-INCLUDE = -I"/usr/include/SDL" -I../libs/libchip8 -I../../modules/catch/single_include -I../../modules/cereal/include
+INCLUDE = -I../libs/libchip8 -I../../modules/catch/single_include -I../../modules/cereal/include
 
 CXXFILES   = testchip8.cpp chip8_tests.cpp schip_tests.cpp
 CXXOBJECTS = $(CXXFILES:.cpp=.o)
