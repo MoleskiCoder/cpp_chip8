@@ -159,12 +159,12 @@ void Schip::LD_II_Vx(int x) {
 }
 
 void Schip::LD_HF_Vx(int x) {
-	m_mnemomicFormat = "LD HF,V%4$01X";
+	m_mnemomicFormat = "(S) LD HF,V%4$01X";
 	m_i = HighFontOffset + (HighFontSize * m_v[x]);
 }
 
 void Schip::XDRW(int x, int y) {
-	m_mnemomicFormat = "XDRW V%4$01X,V%5$01X";
+	m_mnemomicFormat = "(S) XDRW V%4$01X,V%5$01X";
 	draw(x, y, 16, 16);
 }
 
@@ -173,7 +173,7 @@ void Schip::XDRW(int x, int y) {
 // with a successful exit status. [Super-Chip]
 // Code generated: 0x00FD.
 void Schip::EXIT() {
-	m_mnemomicFormat = "EXIT";
+	m_mnemomicFormat = "(S) EXIT";
 	m_finished = true;
 }
 
@@ -183,7 +183,7 @@ void Schip::EXIT() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00Cn
 void Schip::SCDOWN(int n) {
-	m_mnemomicFormat = "SCDOWN %3$01X";
+	m_mnemomicFormat = "(S) SCDOWN %3$01X";
 	m_display.scrollDown(n);
 }
 
@@ -193,7 +193,7 @@ void Schip::SCDOWN(int n) {
 // porting of Chip 8 games which rely on this behaviour.
 // Code generated: 0x00FA
 void Schip::COMPATIBILITY() {
-	m_mnemomicFormat = "COMPATIBILITY";
+	m_mnemomicFormat = "(S) COMPATIBILITY";
 	m_compatibility = true;
 }
 
@@ -203,7 +203,7 @@ void Schip::COMPATIBILITY() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00FB
 void Schip::SCRIGHT() {
-	m_mnemomicFormat = "SCRIGHT";
+	m_mnemomicFormat = "(S) SCRIGHT";
 	m_display.scrollRight();
 }
 
@@ -213,7 +213,7 @@ void Schip::SCRIGHT() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00FC
 void Schip::SCLEFT() {
-	m_mnemomicFormat = "SCLEFT";
+	m_mnemomicFormat = "(S) SCLEFT";
 	m_display.scrollLeft();
 }
 
@@ -221,7 +221,7 @@ void Schip::SCLEFT() {
 // Low resolution (64×32) graphics mode (this is the default). [Super-Chip]
 // Code generated: 0x00FE
 void Schip::LOW() {
-	m_mnemomicFormat = "LOW";
+	m_mnemomicFormat = "(S) LOW";
 	onLowResolution();
 }
 
@@ -229,7 +229,7 @@ void Schip::LOW() {
 // High resolution (128×64) graphics mode. [Super-Chip]
 // Code generated: 0x00FF
 void Schip::HIGH() {
-	m_mnemomicFormat = "HIGH";
+	m_mnemomicFormat = "(S) HIGH";
 	onHighResolution();
 }
 
@@ -238,7 +238,7 @@ void Schip::HIGH() {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX75
 void Schip::LD_R_Vx(int x) {
-	m_mnemomicFormat = "LD R,V%4$01X";
+	m_mnemomicFormat = "(S) LD R,V%4$01X";
 	std::copy_n(m_v.cbegin(), (x & 7) + 1, m_r.begin());
 }
 
@@ -247,6 +247,6 @@ void Schip::LD_R_Vx(int x) {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX85
 void Schip::LD_Vx_R(int x) {
-	m_mnemomicFormat = "LD V%4$01X,R";
+	m_mnemomicFormat = "(S) LD V%4$01X,R";
 	std::copy_n(m_r.cbegin(), (x & 7) + 1, m_v.begin());
 }

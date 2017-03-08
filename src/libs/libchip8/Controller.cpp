@@ -389,7 +389,13 @@ void Controller::Processor_EmulatingCycle(const InstructionEventArgs& cycleEvent
 }
 
 void Controller::Processor_EmulatedCycle(const InstructionEventArgs& cycleEvent) {
-	auto pre = m_processorState;
-	auto post = m_disassembler.disassemble(m_processor->getMnemomicFormat(), cycleEvent, m_processor->getMemory());
-	DisassemblyOutput.fire(DisassemblyEventArgs(pre + '\t' + post));
+	auto state = m_processorState;
+	auto raw = cycleEvent.getInstruction();
+	auto disassembly = m_disassembler.disassemble(m_processor->getMnemomicFormat(), cycleEvent, m_processor->getMemory());
+
+	std::ostringstream output;
+	boost::format formatter("%04X");
+	output << state << "\t" << formatter % raw << "\t" << disassembly;
+
+	DisassemblyOutput.fire(DisassemblyEventArgs(output.str()));
 }

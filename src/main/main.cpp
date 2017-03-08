@@ -51,7 +51,11 @@ static po::variables_map processCommandLine(int argc, char* argv[]) {
 }
 
 void Processor_DisassemblyOutput(const DisassemblyEventArgs& event) {
+#ifdef _DEBUG
+	::SDL_LogError(::SDL_LOG_CATEGORY_APPLICATION, "%s", event.getOutput().c_str());
+#else
 	std::cout << event.getOutput() << std::endl;
+#endif
 }
 
 int main(int argc, char* argv[]) {
