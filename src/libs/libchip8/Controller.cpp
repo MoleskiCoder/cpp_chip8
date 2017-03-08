@@ -236,6 +236,11 @@ void Controller::loadContent() {
 		schip->LowResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
 	}
 
+	if (m_processor->getConfiguration().isDebugMode()) {
+		m_processor->EmulatingCycle.connect(std::bind(&Controller::Processor_EmulatingCycle, this, std::placeholders::_1));
+		m_processor->EmulatedCycle.connect(std::bind(&Controller::Processor_EmulatedCycle, this, std::placeholders::_1));
+	}
+
 	m_gameController.initialise();
 
 	m_processor->loadGame(m_game);
@@ -377,4 +382,14 @@ void Controller::loadState() {
 	cereal::BinaryInputArchive archive(ifs);
 #endif
 	archive(*this);
+}
+
+void Controller::Processor_EmulatingCycle(const InstructionEventArgs& cycleEvent) {
+	m_processorState = m_disassembler.generateState(cycleEvent, m_processor.get());
+}
+
+void Controller::Processor_EmulatedCycle(const InstructionEventArgs& cycleEvent) {
+	auto pre = m_processorState;
+	auto post = m_disassembler.disassemble(m_processor->getMnemomicFormat(), cycleEvent, m_processor->getMemory());
+	DisassemblyOutput.fire(DisassemblyEventArgs(pre + '\t' + post));
 }

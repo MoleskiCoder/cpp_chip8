@@ -19,11 +19,11 @@ opt: CXXFLAGS += -DNDEBUG -march=native -O2
 opt: LDFLAGS += -s
 opt: $(EXE)
 
-debug: CXXFLAGS += -g -DDEBUG
+debug: CXXFLAGS += -g -D_DEBUG
 debug: LDFLAGS += -g
 debug: $(EXE)
 
-coverage: CXXFLAGS += -g -DDEBUG -fprofile-arcs -ftest-coverage
+coverage: CXXFLAGS += -g -D_DEBUG -fprofile-arcs -ftest-coverage
 coverage: LDFLAGS += -g -lgcov
 coverage: $(EXE)
 

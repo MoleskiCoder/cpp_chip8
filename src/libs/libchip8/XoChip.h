@@ -29,12 +29,10 @@ private:
 	template<class Archive> void serialize(Archive& archive) {
 		archive(
 			cereal::base_class<Schip>(this),
-			m_audoPatternBuffer,
-			m_nnnn);
+			m_audoPatternBuffer);
 	}
 
 	std::array<uint8_t, 16> m_audoPatternBuffer;
-	int m_nnnn;
 
 	void SCUP(int n);
 	void save_vx_to_vy(int x, int y);

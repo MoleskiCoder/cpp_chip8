@@ -9,6 +9,8 @@
 #include "Chip8.h"
 #include "AudioDevice.h"
 #include "GameController.h"
+#include "Disassembler.h"
+#include "DisassemblyEventArgs.h"
 
 class Configuration;
 
@@ -32,6 +34,8 @@ public:
 
 	Controller(std::shared_ptr<Chip8> processor, std::string game);
 	~Controller();
+
+	Signal<DisassemblyEventArgs> DisassemblyOutput;
 
 	virtual void runGameLoop();
 	virtual void loadContent();
@@ -92,6 +96,9 @@ private:
 	Uint32 m_frames;
 	bool m_vsync;
 
+	Disassembler m_disassembler;
+	std::string m_processorState;
+
 	void configureBackground() const;
 	void drawFrame();
 
@@ -116,4 +123,7 @@ private:
 
 	void saveState() const;
 	void loadState();
+
+	void Processor_EmulatingCycle(const InstructionEventArgs& addressEvent);
+	void Processor_EmulatedCycle(const InstructionEventArgs& cycleEvent);
 };

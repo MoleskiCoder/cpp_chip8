@@ -19,6 +19,7 @@ GraphicsPlane::GraphicsPlane(bool clip, bool countExceededRows)
 size_t GraphicsPlane::draw(const Memory& memory, int address, int drawX, int drawY, int width, int height) {
 
 	auto screenWidth = getWidth();
+	auto screenHeight = getHeight();
 
 	auto bytesPerRow = width / 8;
 
@@ -31,40 +32,44 @@ size_t GraphicsPlane::draw(const Memory& memory, int address, int drawX, int dra
 	std::vector<int> rowHits(height);
 
 	auto numberOfCells = m_graphics.size();
-	auto cellRowOffset = drawY * screenWidth;
 	auto skipX = !m_clip;
+	auto skipY = !m_clip;
 
 	for (int row = 0; row < height; ++row) {
-		auto spriteAddress = address + (row * bytesPerRow);
-		for (int column = 0; column < width; ++column) {
-			auto cellX = drawX + column;
-			auto clippedX = cellX % screenWidth;
-			auto skip = skipX && (clippedX != cellX);
-			if (!skip) {
-				size_t cell = cellRowOffset + clippedX;
-				if (cell < numberOfCells) {
-					int highColumn = column > 7;
-					auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));
-					auto spritePixel = (spritePixelByte & (0x80 >> (column & 0x7))) == 0 ? 0 : 1;
-					if (spritePixel) {
-						auto before = m_graphics[cell];
-						if (before)
-							++rowHits[row];
-						m_graphics[cell] ^= spritePixel;
+		auto cellY = drawY + row;
+		auto clippedY = cellY % screenHeight;
+		auto skippedY = skipY && (clippedY != cellY);
+		if (!skippedY) {
+			auto spriteAddress = address + (row * bytesPerRow);
+			for (int column = 0; column < width; ++column) {
+				auto cellX = drawX + column;
+				auto clippedX = cellX % screenWidth;
+				auto skippedX = skipX && (clippedX != cellX);
+				if (!skippedX) {
+					size_t cell = clippedY * screenWidth + clippedX;
+					if (cell < numberOfCells) {
+						int highColumn = column > 7;
+						auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));
+						auto spritePixel = (spritePixelByte & (0x80 >> (column & 0x7))) == 0 ? 0 : 1;
+						if (spritePixel) {
+							auto before = m_graphics[cell];
+							if (before)
+								++rowHits[row];
+							m_graphics[cell] ^= spritePixel;
+						}
 					}
-				}
-				else {
-					//// https://github.com/Chromatophore/HP48-Superchip#collision-with-the-bottom-of-the-screen
-					//// Sprites that are drawn such that they contain data that runs off of the bottom of the
-					//// screen will set Vf based on the number of lines that run off of the screen,
-					//// as if they are colliding.
-					if (m_countExceededRows) {
-						rowHits[row]++;
+					else {
+						//// https://github.com/Chromatophore/HP48-Superchip#collision-with-the-bottom-of-the-screen
+						//// Sprites that are drawn such that they contain data that runs off of the bottom of the
+						//// screen will set Vf based on the number of lines that run off of the screen,
+						//// as if they are colliding.
+						if (m_countExceededRows) {
+							rowHits[row]++;
+						}
 					}
 				}
 			}
 		}
-		cellRowOffset += screenWidth;
 	}
 	return std::count_if(rowHits.cbegin(), rowHits.cend(), [](int hits) { return hits > 0; });
 }

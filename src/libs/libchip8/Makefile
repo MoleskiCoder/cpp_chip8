@@ -4,7 +4,7 @@ CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe
 
 INCLUDE = -I"../../../modules/cereal/include"
 
-CXXFILES   = AudioDevice.cpp BitmappedGraphics.cpp Chip8.cpp ColourPalette.cpp Configuration.cpp ConfigurationReader.cpp Controller.cpp GameController.cpp GraphicsPlane.cpp KeyboardDevice.cpp Memory.cpp Schip.cpp XoChip.cpp
+CXXFILES   = AudioDevice.cpp BitmappedGraphics.cpp Chip8.cpp ColourPalette.cpp Configuration.cpp ConfigurationReader.cpp Controller.cpp Disassembler.cpp GameController.cpp GraphicsPlane.cpp KeyboardDevice.cpp Memory.cpp Schip.cpp XoChip.cpp
 
 CXXOBJECTS = $(CXXFILES:.cpp=.o)
 
@@ -18,10 +18,10 @@ all: opt
 opt: CXXFLAGS += -DNDEBUG -march=native -O2
 opt: $(LIB)
 
-debug: CXXFLAGS += -g -DDEBUG
+debug: CXXFLAGS += -g -D_DEBUG
 debug: $(LIB)
 
-coverage: CXXFLAGS += -g -DDEBUG -fprofile-arcs -ftest-coverage
+coverage: CXXFLAGS += -g -D_DEBUG -fprofile-arcs -ftest-coverage
 coverage: $(LIB)
 
 $(PCH): stdafx.h

@@ -7,7 +7,8 @@
 #include "ConfigurationReader.h"
 
 Configuration::Configuration()
-: m_type(chip8),
+: m_debugMode(false),
+  m_type(chip8),
   m_allowMisalignedOpcodes(false),
   m_vsyncLocked(true),
   m_framesPerSecond(60),
@@ -18,7 +19,10 @@ Configuration::Configuration()
   m_graphicPlanes(1),
   m_graphicsClip(true),
   m_graphicsCountExceededRows(false),
-  m_graphicsCountRowHits(false) {
+  m_graphicsCountRowHits(false),
+  m_chip8Shifts(false),
+  m_chip8LoadAndSave(false),
+  m_chip8IndexedJumps(false) {
 }
 
 Configuration Configuration::buildSuperChipConfiguration() {
