@@ -39,34 +39,35 @@ size_t GraphicsPlane::draw(const Memory& memory, int address, int drawX, int dra
 		auto cellY = drawY + row;
 		auto clippedY = cellY % screenHeight;
 		auto skippedY = skipY && (clippedY != cellY);
-		if (!skippedY) {
-			auto spriteAddress = address + (row * bytesPerRow);
-			for (int column = 0; column < width; ++column) {
-				auto cellX = drawX + column;
-				auto clippedX = cellX % screenWidth;
-				auto skippedX = skipX && (clippedX != cellX);
-				if (!skippedX) {
-					size_t cell = clippedY * screenWidth + clippedX;
-					if (cell < numberOfCells) {
-						int highColumn = column > 7;
-						auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));
-						auto spritePixel = (spritePixelByte & (0x80 >> (column & 0x7))) == 0 ? 0 : 1;
-						if (spritePixel) {
-							auto before = m_graphics[cell];
-							if (before)
-								++rowHits[row];
-							m_graphics[cell] ^= spritePixel;
-						}
-					}
-					else {
-						//// https://github.com/Chromatophore/HP48-Superchip#collision-with-the-bottom-of-the-screen
-						//// Sprites that are drawn such that they contain data that runs off of the bottom of the
-						//// screen will set Vf based on the number of lines that run off of the screen,
-						//// as if they are colliding.
-						if (m_countExceededRows) {
-							rowHits[row]++;
-						}
-					}
+		if (skippedY)
+			continue;
+
+		auto spriteAddress = address + (row * bytesPerRow);
+		for (int column = 0; column < width; ++column) {
+			auto cellX = drawX + column;
+			auto clippedX = cellX % screenWidth;
+			auto skippedX = skipX && (clippedX != cellX);
+			if (skippedX)
+				continue;
+
+			size_t cell = clippedY * screenWidth + clippedX;
+			if (cell < numberOfCells) {
+				int highColumn = column > 7;
+				auto spritePixelByte = memory.get(spriteAddress + (highColumn ? 1 : 0));
+				auto spritePixel = (spritePixelByte & (0x80 >> (column & 0x7))) == 0 ? 0 : 1;
+				if (spritePixel) {
+					auto before = m_graphics[cell];
+					if (before)
+						++rowHits[row];
+					m_graphics[cell] ^= spritePixel;
+				}
+			} else {
+				//// https://github.com/Chromatophore/HP48-Superchip#collision-with-the-bottom-of-the-screen
+				//// Sprites that are drawn such that they contain data that runs off of the bottom of the
+				//// screen will set Vf based on the number of lines that run off of the screen,
+				//// as if they are colliding.
+				if (m_countExceededRows) {
+					rowHits[row]++;
 				}
 			}
 		}
@@ -103,15 +104,15 @@ void GraphicsPlane::clearColumn(int column) {
 
 void GraphicsPlane::copyRow(int source, int destination) {
 	auto width = getWidth();
-	auto iterator = m_graphics.begin();
-	std::copy_n(iterator + source * width, width, iterator + destination * width);
+	std::copy_n(m_graphics.cbegin() + source * width, width, m_graphics.begin() + destination * width);
 }
 
 void GraphicsPlane::copyColumn(int source, int destination) {
 	auto width = getWidth();
 	auto height = getHeight();
 	for (int y = 0; y < height; ++y) {
-		m_graphics[destination + (y * width)] = m_graphics[source + (y * width)];
+		auto rowOffset = y * width;
+		m_graphics[destination + rowOffset] = m_graphics[source + rowOffset];
 	}
 }
 
@@ -123,7 +124,7 @@ void GraphicsPlane::scrollDown(int count) {
 		copyRow(y, y + count);
 	}
 
-	// Remove the top columns, blanked by the scroll effect
+	// Remove the topmost rows, blanked by the scroll effect
 	for (int y = 0; y < count; ++y) {
 		clearRow(y);
 	}
@@ -144,35 +145,39 @@ void GraphicsPlane::scrollUp(int count) {
 }
 
 void GraphicsPlane::scrollLeft() {
+	scrollLeft(4);
+}
+
+void GraphicsPlane::scrollLeft(int count) {
+
 	auto screenWidth = getWidth();
 
-	// Scroll distance
-	auto n = 4;
-
 	// Copy columns from left to right
-	for (int x = 0; x < (screenWidth - n); ++x) {
-		copyColumn(x + n, x);
+	for (int x = 0; x < (screenWidth - count); ++x) {
+		copyColumn(x + count, x);
 	}
 
 	// Remove the rightmost columns, blanked by the scroll effect
-	for (int x = 0; x < n; ++x) {
+	for (int x = 0; x < count; ++x) {
 		clearColumn(screenWidth - x - 1);
 	}
 }
 
 void GraphicsPlane::scrollRight() {
+	scrollRight(4);
+}
+
+void GraphicsPlane::scrollRight(int count) {
+
 	auto screenWidth = getWidth();
 
-	// Scroll distance
-	auto n = 4;
-
-	// Copy colummns from right to left
-	for (int x = screenWidth - n - 1; x >= 0; --x) {
-		copyColumn(x, x + n);
+	// Copy columns from right to left
+	for (int x = screenWidth - count - 1; x >= 0; --x) {
+		copyColumn(x, x + count);
 	}
 
 	// Remove the leftmost columns, blanked by the scroll effect
-	for (int x = 0; x < n; ++x) {
+	for (int x = 0; x < count; ++x) {
 		clearColumn(x);
 	}
 }

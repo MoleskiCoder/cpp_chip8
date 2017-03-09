@@ -77,4 +77,7 @@ private:
 	void clearColumn(int column);
 	void copyRow(int source, int destination);
 	void copyColumn(int source, int destination);
+
+	void scrollLeft(int count);
+	void scrollRight(int count);
 };
