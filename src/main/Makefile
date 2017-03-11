@@ -1,9 +1,7 @@
 EXE = chip8
 
-CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe
+CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe -I../libs/libchip8
 LDFLAGS  = `sdl2-config --libs` -lboost_program_options -L../libs/libchip8 -lchip8
-
-INCLUDE = -I../libs/libchip8
 
 CXXFILES   = main.cpp
 CXXOBJECTS = $(CXXFILES:.cpp=.o)
@@ -28,13 +26,13 @@ coverage: LDFLAGS += -g -lgcov
 coverage: $(EXE)
 
 $(PCH): stdafx.h
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -x c++-header $<
+	$(CXX) $(CXXFLAGS) -x c++-header $<
 
 $(EXE): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $(EXE) $(LDFLAGS)
 
 %.o: %.cpp $(PCH)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -c -o $@
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 .PHONY: clean
 clean:

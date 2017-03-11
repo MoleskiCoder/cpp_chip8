@@ -1,9 +1,7 @@
 EXE = testchip8
 
-CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe
+CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe -I../libs/libchip8 -I../../modules/catch/single_include -I../../modules/cereal/include
 LDFLAGS  = -L../libs/libchip8 -lchip8 `sdl2-config --libs` -lboost_program_options
-
-INCLUDE = -I../libs/libchip8 -I../../modules/catch/single_include -I../../modules/cereal/include
 
 CXXFILES   = testchip8.cpp chip8_tests.cpp schip_tests.cpp
 CXXOBJECTS = $(CXXFILES:.cpp=.o)
@@ -28,13 +26,13 @@ coverage: LDFLAGS += -g -lgcov
 coverage: $(EXE)
 
 $(PCH): stdafx.h
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -x c++-header $<
+	$(CXX) $(CXXFLAGS) -x c++-header $<
 
 $(EXE): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $(EXE) $(LDFLAGS)
 
 %.o: %.cpp $(PCH)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $< -c -o $@
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 .PHONY: clean
 clean:
