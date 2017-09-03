@@ -1,10 +1,9 @@
 language: cpp
-sudo: required
 compiler:
 - gcc
 os:
 - linux
-dist: xenial
+dist: trusty
 script: make -j 4 all && make test
 
 env:
@@ -19,9 +18,8 @@ before_install:
 addons:
   apt:
     packages:
-    - build-essential
-    - libsdl2-dev
-    - libboost-program-options-dev
+      - libsdl2-dev
+      - libboost-program-options-dev
   coverity_scan:
     project:
       name: "MoleskiCoder/cpp_chip8"
