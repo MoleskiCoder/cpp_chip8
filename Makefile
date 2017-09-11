@@ -15,6 +15,7 @@ coverage:
 	$(MAKE) -C src/libs/libchip8 coverage
 	$(MAKE) -C src/main coverage
 	$(MAKE) -C src/testchip8 coverage
+	src/testchip8/testchip8
 
 .PHONY: test
 test:

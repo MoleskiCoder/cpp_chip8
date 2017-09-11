@@ -4,7 +4,7 @@ compiler:
 os:
 - linux
 dist: trusty
-script: make -j 4 all && make test
+script: make -j 4 all && make coverage
 
 env:
   global:
@@ -13,7 +13,11 @@ env:
    - secure: "QNUA+Sc8SkUTfP3iareQkr1iaLb192xjn6pUBZyVs0M4BdO5/VkCzuL9w9lcI64893vx0gT+Rn3yzwI+VHCz7WJxVqTs7WpVb1BIuIxLKu3HwvXwRfpG4n5wic2iyxXtvzVM8q3UMrcMoV5+s22iWKVUQ3RPEFqX4QyD7EP+BzncJJBrttlw1Vm61HwYEKuSrtQlUUXnvmaq40CSoh5wXOnejCTWK9ANtIWxfa6nOPbU5Ty9ZgBEGqcRDL/tZVPS6SbKMGRpmh3PoQ8oOpteuSOb/59QWhGQ2umjlm3E1aRXX4WPgvUym0cV6EU4HFuKQlg7fKPnG6g1mJ25K2BFeGsFwDaxlpTBYpe5kxubFmQ37neSR/5JRreGa9SJbwzzcFqNWiLy3r/ny+yJ28N8OxeEwoIB8hvxG/lNW7YmL4GH4y4NQzLlBuVxKkINGTyk+L9/R4sBpdiNZw+agEs3mjb1St6AKLYM6T0jMCGjF4kXq+LzXZPF4ru3PeHy0wtwYWCYr2Qbzl3mIOxouB5XejzeGszL8igk+5aBjG30Kplu0oEdMdOWIBI32i+NrmIMm9dZwefVvWlLXBC6L3EiiHhgY+K23LALX2mOf5eFKS7M41KQeknZYbWLjWTL8iYgKtbcvrYs79k/a1uCTUqrD7sBsD2MSmi6HZc9IprgJF8="
 
 before_install:
+  - pip install -user cpp-coveralls
   - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+after_success:
+  - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
 
 addons:
   apt:
