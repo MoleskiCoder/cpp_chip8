@@ -205,6 +205,6 @@ private:
 	bool m_chip8LoadAndSave;
 	bool m_chip8IndexedJumps;
 
-	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, std::string path, ProcessorLevel defaultValue) const;
-	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, std::string path) const;
+	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, const std::string& path, ProcessorLevel defaultValue) const;
+	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, const std::string& path) const;
 };

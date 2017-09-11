@@ -62,7 +62,7 @@ void Configuration::read(std::string path) {
 	m_graphicsCountRowHits = reader.GetBooleanValue("Graphics.CountRowHits", m_graphicsCountRowHits);
 }
 
-ProcessorLevel Configuration::GetProcessorTypeValue(const ConfigurationReader& reader, std::string path, ProcessorLevel defaultValue) const {
+ProcessorLevel Configuration::GetProcessorTypeValue(const ConfigurationReader& reader, const std::string& path, ProcessorLevel defaultValue) const {
 	
 	auto value = reader.GetStringValue(path);
 	if (value.empty())
@@ -77,6 +77,6 @@ ProcessorLevel Configuration::GetProcessorTypeValue(const ConfigurationReader& r
 	return ProcessorLevel::xoChip;
 }
 
-ProcessorLevel Configuration::GetProcessorTypeValue(const ConfigurationReader& reader, std::string path) const {
+ProcessorLevel Configuration::GetProcessorTypeValue(const ConfigurationReader& reader, const std::string& path) const {
 	return GetProcessorTypeValue(reader, path, ProcessorLevel::superChip);
 }
