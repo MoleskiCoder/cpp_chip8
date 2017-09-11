@@ -33,7 +33,7 @@ AudioDevice::~AudioDevice() {
 // http://rerwarwar.weebly.com/sdl2-audio-sine1.html
 void AudioDevice::sinWave_StreamProvider(void *userdata, Uint8 *stream, int len) {
 
-	auto audioDevice = (AudioDevice*)userdata;
+	auto audioDevice = static_cast<AudioDevice*>(userdata);
 	 
 	len /= 2; // 16 bit
 	auto buffer = (Sint16*)stream;

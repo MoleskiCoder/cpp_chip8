@@ -19,7 +19,7 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/types/unordered_set.hpp>
 
-Controller::Controller(std::shared_ptr<Chip8> processor, std::string game)
+Controller::Controller(std::shared_ptr<Chip8> processor, const std::string& game)
 : m_processor(processor),
   m_game(game),
   m_colours(m_processor->getDisplay().getNumberOfColours()),
