@@ -1,17 +1,18 @@
 #pragma once
 
 #include <string>
+
 #include <boost/format.hpp>
 
-class InstructionEventArgs;
-class Memory;
-class Chip8;
+#include "Chip8.h"
+#include "InstructionEventArgs.h"
+#include "Memory.h"
 
 class Disassembler {
 public:
 	Disassembler();
 
-	std::string disassemble(std::string mnemomicFormat, const InstructionEventArgs& event, const Memory& memory) const;
+	std::string disassemble(const std::string& mnemomicFormat, const InstructionEventArgs& event, const Memory& memory) const;
 	std::string generateState(const InstructionEventArgs& event, Chip8* processor) const;
 
 private:

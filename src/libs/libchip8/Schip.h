@@ -5,14 +5,13 @@
 
 #include <cereal/types/polymorphic.hpp>
 
+#include "BitmappedGraphics.h"
 #include "Chip8.h"
-#include "Signal.h"
+#include "Configuration.h"
 #include "EventArgs.h"
-
-class Memory;
-class KeyboardDevice;
-class BitmappedGraphics;
-class Configuration;
+#include "KeyboardDevice.h"
+#include "Memory.h"
+#include "Signal.h"
 
 class Schip : public Chip8 {
 public:
@@ -21,9 +20,9 @@ public:
 		HighFontSize = 10,
 	};
 
-	Schip() {}
+	Schip() = default;
 	Schip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
-	virtual ~Schip();
+	virtual ~Schip() = default;
 
 	Signal<EventArgs> HighResolutionConfigured;
 	Signal<EventArgs> LowResolutionConfigured;

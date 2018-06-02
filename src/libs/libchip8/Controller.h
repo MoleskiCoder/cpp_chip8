@@ -1,18 +1,22 @@
 #pragma once
 
-#include <string>
 #include <array>
-#include <vector>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "ColourPalette.h"
-#include "Chip8.h"
+#include <SDL.h>
+
 #include "AudioDevice.h"
-#include "GameController.h"
+#include "Chip8.h"
+#include "ColourPalette.h"
+#include "Configuration.h"
 #include "Disassembler.h"
 #include "DisassemblyEventArgs.h"
-
-class Configuration;
+#include "InstructionEventArgs.h"
+#include "GameController.h"
+#include "Signal.h"
 
 class Controller {
 public:
@@ -80,21 +84,21 @@ private:
 
 	GameController m_gameController;
 
-	SDL_Window* m_window;
-	SDL_Renderer* m_renderer;
+	SDL_Window* m_window = nullptr;
+	SDL_Renderer* m_renderer = nullptr;
 
-	SDL_Texture* m_bitmapTexture;
-	Uint32 m_pixelType;
-	SDL_PixelFormat* m_pixelFormat;
+	SDL_Texture* m_bitmapTexture = nullptr;
+	Uint32 m_pixelType = SDL_PIXELFORMAT_ARGB8888;
+	SDL_PixelFormat* m_pixelFormat = nullptr;
 
 	std::vector<uint32_t> m_pixels;
 
 	AudioDevice m_audio;
 
 	int m_fps;
-	Uint32 m_startTicks;
-	Uint32 m_frames;
-	bool m_vsync;
+	Uint32 m_startTicks = 0;
+	Uint32 m_frames = 0;
+	bool m_vsync = false;
 
 	Disassembler m_disassembler;
 	std::string m_processorState;

@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include "ConfigurationReader.h"
+
 namespace cereal {
 	class access;
 }
@@ -13,11 +15,9 @@ enum ProcessorLevel {
 	xoChip
 };
 
-class ConfigurationReader;
-
 class Configuration {
 public:
-	Configuration();
+	Configuration() = default;
 
 	bool isDebugMode() const {
 		return m_debugMode;
@@ -186,24 +186,24 @@ private:
 		);
 	}
 
-	bool m_debugMode;
+	bool m_debugMode = false;
 
-	ProcessorLevel m_type;
-	bool m_allowMisalignedOpcodes;
-	bool m_vsyncLocked;
-	int m_framesPerSecond;
-	int m_cyclesPerFrame;
-	uint16_t m_startAddress;
-	uint16_t m_loadAddress;
-	int m_memorySize;
-	int m_graphicPlanes;
-	bool m_graphicsClip;
-	bool m_graphicsCountExceededRows;
-	bool m_graphicsCountRowHits;
+	ProcessorLevel m_type = chip8;
+	bool m_allowMisalignedOpcodes = false;
+	bool m_vsyncLocked = true;
+	int m_framesPerSecond = 60;
+	int m_cyclesPerFrame = 13;
+	uint16_t m_startAddress = 0x200;
+	uint16_t m_loadAddress = 0x200;
+	int m_memorySize = 4096;
+	int m_graphicPlanes = 1;
+	bool m_graphicsClip = true;
+	bool m_graphicsCountExceededRows = false;
+	bool m_graphicsCountRowHits = false;
 
-	bool m_chip8Shifts;
-	bool m_chip8LoadAndSave;
-	bool m_chip8IndexedJumps;
+	bool m_chip8Shifts = false;
+	bool m_chip8LoadAndSave = false;
+	bool m_chip8IndexedJumps = false;
 
 	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, const std::string& path, ProcessorLevel defaultValue) const;
 	ProcessorLevel GetProcessorTypeValue(const ConfigurationReader& reader, const std::string& path) const;

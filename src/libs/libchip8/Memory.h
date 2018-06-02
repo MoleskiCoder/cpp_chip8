@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace cereal {
 	class access;
@@ -23,7 +23,7 @@ public:
 	void setWord(int address, uint16_t value);
 
 	void clear();
-	void loadRom(std::string path, uint16_t offset);
+	void loadRom(const std::string& path, uint16_t offset);
 
 private:
 	friend class cereal::access;

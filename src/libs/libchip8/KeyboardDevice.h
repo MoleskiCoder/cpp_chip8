@@ -2,6 +2,7 @@
 
 #include <array>
 #include <unordered_set>
+
 #include <SDL.h>
 
 namespace cereal {

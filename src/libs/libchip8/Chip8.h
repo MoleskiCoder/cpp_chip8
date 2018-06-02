@@ -2,16 +2,16 @@
 
 #include <array>
 #include <cstdint>
-#include <string>
 #include <random>
+#include <string>
 
-#include "Memory.h"
 #include "BitmappedGraphics.h"
-#include "KeyboardDevice.h"
 #include "Configuration.h"
-#include "Signal.h"
 #include "EventArgs.h"
 #include "InstructionEventArgs.h"
+#include "KeyboardDevice.h"
+#include "Memory.h"
+#include "Signal.h"
 
 class Chip8 {
 public:
@@ -22,7 +22,7 @@ public:
 
 	Chip8();
 	Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
-	virtual ~Chip8();
+	virtual ~Chip8() = default;
 
 	Signal<EventArgs> BeepStarting;
 	Signal<EventArgs> BeepStopped;
@@ -32,7 +32,7 @@ public:
 
 	virtual void initialise();
 
-	void loadGame(std::string game);
+	void loadGame(const std::string& game);
 
 	void step();
 
@@ -146,7 +146,7 @@ public:
 		m_finished = value;
 	}
 
-	std::string getMnemomicFormat() const {
+	const std::string& getMnemomicFormat() const {
 		return m_mnemomicFormat;
 	}
 
@@ -156,10 +156,10 @@ protected:
 
 	std::array<uint8_t, 16> m_v;
 
-	uint16_t m_i;
-	uint16_t m_pc;
+	uint16_t m_i = 0;
+	uint16_t m_pc = 0;
 
-	bool m_finished;
+	bool m_finished = false;
 
 	std::string m_mnemomicFormat;
 
@@ -274,16 +274,16 @@ private:
 
 	std::array<uint16_t, 16> m_stack;
 
-	uint8_t m_delayTimer;
-	uint8_t m_soundTimer;
-	uint16_t m_sp;
+	uint8_t m_delayTimer = 0;
+	uint8_t m_soundTimer = 0;
+	uint16_t m_sp = 0;
 
-	uint16_t m_opcode;
+	uint16_t m_opcode = 0;
 
-	bool m_soundPlaying;
+	bool m_soundPlaying = false;
 
-	bool m_waitingForKeyPress;
-	int m_waitingForKeyPressRegister;
+	bool m_waitingForKeyPress = false;
+	int m_waitingForKeyPressRegister = -1;
 
 	std::mt19937 m_randomNumberGenerator;
 	std::uniform_int_distribution<std::mt19937::result_type> m_eightBitDistribution;

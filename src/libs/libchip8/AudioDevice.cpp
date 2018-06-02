@@ -4,13 +4,7 @@
 
 #include <cmath>
 
-AudioDevice::AudioDevice()
-: m_device(0),
-  m_deviceValid(false),
-  m_sinewave_position(0),
-  m_sinewave_length(0),
-  m_sinewave_frequency(0.0),
-  m_sinewave_volume(0.0) {
+AudioDevice::AudioDevice() {
 
 	SDL_zero(m_have);
 	SDL_zero(m_want);

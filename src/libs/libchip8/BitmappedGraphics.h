@@ -3,8 +3,7 @@
 #include <vector>
 
 #include "GraphicsPlane.h"
-
-class Memory;
+#include "Memory.h"
 
 namespace cereal {
 	class access;
@@ -16,7 +15,7 @@ public:
 		DefaultPlane = 0x1,
 	};
 
-	BitmappedGraphics();
+	BitmappedGraphics() = default;
 	BitmappedGraphics(int numberOfPlanes, bool clip, bool countExceededRows, bool countRowHits);
 
 	int getNumberOfPlanes() const {
@@ -98,12 +97,12 @@ private:
 			m_dirty);
 	}
 
-	int m_numberOfPlanes;
+	int m_numberOfPlanes = 1;
 	std::vector<GraphicsPlane> m_planes;
-	int m_planeMask;
-	bool m_highResolution;
-	bool m_countRowHits;
-	bool m_dirty;
+	int m_planeMask = 1;
+	bool m_highResolution = false;
+	bool m_countRowHits = false;
+	bool m_dirty = false;
 
 	bool isPlaneSelected(int plane) const;
 

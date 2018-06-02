@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
-struct SDL_PixelFormat;
+#include <SDL.h>
 
 class ColourPalette {
 public:

@@ -2,23 +2,21 @@
 #pragma once
 #endif
 
-#include <string>
-#include <cstdint>
-#include <random>
-#include <memory>
-#include <functional>
-#include <cmath>
-#include <limits>
-#include <stdexcept>
 #include <algorithm>
-
-#include <iostream>
-#include <fstream>
-
 #include <array>
-#include <vector>
+#include <cmath>
+#include <cstdint>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <limits>
 #include <map>
+#include <memory>
+#include <random>
+#include <stdexcept>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
 #include <boost/format.hpp>
 

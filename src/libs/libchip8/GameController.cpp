@@ -3,11 +3,7 @@
 #include "Controller.h"
 
 GameController::GameController(KeyboardDevice& keyboard)
-: m_keyboard(keyboard),
-  m_gameController(nullptr),
-  m_hapticController(nullptr),
-  m_hapticRumbleSupported(false) {
-}
+: m_keyboard(keyboard) {}
 
 GameController::~GameController() {
 	close();

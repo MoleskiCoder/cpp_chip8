@@ -24,15 +24,7 @@ Controller::Controller(std::shared_ptr<Chip8> processor, const std::string& game
   m_game(game),
   m_colours(m_processor->getDisplay().getNumberOfColours()),
   m_gameController(m_processor->getKeyboardMutable()),
-  m_window(nullptr),
-  m_renderer(nullptr),
-  m_bitmapTexture(nullptr),
-  m_pixelType(SDL_PIXELFORMAT_ARGB8888),
-  m_pixelFormat(nullptr),
-  m_fps(m_processor->getConfiguration().getFramesPerSecond()),
-  m_startTicks(0),
-  m_frames(0),
-  m_vsync(false) {
+  m_fps(m_processor->getConfiguration().getFramesPerSecond()) {
 }
 
 Controller::~Controller() {

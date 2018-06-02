@@ -4,17 +4,9 @@
 
 #include <algorithm>
 
-GraphicsPlane::GraphicsPlane()
-: m_highResolution(false),
-  m_clip(false),
-  m_countExceededRows(false) {
-}
-
 GraphicsPlane::GraphicsPlane(bool clip, bool countExceededRows)
-: m_highResolution(false),
-  m_clip(clip),
-  m_countExceededRows(countExceededRows)
-{}
+: m_clip(clip),
+  m_countExceededRows(countExceededRows) {}
 
 size_t GraphicsPlane::draw(const Memory& memory, int address, int drawX, int drawY, int width, int height) {
 

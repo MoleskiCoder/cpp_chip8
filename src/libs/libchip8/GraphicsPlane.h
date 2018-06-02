@@ -2,7 +2,7 @@
 
 #include <vector>
 
-class Memory;
+#include "Memory.h"
 
 namespace cereal {
 	class access;
@@ -18,7 +18,7 @@ public:
 		ScreenHeightHigh = 64
 	};
 
-	GraphicsPlane();
+	GraphicsPlane() = default;
 	GraphicsPlane(bool clip, bool countExceededRows);
 
 	const std::vector<int>& getGraphics() const {
@@ -55,9 +55,9 @@ private:
 	}
 
 	std::vector<int> m_graphics;
-	bool m_highResolution;
-	bool m_clip;
-	bool m_countExceededRows;
+	bool m_highResolution = false;
+	bool m_clip = false;
+	bool m_countExceededRows = false;
 
 	void allocateMemory();
 

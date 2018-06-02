@@ -6,38 +6,15 @@
 #include "Configuration.h"
 
 Chip8::Chip8()
-: m_i(0),
-  m_pc(0),
-  m_finished(false),
-  m_delayTimer(0),
-  m_soundTimer(0),
-  m_sp(0),
-  m_opcode(0),
-  m_soundPlaying(false),
-  m_waitingForKeyPress(false),
-  m_waitingForKeyPressRegister(-1),
-  m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
+: m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
 }
 
 Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration)
 : m_display(display),
   m_memory(memory),
-  m_i(0),
-  m_pc(0),
-  m_finished(false),
   m_keyboard(keyboard),
   m_configuration(configuration),
-  m_delayTimer(0),
-  m_soundTimer(0),
-  m_sp(0),
-  m_opcode(0),
-  m_soundPlaying(false),
-  m_waitingForKeyPress(false),
-  m_waitingForKeyPressRegister(-1),
   m_eightBitDistribution(0, std::numeric_limits<uint8_t>::max()) {
-}
-
-Chip8::~Chip8() {
 }
 
 void Chip8::initialise() {
@@ -70,7 +47,7 @@ void Chip8::initialise() {
 	m_randomNumberGenerator.seed(std::random_device()());
 }
 
-void Chip8::loadGame(std::string game) {
+void Chip8::loadGame(const std::string& game) {
 	m_memory.loadRom(game, m_configuration.getLoadAddress());
 }
 

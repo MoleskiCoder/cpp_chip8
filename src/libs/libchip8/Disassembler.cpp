@@ -52,7 +52,7 @@ std::string Disassembler::generateState(const InstructionEventArgs& event, Chip8
 	return output.str();
 }
 
-std::string Disassembler::disassemble(std::string mnemomicFormat, const InstructionEventArgs& event, const Memory& memory) const {
+std::string Disassembler::disassemble(const std::string& mnemomicFormat, const InstructionEventArgs& event, const Memory& memory) const {
 	if (mnemomicFormat.empty())
 		throw std::runtime_error("No disassembly format defined.");
 

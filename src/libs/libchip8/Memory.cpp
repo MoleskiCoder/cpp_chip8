@@ -40,7 +40,7 @@ void Memory::clear() {
 	std::fill(m_bus.begin(), m_bus.end(), 0);
 }
 
-void Memory::loadRom(std::string path, uint16_t offset) {
+void Memory::loadRom(const std::string& path, uint16_t offset) {
 
 	std::ifstream file;
 	file.exceptions(std::ios::failbit | std::ios::badbit);

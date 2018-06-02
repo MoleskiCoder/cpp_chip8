@@ -4,7 +4,7 @@
 
 class DisassemblyEventArgs {
 public:
-	DisassemblyEventArgs(std::string output)
+	DisassemblyEventArgs(const std::string& output)
 	: m_output(output) {}
 
 	std::string getOutput() const {

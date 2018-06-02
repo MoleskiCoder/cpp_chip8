@@ -5,9 +5,6 @@ Schip::Schip(const Memory& memory, const KeyboardDevice& keyboard, const Bitmapp
 : Chip8(memory, keyboard, display, configuration) {
 }
 
-Schip::~Schip() {
-}
-
 void Schip::initialise() {
 	Chip8::initialise();
 	std::copy_n(m_highFont.cbegin(), m_highFont.size(), m_memory.getBusMutable().begin() + HighFontOffset);

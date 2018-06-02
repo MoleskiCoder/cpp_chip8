@@ -5,18 +5,17 @@
 
 #include <cereal/types/polymorphic.hpp>
 
+#include "BitmappedGraphics.h"
+#include "Configuration.h"
+#include "KeyboardDevice.h"
+#include "Memory.h"
 #include "Schip.h"
-
-class Memory;
-class KeyboardDevice;
-class BitmappedGraphics;
-class Configuration;
 
 class XoChip : public Schip {
 public:
 	XoChip();
 	XoChip(const Memory& memory, const KeyboardDevice& keyboard, const BitmappedGraphics& display, const Configuration& configuration);
-	virtual ~XoChip();
+	virtual ~XoChip() = default;
 
 protected:
 	bool emulateInstructions_0(int nnn, int nn, int n, int x, int y);
