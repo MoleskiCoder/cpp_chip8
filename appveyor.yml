@@ -1,4 +1,5 @@
 version: 1.0.{build}
+image: Visual Studio 2017
 before_build:
 - cmd: >-
     nuget restore
@@ -6,4 +7,5 @@ before_build:
     git submodule update --init --recursive
 build:
   project: cpp_chip8.sln
+  parallel: true
   verbosity: minimal
