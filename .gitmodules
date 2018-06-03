@@ -1,6 +1,0 @@
-[submodule "modules/cereal"]
-	path = modules/cereal
-	url = https://github.com/USCiLab/cereal.git
-[submodule "modules/catch"]
-	path = modules/catch
-	url = https://github.com/philsquared/Catch.git
