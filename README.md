@@ -25,7 +25,7 @@ The game loop is strongly related to the way MonoGame/XNA works.
 
 ### Windows
 
-Compile with Visual Studio 2015 (via the solution)
+Compile with Visual Studio 2017 (via the solution)
 
 ## Running
 
