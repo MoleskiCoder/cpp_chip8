@@ -1,6 +1,6 @@
 EXE = testchip8
 
-CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe -I../libs/libchip8 -I../../modules/catch/single_include -I../../modules/cereal/include
+CXXFLAGS = -Wall `sdl2-config --cflags` -std=c++11 -pipe -I../libs/libchip8 -I../../modules/catch2/single_include -I../../modules/cereal/include
 LDFLAGS  = -L../libs/libchip8 -lchip8 `sdl2-config --libs` -lboost_program_options
 
 CXXFILES   = testchip8.cpp chip8_tests.cpp schip_tests.cpp
