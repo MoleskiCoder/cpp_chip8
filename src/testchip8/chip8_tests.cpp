@@ -505,7 +505,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 
 			auto& memory = processor->getMemoryMutable();
 
-			auto sprite = 0x400;
+			const uint16_t sprite = 0x400U;
 			memory.set(sprite, 0b10101010);
 			memory.set(sprite + 1, 0b01010101);
 			memory.set(sprite + 2, 0b10101010);
@@ -543,7 +543,7 @@ SCENARIO("The Chip-8 interpreter can execute all valid Chip-8 instructions", "[C
 
 			auto& memory = processor->getMemoryMutable();
 
-			auto sprite = 0x400;
+			const uint16_t sprite = 0x400U;
 			memory.set(sprite, 0b10101010);
 			memory.set(sprite + 1, 0b01010101);
 			memory.set(sprite + 2, 0b10101010);

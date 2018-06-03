@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include "ConfigurationReader.h"
+class ConfigurationReader;
 
 namespace cereal {
 	class access;
@@ -15,7 +15,7 @@ enum ProcessorLevel {
 	xoChip
 };
 
-class Configuration {
+class Configuration final {
 public:
 	Configuration() = default;
 

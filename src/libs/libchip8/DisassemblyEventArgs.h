@@ -2,7 +2,7 @@
 
 #include <string>
 
-class DisassemblyEventArgs {
+class DisassemblyEventArgs final {
 public:
 	DisassemblyEventArgs(const std::string& output)
 	: m_output(output) {}

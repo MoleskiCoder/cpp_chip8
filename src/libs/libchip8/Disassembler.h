@@ -4,11 +4,11 @@
 
 #include <boost/format.hpp>
 
-#include "Chip8.h"
-#include "InstructionEventArgs.h"
-#include "Memory.h"
+class Chip8;
+class InstructionEventArgs;
+class Memory;
 
-class Disassembler {
+class Disassembler final {
 public:
 	Disassembler();
 

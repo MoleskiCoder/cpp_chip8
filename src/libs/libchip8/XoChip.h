@@ -5,11 +5,12 @@
 
 #include <cereal/types/polymorphic.hpp>
 
-#include "BitmappedGraphics.h"
-#include "Configuration.h"
-#include "KeyboardDevice.h"
-#include "Memory.h"
 #include "Schip.h"
+
+class Memory;
+class KeyboardDevice;
+class BitmappedGraphics;
+class Configuration;
 
 class XoChip : public Schip {
 public:

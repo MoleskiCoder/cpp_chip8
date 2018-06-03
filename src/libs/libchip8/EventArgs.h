@@ -2,6 +2,6 @@
 
 class EventArgs {
 public:
-	EventArgs() {}
+	EventArgs() noexcept {}
 };
 

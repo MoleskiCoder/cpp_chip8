@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-class InstructionEventArgs {
+class InstructionEventArgs final {
 public:
 	InstructionEventArgs(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y)
 	: m_programCounter(programCounter),

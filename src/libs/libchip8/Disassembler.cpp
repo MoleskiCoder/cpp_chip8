@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include <sstream>
+
 #include "Disassembler.h"
 #include "InstructionEventArgs.h"
 #include "Memory.h"

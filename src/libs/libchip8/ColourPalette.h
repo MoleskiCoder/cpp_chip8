@@ -5,7 +5,7 @@
 
 #include <SDL.h>
 
-class ColourPalette {
+class ColourPalette final {
 public:
 	ColourPalette(int numberOfColours);
 

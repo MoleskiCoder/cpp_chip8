@@ -8,9 +8,9 @@ namespace cereal {
 	class access;
 }
 
-class Memory {
+class Memory final {
 public:
-	Memory() {}
+	Memory() noexcept {}
 	Memory(int size);
 
 	const std::vector<uint8_t>& getBus() const;

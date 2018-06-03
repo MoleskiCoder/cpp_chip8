@@ -5,7 +5,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-class ConfigurationReader {
+class ConfigurationReader final {
 
 public:
 	ConfigurationReader(const std::string& path);

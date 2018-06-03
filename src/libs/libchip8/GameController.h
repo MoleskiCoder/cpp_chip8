@@ -5,13 +5,13 @@
 
 #include <SDL.h>
 
-#include "KeyboardDevice.h"
+class KeyboardDevice;
 
 namespace cereal {
 	class access;
 }
 
-class GameController {
+class GameController final {
 public:
 	GameController(KeyboardDevice& keyboard);
 	virtual ~GameController();

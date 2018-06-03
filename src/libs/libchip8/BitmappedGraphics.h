@@ -3,13 +3,14 @@
 #include <vector>
 
 #include "GraphicsPlane.h"
-#include "Memory.h"
+
+class Memory;
 
 namespace cereal {
 	class access;
 }
 
-class BitmappedGraphics {
+class BitmappedGraphics final {
 public:
 	enum {
 		DefaultPlane = 0x1,

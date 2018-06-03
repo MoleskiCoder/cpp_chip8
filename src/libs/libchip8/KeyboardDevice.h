@@ -9,7 +9,7 @@ namespace cereal {
 	class access;
 }
 
-class KeyboardDevice {
+class KeyboardDevice final {
 public:
 	bool checkKeyPress(int& key) const;
 	bool isKeyPressed(int key) const;

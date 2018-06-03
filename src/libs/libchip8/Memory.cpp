@@ -37,7 +37,7 @@ void Memory::setWord(int address, uint16_t value) {
 }
 
 void Memory::clear() {
-	std::fill(m_bus.begin(), m_bus.end(), 0);
+	std::fill(m_bus.begin(), m_bus.end(), (uint8_t)0U);
 }
 
 void Memory::loadRom(const std::string& path, uint16_t offset) {

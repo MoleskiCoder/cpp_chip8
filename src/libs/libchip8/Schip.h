@@ -5,13 +5,14 @@
 
 #include <cereal/types/polymorphic.hpp>
 
-#include "BitmappedGraphics.h"
 #include "Chip8.h"
-#include "Configuration.h"
 #include "EventArgs.h"
-#include "KeyboardDevice.h"
-#include "Memory.h"
 #include "Signal.h"
+
+class Memory;
+class KeyboardDevice;
+class BitmappedGraphics;
+class Configuration;
 
 class Schip : public Chip8 {
 public:

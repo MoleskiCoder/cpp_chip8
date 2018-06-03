@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -11,14 +10,14 @@
 #include "AudioDevice.h"
 #include "Chip8.h"
 #include "ColourPalette.h"
-#include "Configuration.h"
 #include "Disassembler.h"
 #include "DisassemblyEventArgs.h"
-#include "InstructionEventArgs.h"
 #include "GameController.h"
-#include "Signal.h"
 
-class Controller {
+class Configuration;
+class InstructionEventArgs;
+
+class Controller final {
 public:
 	enum {
 		DisplayScale = 10

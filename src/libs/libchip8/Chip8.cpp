@@ -27,10 +27,10 @@ void Chip8::initialise() {
 	m_display.initialise();
 
 	// Clear stack
-	std::fill(m_stack.begin(), m_stack.end(), 0);
+	std::fill(m_stack.begin(), m_stack.end(), (uint16_t)0U);
 
 	// Clear registers V0-VF
-	std::fill(m_v.begin(), m_v.end(), 0);
+	std::fill(m_v.begin(), m_v.end(), (uint8_t)0U);
 
 	// Clear memory
 	m_memory.clear();

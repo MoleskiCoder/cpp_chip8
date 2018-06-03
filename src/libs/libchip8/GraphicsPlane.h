@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include "Memory.h"
-
 namespace cereal {
 	class access;
 }
 
-class GraphicsPlane {
+class Memory;
+
+class GraphicsPlane final {
 public:
 	enum {
 		ScreenWidthLow = 64,
