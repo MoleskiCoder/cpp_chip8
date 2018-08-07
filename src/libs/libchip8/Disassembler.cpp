@@ -15,13 +15,13 @@ Disassembler::Disassembler() {
 std::string Disassembler::generateState(const InstructionEventArgs& event, Chip8* processor) const {
 
 	auto pc = event.getProgramCounter();
-	auto sp = processor->getStackPointer();
-	auto indirector = processor->getIndirector();
-	auto dt = processor->getDelayTimer();
-	auto st = processor->getSoundTimer();
+	auto sp = processor->SP();
+	auto indirector = processor->indirector();
+	auto dt = processor->delayTimer();
+	auto st = processor->soundTimer();
 	auto waiting = processor->isWaitingForKeyPress();
 	auto keypressRegister = processor->getWaitingForKeyPressRegister();
-	const auto& V = processor->getRegisters();
+	const auto& V = processor->registers();
 
 	std::ostringstream output;
 

@@ -22,9 +22,9 @@
 Controller::Controller(std::shared_ptr<Chip8> processor, const std::string& game)
 : m_processor(processor),
   m_game(game),
-  m_colours(m_processor->getDisplay().getNumberOfColours()),
-  m_gameController(m_processor->getKeyboardMutable()),
-  m_fps(m_processor->getConfiguration().getFramesPerSecond()) {
+  m_colours(m_processor->display().getNumberOfColours()),
+  m_gameController(m_processor->keyboard()),
+  m_fps(m_processor->configuration().getFramesPerSecond()) {
 }
 
 Controller::~Controller() {
@@ -73,7 +73,7 @@ void Controller::runGameLoop() {
 		while (::SDL_PollEvent(&e)) {
 			switch (e.type) {
 			case SDL_QUIT:
-				m_processor->setFinished(true);
+				m_processor->setFinished();
 				break;
 			case SDL_KEYDOWN:
 				handleKeyDown(e.key.keysym.sym);
@@ -98,9 +98,8 @@ void Controller::runGameLoop() {
 			const auto elapsedTicks = ::SDL_GetTicks() - m_startTicks;
 			const auto neededTicks = (++m_frames / (float)m_fps) * 1000.0;
 			auto sleepNeeded = (int)(neededTicks - elapsedTicks);
-			if (sleepNeeded > 0) {
+			if (sleepNeeded > 0)
 				::SDL_Delay(sleepNeeded);
-			}
 		}
 	}
 }
@@ -119,7 +118,7 @@ void Controller::handleKeyDown(SDL_Keycode key) {
 		// Don't let it get poked.
 		break;
 	default:
-		m_processor->getKeyboardMutable().pokeKey(key);
+		m_processor->keyboard().pokeKey(key);
 		break;
 	}
 }
@@ -136,7 +135,7 @@ void Controller::handleKeyUp(SDL_Keycode key) {
 		toggleFullscreen();
 		break;
 	default:
-		m_processor->getKeyboardMutable().pullKey(key);
+		m_processor->keyboard().pullKey(key);
 		break;
 	}
 }
@@ -155,15 +154,15 @@ void Controller::runFrame() {
 }
 
 bool Controller::finishedCycling(int cycles) const {
-	auto limit = m_processor->getConfiguration().getCyclesPerFrame();
+	auto limit = m_processor->configuration().getCyclesPerFrame();
 	auto exhausted = cycles > limit;
 	auto finished = m_processor->getFinished();
-	auto draw = m_processor->getDisplay().getLowResolution() && m_processor->getDrawNeeded();
+	auto draw = m_processor->display().getLowResolution() && m_processor->getDrawNeeded();
 	return exhausted || finished || draw;
 }
 
 void Controller::stop() {
-	m_processor->setFinished(true);
+	m_processor->setFinished();
 }
 
 void Controller::loadContent() {
@@ -180,7 +179,7 @@ void Controller::loadContent() {
 	::SDL_DisplayMode mode;
 	verifySDLCall(::SDL_GetWindowDisplayMode(m_window, &mode), "Unable to obtain window information");
 
-	const auto& configuration = m_processor->getConfiguration();
+	const auto& configuration = m_processor->configuration();
 
 	m_vsync = configuration.getVsyncLocked();
 	Uint32 rendererFlags = 0;
@@ -228,7 +227,7 @@ void Controller::loadContent() {
 		schip->LowResolutionConfigured.connect(std::bind(&Controller::recreateBitmapTexture, this));
 	}
 
-	if (m_processor->getConfiguration().isDebugMode()) {
+	if (m_processor->configuration().isDebugMode()) {
 		m_processor->EmulatingCycle.connect(std::bind(&Controller::Processor_EmulatingCycle, this, std::placeholders::_1));
 		m_processor->EmulatedCycle.connect(std::bind(&Controller::Processor_EmulatedCycle, this, std::placeholders::_1));
 	}
@@ -303,8 +302,8 @@ void Controller::drawFrame() {
 	auto displayWidth = getDisplayWidth();
 	auto displayHeight = getDisplayHeight();
 
-	auto source = m_processor->getDisplay().getPlanes();
-	auto numberOfPlanes = m_processor->getDisplay().getNumberOfPlanes();
+	auto source = m_processor->display().planes();
+	auto numberOfPlanes = m_processor->display().getNumberOfPlanes();
 
 	for (int y = 0; y < displayHeight; y++) {
 		auto rowOffset = y * displayWidth;
@@ -312,7 +311,7 @@ void Controller::drawFrame() {
 			auto pixelIndex = x + rowOffset;
 			int colourIndex = 0;
 			for (int plane = 0; plane < numberOfPlanes; ++plane) {
-				auto bit = source[plane].getGraphics()[pixelIndex];
+				auto bit = source[plane].graphics()[pixelIndex];
 				colourIndex |= bit << plane;
 			}
 			m_pixels[pixelIndex] = m_colours.getColour(colourIndex);
@@ -383,7 +382,7 @@ void Controller::Processor_EmulatingCycle(const InstructionEventArgs& cycleEvent
 void Controller::Processor_EmulatedCycle(const InstructionEventArgs& cycleEvent) {
 	auto state = m_processorState;
 	auto raw = cycleEvent.getInstruction();
-	auto disassembly = m_disassembler.disassemble(m_processor->getMnemomicFormat(), cycleEvent, m_processor->getMemory());
+	auto disassembly = m_disassembler.disassemble(m_processor->mnemomicFormat(), cycleEvent, m_processor->memory());
 
 	std::ostringstream output;
 	boost::format formatter("%04X");

@@ -21,11 +21,11 @@ public:
 	GraphicsPlane() = default;
 	GraphicsPlane(bool clip, bool countExceededRows);
 
-	const std::vector<int>& getGraphics() const {
+	const std::vector<int>& graphics() const {
 		return m_graphics;
 	}
 
-	std::vector<int>& getGraphicsMutable() {
+	std::vector<int>& graphics() {
 		return m_graphics;
 	}
 

@@ -7,18 +7,18 @@ Schip::Schip(const Memory& memory, const KeyboardDevice& keyboard, const Bitmapp
 
 void Schip::initialise() {
 	Chip8::initialise();
-	std::copy_n(m_highFont.cbegin(), m_highFont.size(), m_memory.getBusMutable().begin() + HighFontOffset);
-	if (getConfiguration().getChip8LoadAndSave())
+	std::copy_n(m_highFont.cbegin(), m_highFont.size(), memory().bus().begin() + HighFontOffset);
+	if (configuration().getChip8LoadAndSave())
 		m_compatibility = true;
 }
 
 void Schip::onHighResolution() {
-	m_display.setHighResolution(true);
+	display().setHighResolution(true);
 	HighResolutionConfigured.fire(EventArgs());
 }
 
 void Schip::onLowResolution() {
-	m_display.setHighResolution(false);
+	display().setHighResolution(false);
 	LowResolutionConfigured.fire(EventArgs());
 }
 
@@ -98,24 +98,24 @@ bool Schip::emulateInstructions_0(int nnn, int nn, int n, int x, int y) {
 // https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 // Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
 void Schip::SHR(int x, int y) {
-	if (getConfiguration().getChip8Shifts()) {
+	if (configuration().getChip8Shifts()) {
 		Chip8::SHR(x, y);
 	} else {
-		m_mnemomicFormat = "(S) SHR V%4$01X";
-		m_v[0xf] = m_v[x] & 0x1;
-		m_v[x] >>= 1;
+		mnemomicFormat() = "(S) SHR V%4$01X";
+		registers()[0xf] = registers()[x] & 0x1;
+		registers()[x] >>= 1;
 	}
 }
 
 // https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 // Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
 void Schip::SHL(int x, int y) {
-	if (getConfiguration().getChip8Shifts()) {
+	if (configuration().getChip8Shifts()) {
 		Chip8::SHL(x, y);
 	} else {
-		m_mnemomicFormat = "(S) SHL V%4$01X";
-		m_v[0xf] = (m_v[x] & 0x80) == 0 ? 0 : 1;
-		m_v[x] <<= 1;
+		mnemomicFormat() = "(S) SHL V%4$01X";
+		registers()[0xf] = (registers()[x] & 0x80) == 0 ? 0 : 1;
+		registers()[x] <<= 1;
 	}
 }
 
@@ -125,11 +125,11 @@ void Schip::SHL(int x, int y) {
 //  HP48 -SC: reads highest nibble of address to select
 //      register to apply to address (high nibble pulls double duty)
 void Schip::JP_V0(int x, int nnn) {
-	if (getConfiguration().getChip8IndexedJumps()) {
+	if (configuration().getChip8IndexedJumps()) {
 		Chip8::JP_V0(x, nnn);
 	} else {
-		m_mnemomicFormat = "(S) JP V%4$01X,%1$03X";
-		m_pc = (uint16_t)(m_v[x] + nnn);
+		mnemomicFormat() = "(S) JP V%4$01X,%1$03X";
+		PC() = (uint16_t)(registers()[x] + nnn);
 	}
 }
 
@@ -139,8 +139,8 @@ void Schip::LD_Vx_II(int x) {
 	if (m_compatibility) {
 		Chip8::LD_Vx_II(x);
 	} else {
-		m_mnemomicFormat = "(S) LD V%4$01X,[I]";
-		std::copy_n(m_memory.getBus().cbegin() + m_i, x + 1, m_v.begin());
+		mnemomicFormat() = "(S) LD V%4$01X,[I]";
+		std::copy_n(memory().bus().cbegin() + indirector(), x + 1, registers().begin());
 	}
 }
 
@@ -150,18 +150,18 @@ void Schip::LD_II_Vx(int x) {
 	if (m_compatibility) {
 		Chip8::LD_II_Vx(x);
 	} else {
-		m_mnemomicFormat = "(S) LD [I],V%4$01X";
-		std::copy_n(m_v.cbegin(), x + 1, m_memory.getBusMutable().begin() + m_i);
+		mnemomicFormat() = "(S) LD [I],V%4$01X";
+		std::copy_n(registers().cbegin(), x + 1, memory().bus().begin() + indirector());
 	}
 }
 
 void Schip::LD_HF_Vx(int x) {
-	m_mnemomicFormat = "(S) LD HF,V%4$01X";
-	m_i = HighFontOffset + (HighFontSize * m_v[x]);
+	mnemomicFormat() = "(S) LD HF,V%4$01X";
+	indirector() = HighFontOffset + (HighFontSize * registers()[x]);
 }
 
 void Schip::XDRW(int x, int y) {
-	m_mnemomicFormat = "(S) XDRW V%4$01X,V%5$01X";
+	mnemomicFormat() = "(S) XDRW V%4$01X,V%5$01X";
 	draw(x, y, 16, 16);
 }
 
@@ -170,8 +170,8 @@ void Schip::XDRW(int x, int y) {
 // with a successful exit status. [Super-Chip]
 // Code generated: 0x00FD.
 void Schip::EXIT() {
-	m_mnemomicFormat = "(S) EXIT";
-	m_finished = true;
+	mnemomicFormat() = "(S) EXIT";
+	setFinished();
 }
 
 // scdown n
@@ -180,8 +180,8 @@ void Schip::EXIT() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00Cn
 void Schip::SCDOWN(int n) {
-	m_mnemomicFormat = "(S) SCDOWN %3$01X";
-	m_display.scrollDown(n);
+	mnemomicFormat() = "(S) SCDOWN %3$01X";
+	display().scrollDown(n);
 }
 
 // compatibility
@@ -190,7 +190,7 @@ void Schip::SCDOWN(int n) {
 // porting of Chip 8 games which rely on this behaviour.
 // Code generated: 0x00FA
 void Schip::COMPATIBILITY() {
-	m_mnemomicFormat = "(S) COMPATIBILITY";
+	mnemomicFormat() = "(S) COMPATIBILITY";
 	m_compatibility = true;
 }
 
@@ -200,8 +200,8 @@ void Schip::COMPATIBILITY() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00FB
 void Schip::SCRIGHT() {
-	m_mnemomicFormat = "(S) SCRIGHT";
-	m_display.scrollRight();
+	mnemomicFormat() = "(S) SCRIGHT";
+	display().scrollRight();
 }
 
 // scleft
@@ -210,15 +210,15 @@ void Schip::SCRIGHT() {
 // (Use the delay timer to pace your games in high resolution mode.)
 // Code generated: 0x00FC
 void Schip::SCLEFT() {
-	m_mnemomicFormat = "(S) SCLEFT";
-	m_display.scrollLeft();
+	mnemomicFormat() = "(S) SCLEFT";
+	display().scrollLeft();
 }
 
 // low
 // Low resolution (64×32) graphics mode (this is the default). [Super-Chip]
 // Code generated: 0x00FE
 void Schip::LOW() {
-	m_mnemomicFormat = "(S) LOW";
+	mnemomicFormat() = "(S) LOW";
 	onLowResolution();
 }
 
@@ -226,7 +226,7 @@ void Schip::LOW() {
 // High resolution (128×64) graphics mode. [Super-Chip]
 // Code generated: 0x00FF
 void Schip::HIGH() {
-	m_mnemomicFormat = "(S) HIGH";
+	mnemomicFormat() = "(S) HIGH";
 	onHighResolution();
 }
 
@@ -235,8 +235,8 @@ void Schip::HIGH() {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX75
 void Schip::LD_R_Vx(int x) {
-	m_mnemomicFormat = "(S) LD R,V%4$01X";
-	std::copy_n(m_v.cbegin(), (x & 7) + 1, m_r.begin());
+	mnemomicFormat() = "(S) LD R,V%4$01X";
+	std::copy_n(registers().cbegin(), (x & 7) + 1, calculatorRegisters().begin());
 }
 
 // flags.restore vX
@@ -244,6 +244,6 @@ void Schip::LD_R_Vx(int x) {
 // HP48 implementation). (X < 8) [Super-Chip]
 // Code generated: 0xFX85
 void Schip::LD_Vx_R(int x) {
-	m_mnemomicFormat = "(S) LD V%4$01X,R";
-	std::copy_n(m_r.cbegin(), (x & 7) + 1, m_v.begin());
+	mnemomicFormat() = "(S) LD V%4$01X,R";
+	std::copy_n(calculatorRegisters().cbegin(), (x & 7) + 1, registers().begin());
 }

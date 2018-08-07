@@ -62,20 +62,20 @@ bool XoChip::emulateInstructions_F(int nnn, int nn, int n, int x, int y) {
 
 //// scroll-up n (0x00DN) scroll the contents of the display up by 0-15 pixels.
 void XoChip::SCUP(int n) {
-	m_mnemomicFormat = "(X) SCUP %3$01X";
-	m_display.scrollUp(n);
+	mnemomicFormat() = "(X) SCUP %3$01X";
+	display().scrollUp(n);
 }
 
 // save vx - vy (0x5XY2) save an inclusive range of registers to memory starting at i.
 // https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md#memory-access
 void XoChip::save_vx_to_vy(int x, int y) {
-	m_mnemomicFormat = "(X) SAVE V%4$01X-V%5$01X";
+	mnemomicFormat() = "(X) SAVE V%4$01X-V%5$01X";
 	auto step = x > y ? -1 : +1;
-	auto address = m_i;
+	auto address = indirector();
 	auto ongoing = true;
 	do
 	{
-		m_memory.set(address++, m_v[x]);
+		memory().set(address++, registers()[x]);
 		ongoing = x != y;
 		x += step;
 	} while (ongoing);
@@ -84,12 +84,12 @@ void XoChip::save_vx_to_vy(int x, int y) {
 // load vx - vy (0x5XY3) load an inclusive range of registers from memory starting at i.
 // https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md#memory-access
 void XoChip::load_vx_to_vy(int x, int y) {
-	m_mnemomicFormat = "(X) LOAD V%4$01X-V%5$01X";
+	mnemomicFormat() = "(X) LOAD V%4$01X-V%5$01X";
 	auto step = x > y ? -1 : +1;
-	auto address = m_i;
+	auto address = indirector();
 	auto ongoing = true;
 	do {
-		m_v[x] = m_memory.get(address++);
+		registers()[x] = memory().get(address++);
 		ongoing = x != y;
 		x += step;
 	} while (ongoing);
@@ -98,19 +98,19 @@ void XoChip::load_vx_to_vy(int x, int y) {
 // i := long NNNN (0xF000, 0xNNNN) load i with a 16-bit address.
 // https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md#extended-memory
 void XoChip::load_i_long() {
-	m_mnemomicFormat = "(X) LD I,%6$04X";
-	m_i = (uint16_t)m_memory.getWord(m_pc);
-	m_pc += 2;
+	mnemomicFormat() = "(X) LD I,%6$04X";
+	indirector() = (uint16_t)memory().getWord(PC());
+	PC() += 2;
 }
 
 ////plane n (0xFN01) select zero or more drawing planes by bitmask (0 <= n <= 3).
 void XoChip::plane(int n) {
-	m_mnemomicFormat = "(X) PLANE %3$01X";
-	m_display.setPlaneMask(n);
+	mnemomicFormat() = "(X) PLANE %3$01X";
+	display().setPlaneMask(n);
 }
 
 ////audio (0xF002) store 16 bytes starting at i in the audio pattern buffer.
 void XoChip::audio() {
-	m_mnemomicFormat = "(X) AUDIO";
-	std::copy_n(m_memory.getBus().cbegin() + m_i, m_audoPatternBuffer.size(), m_audoPatternBuffer.begin());
+	mnemomicFormat() = "(X) AUDIO";
+	std::copy_n(memory().bus().cbegin() + indirector(), m_audoPatternBuffer.size(), m_audoPatternBuffer.begin());
 }

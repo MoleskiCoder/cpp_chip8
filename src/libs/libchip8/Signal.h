@@ -16,8 +16,7 @@ public:
 	}
 
 	void fire(const T& e) const {
-		if (!delegates.empty())
-			for (auto& delegate : delegates)
-				delegate(e);
+		for (auto& delegate : delegates)
+			delegate(e);
 	}
 };

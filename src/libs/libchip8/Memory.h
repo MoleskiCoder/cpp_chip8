@@ -13,8 +13,8 @@ public:
 	Memory() noexcept {}
 	Memory(int size);
 
-	const std::vector<uint8_t>& getBus() const;
-	std::vector<uint8_t>& getBusMutable();
+	const std::vector<uint8_t>& bus() const;
+	std::vector<uint8_t>& bus();
 
 	uint8_t get(int address) const;
 	uint16_t getWord(int address) const;

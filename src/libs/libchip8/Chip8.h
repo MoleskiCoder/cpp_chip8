@@ -38,131 +38,54 @@ public:
 
 	void updateTimers();
 
-	uint16_t getProgramCounter() const {
-		return m_pc;
-	}
+	uint16_t PC() const { return m_pc; }
+	uint16_t& PC() { return m_pc; }
 	
-	void setProgramCounter(uint16_t value) {
-		m_pc = value;
-	}
+	const std::array<uint8_t, 16>& registers() const { return m_v; }
+	std::array<uint8_t, 16>& registers() { return m_v; }
 
-	const std::array<uint8_t, 16>& getRegisters() const {
-		return m_v;
-	}
+	uint16_t indirector() const { return m_i; }
+	uint16_t& indirector() { return m_i; }
 
-	std::array<uint8_t, 16>& getRegistersMutable() {
-		return m_v;
-	}
+	const Memory& memory() const { return m_memory; }
+	Memory& memory() {return m_memory; }
 
-	uint16_t getIndirector() const {
-		return m_i;
-	}
+	const std::array<uint16_t, 16>& stack() const { return m_stack; }
+	std::array<uint16_t, 16>& stack() { return m_stack; }
 
-	void setIndirector(uint16_t value) {
-		m_i = value;
-	}
+	uint16_t SP() const { return m_sp; }
+	uint16_t& SP() { return m_sp; }
 
-	const Memory& getMemory() const {
-		return m_memory;
-	}
+	uint8_t delayTimer() const { return m_delayTimer; }
+	uint8_t& delayTimer() { return m_delayTimer; }
 
-	Memory& getMemoryMutable() {
-		return m_memory;
-	}
+	uint8_t soundTimer() const { return m_soundTimer; }
+	uint8_t& soundTimer() { return m_soundTimer; }
 
-	const std::array<uint16_t, 16>& getStack() const {
-		return m_stack;
-	}
+	bool isWaitingForKeyPress() const { return m_waitingForKeyPress; }
+	void setWaitingForKeyPress(bool value = true) { m_waitingForKeyPress = value; }
 
-	uint16_t getStackPointer() const {
-		return m_sp;
-	}
+	int getWaitingForKeyPressRegister() const { return m_waitingForKeyPressRegister; }
+	void setWaitingForKeyPressRegister(int value) { m_waitingForKeyPressRegister = value; }
 
-	uint8_t getDelayTimer() const {
-		return m_delayTimer;
-	}
+	const Configuration& configuration() const { return m_configuration; }
 
-	void setDelayTimer(uint8_t value) {
-		m_delayTimer = value;
-	}
+	const BitmappedGraphics& display() const { return m_display; }
+	BitmappedGraphics& display() { return m_display; }
 
-	uint8_t getSoundTimer() const {
-		return m_soundTimer;
-	}
+	const KeyboardDevice& keyboard() const { return m_keyboard; }
+	KeyboardDevice& keyboard() { return m_keyboard; }
 
-	void setSoundTimer(uint8_t value) {
-		m_soundTimer = value;
-	}
+	bool getDrawNeeded() const { return display().getDirty(); }
+	void setDrawNeeded(bool value = true) { display().setDirty(value); }
 
-	bool isWaitingForKeyPress() const {
-		return m_waitingForKeyPress;
-	}
+	bool getFinished() const { return m_finished; }
+	void setFinished(bool value = true) { m_finished = value; }
 
-	void setWaitingForKeyPress(bool value) {
-		m_waitingForKeyPress = value;
-	}
-
-	int getWaitingForKeyPressRegister() const {
-		return m_waitingForKeyPressRegister;
-	}
-
-	void setWaitingForKeyPressRegister(int value) {
-		m_waitingForKeyPressRegister = value;
-	}
-
-	const Configuration& getConfiguration() const {
-		return m_configuration;
-	}
-
-	const BitmappedGraphics& getDisplay() const {
-		return m_display;
-	}
-
-	BitmappedGraphics& getDisplayMutable() {
-		return m_display;
-	}
-
-	const KeyboardDevice& getKeyboard() const {
-		return m_keyboard;
-	}
-
-	KeyboardDevice& getKeyboardMutable() {
-		return m_keyboard;
-	}
-
-	bool getDrawNeeded() const {
-		return m_display.getDirty();
-	}
-
-	void setDrawNeeded(bool value) {
-		m_display.setDirty(value);
-	}
-
-	bool getFinished() const {
-		return m_finished;
-	}
-
-	void setFinished(bool value) {
-		m_finished = value;
-	}
-
-	const std::string& getMnemomicFormat() const {
-		return m_mnemomicFormat;
-	}
+	const std::string& mnemomicFormat() const { return m_mnemomicFormat; }
+	std::string& mnemomicFormat() { return m_mnemomicFormat; }
 
 protected:
-	BitmappedGraphics m_display;
-	Memory m_memory;
-
-	std::array<uint8_t, 16> m_v;
-
-	uint16_t m_i = 0;
-	uint16_t m_pc = 0;
-
-	bool m_finished = false;
-
-	std::string m_mnemomicFormat;
-
 	void onBeepStarting();
 	void onBeepStopped();
 
@@ -249,6 +172,18 @@ private:
 			m_waitingForKeyPress,
 			m_waitingForKeyPressRegister);
 	}
+
+	BitmappedGraphics m_display;
+	Memory m_memory;
+
+	std::array<uint8_t, 16> m_v;
+
+	uint16_t m_i = 0;
+	uint16_t m_pc = 0;
+
+	bool m_finished = false;
+
+	std::string m_mnemomicFormat;
 
 	std::array<uint8_t, 5 * 16> m_standardFont = { {
 		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0

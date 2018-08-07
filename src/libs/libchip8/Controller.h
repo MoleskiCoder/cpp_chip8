@@ -44,11 +44,11 @@ public:
 	virtual void loadContent();
 
 	int getDisplayWidth() const {
-		return m_processor->getDisplay().getWidth();
+		return m_processor->display().getWidth();
 	}
 
 	int getDisplayHeight() const {
-		return m_processor->getDisplay().getHeight();
+		return m_processor->display().getHeight();
 	}
 
 	int getScreenWidth() const {

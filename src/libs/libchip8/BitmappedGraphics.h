@@ -27,11 +27,11 @@ public:
 		return 1 << getNumberOfPlanes();
 	}
 
-	const std::vector<GraphicsPlane>& getPlanes() const {
+	const std::vector<GraphicsPlane>& planes() const {
 		return m_planes;
 	}
 
-	std::vector<GraphicsPlane>& getPlanesMutable() {
+	std::vector<GraphicsPlane>& planes() {
 		return m_planes;
 	}
 
@@ -39,11 +39,10 @@ public:
 		return m_highResolution;
 	}
 
-	void setHighResolution(bool value) {
+	void setHighResolution(const bool value) {
 		m_highResolution = value;
-		for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
-			m_planes[plane].setHighResolution(value);
-		}
+		for (auto& plane : m_planes)
+			plane.setHighResolution(value);
 	}
 
 	bool getLowResolution() const {
@@ -62,7 +61,7 @@ public:
 		return m_planeMask;
 	}
 
-	void setPlaneMask(int value) {
+	void setPlaneMask(const int value) {
 		m_planeMask = value;
 	}
 
@@ -70,7 +69,7 @@ public:
 		return m_dirty;
 	}
 
-	void setDirty(bool value) {
+	void setDirty(const bool value = true) {
 		m_dirty = value;
 	}
 

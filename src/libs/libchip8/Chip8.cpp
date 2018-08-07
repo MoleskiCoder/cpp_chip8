@@ -18,45 +18,44 @@ Chip8::Chip8(const Memory& memory, const KeyboardDevice& keyboard, const Bitmapp
 }
 
 void Chip8::initialise() {
-	m_finished = false;
+	setFinished(false);
 
-	m_pc = m_configuration.getStartAddress();
-	m_i = 0;			// Reset index register
-	m_sp = 0;			// Reset stack pointer
+	PC() = configuration().getStartAddress();
+	indirector() = 0;
+	SP() = 0;
 
-	m_display.initialise();
+	display().initialise();
 
 	// Clear stack
-	std::fill(m_stack.begin(), m_stack.end(), (uint16_t)0U);
+	std::fill(stack().begin(), stack().end(), (uint16_t)0U);
 
 	// Clear registers V0-VF
-	std::fill(m_v.begin(), m_v.end(), (uint8_t)0U);
+	std::fill(registers().begin(), registers().end(), (uint8_t)0U);
 
 	// Clear memory
-	m_memory.clear();
+	memory().clear();
 
 	// Load fonts
-	std::copy_n(m_standardFont.cbegin(), m_standardFont.size(), m_memory.getBusMutable().begin() + StandardFontOffset);
+	std::copy_n(m_standardFont.cbegin(), m_standardFont.size(), memory().bus().begin() + StandardFontOffset);
 
 	// Reset timers
-	m_delayTimer = m_soundTimer = 0;
+	delayTimer() = soundTimer() = 0;
 
 	m_soundPlaying = false;
-	m_waitingForKeyPress = false;
+	setWaitingForKeyPress(false);
 
 	m_randomNumberGenerator.seed(std::random_device()());
 }
 
 void Chip8::loadGame(const std::string& game) {
-	m_memory.loadRom(game, m_configuration.getLoadAddress());
+	memory().loadRom(game, m_configuration.getLoadAddress());
 }
 
 void Chip8::step() {
-	if (m_waitingForKeyPress) {
+	if (m_waitingForKeyPress)
 		waitForKeyPress();
-	} else {
+	else
 		emulateCycle();
-	}
 }
 
 void Chip8::updateTimers() {
@@ -75,7 +74,7 @@ void Chip8::onBeepStopped() {
 }
 
 void Chip8::onEmulatingCycle(uint16_t programCounter, uint16_t instruction, int address, int operand, int n, int x, int y) {
-	m_mnemomicFormat.clear();
+	mnemomicFormat().clear();
 	EmulatingCycle.fire(InstructionEventArgs(programCounter, instruction, address, operand, n, x, y));
 }
 
@@ -91,33 +90,29 @@ void Chip8::emulateCycle() {
 	//                      <- n ->
 	//        <- x ->
 	//               <- y ->
-	m_opcode = m_memory.getWord(m_pc);
+	m_opcode = memory().getWord(PC());
 	auto nnn = m_opcode & 0xfff;
 	auto nn = m_opcode & 0xff;
 	auto n = nn & 0xf;
 	auto x = (m_opcode & 0xf00) >> 8;
 	auto y = (nn & 0xf0) >> 4;
 
-	if ((m_pc % 2) == 1) {
-		if (!m_configuration.getAllowMisalignedOpcodes()) {
-			throw std::runtime_error("Instruction is not on an aligned address.");
-		}
-	}
+	if (((PC() % 2) == 1) && !configuration().getAllowMisalignedOpcodes())
+		throw std::runtime_error("Instruction is not on an aligned address.");
 
-	auto programCounter = m_pc;
-	m_pc += 2;
+	auto programCounter = PC();
+	PC() += 2;
 
 	onEmulatingCycle(programCounter, m_opcode, nnn, nn, n, x, y);
-	if (!emulateInstruction(nnn, nn, n, x, y)) {
+	if (!emulateInstruction(nnn, nn, n, x, y))
 		throw std::runtime_error("Illegal instruction (is the processor type set correctly?)");
-	}
 
 	onEmulatedCycle(programCounter, m_opcode, nnn, nn, n, x, y);
 }
 
 void Chip8::draw(int x, int y, int width, int height) {
-	auto hits = m_display.draw(m_memory, m_i, m_v[x], m_v[y], width, height);
-	m_v[0xf] = (uint8_t)hits;
+	const auto hits = display().draw(memory(), indirector(), registers()[x], registers()[y], width, height);
+	registers()[0xf] = (uint8_t)hits;
 }
 
 bool Chip8::emulateInstruction(int nnn, int nn, int n, int x, int y) {
@@ -371,123 +366,119 @@ bool Chip8::emulateInstructions_0(int, int nn, int, int, int) {
 ////
 
 void Chip8::CLS() {
-	m_mnemomicFormat = "CLS";
-	m_display.clear();
+	mnemomicFormat() = "CLS";
+	display().clear();
 }
 
 void Chip8::RET() {
-	m_mnemomicFormat = "RET";
-	m_pc = m_stack[--m_sp & 0xF];
+	mnemomicFormat() = "RET";
+	PC() = stack()[--SP() & 0xF];
 }
 
 void Chip8::JP(int nnn) {
-	m_mnemomicFormat = "JP %1$03X";
-	m_pc = (uint16_t)nnn;
+	mnemomicFormat() = "JP %1$03X";
+	PC() = (uint16_t)nnn;
 }
 
 void Chip8::CALL(int nnn) {
-	m_mnemomicFormat = "CALL %1$03X";
-	m_stack[m_sp++] = m_pc;
-	m_pc = (uint16_t)nnn;
+	mnemomicFormat() = "CALL %1$03X";
+	stack()[SP()++] = PC();
+	PC() = (uint16_t)nnn;
 }
 
 void Chip8::SE_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "SE V%4$01X,%2$02X";
-	if (m_v[x] == nn) {
-		m_pc += 2;
-	}
+	mnemomicFormat() = "SE V%4$01X,%2$02X";
+	if (registers()[x] == nn)
+		PC() += 2;
 }
 
 void Chip8::SNE_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "SNE V%4$01X,%2$02X";
-	if (m_v[x] != nn) {
-		m_pc += 2;
-	}
+	mnemomicFormat() = "SNE V%4$01X,%2$02X";
+	if (registers()[x] != nn)
+		PC() += 2;
 }
 
 void Chip8::SE(int x, int y) {
-	m_mnemomicFormat = "SE V%4$01X,V%5$01X";
-	if (m_v[x] == m_v[y]) {
-		m_pc += 2;
-	}
+	mnemomicFormat() = "SE V%4$01X,V%5$01X";
+	if (registers()[x] == registers()[y])
+		PC() += 2;
 }
 
 void Chip8::LD_REG_IMM(int x, int nn) {
-	m_mnemomicFormat = "LD V%4$01X,%2$02X";
-	m_v[x] = (uint8_t)nn;
+	mnemomicFormat() = "LD V%4$01X,%2$02X";
+	registers()[x] = (uint8_t)nn;
 }
 
 void Chip8::ADD_REG_IMM(int x, int nn) {
 	m_mnemomicFormat = "ADD V%4$01X,%2$02X";
-	m_v[x] += (uint8_t)nn;
+	registers()[x] += (uint8_t)nn;
 }
 
 void Chip8::LD(int x, int y) {
-	m_mnemomicFormat = "LD V%4$01X,V%5$01X";
-	m_v[x] = m_v[y];
+	mnemomicFormat() = "LD V%4$01X,V%5$01X";
+	registers()[x] = registers()[y];
 }
 
 void Chip8::OR(int x, int y) {
-	m_mnemomicFormat = "OR V%4$01X,V%5$01X";
-	m_v[x] |= m_v[y];
+	mnemomicFormat() = "OR V%4$01X,V%5$01X";
+	registers()[x] |= registers()[y];
 }
 
 void Chip8::AND(int x, int y) {
-	m_mnemomicFormat = "AND V%4$01X,V%5$01X";
-	m_v[x] &= m_v[y];
+	mnemomicFormat() = "AND V%4$01X,V%5$01X";
+	registers()[x] &= registers()[y];
 }
 
 void Chip8::XOR(int x, int y) {
-	m_mnemomicFormat = "XOR V%4$01X,V%5$01X";
-	m_v[x] ^= m_v[y];
+	mnemomicFormat() = "XOR V%4$01X,V%5$01X";
+	registers()[x] ^= registers()[y];
 }
 
 void Chip8::ADD(int x, int y) {
-	m_mnemomicFormat = "ADD V%4$01X,V%5$01X";
-	m_v[0xf] = (uint8_t)(m_v[y] > (0xff - m_v[x]) ? 1 : 0);
-	m_v[x] += m_v[y];
+	mnemomicFormat() = "ADD V%4$01X,V%5$01X";
+	registers()[0xf] = (uint8_t)(registers()[y] > (0xff - registers()[x]) ? 1 : 0);
+	registers()[x] += registers()[y];
 }
 
 void Chip8::SUB(int x, int y) {
-	m_mnemomicFormat = "SUB V%4$01X,V%5$01X";
-	m_v[0xf] = (uint8_t)(m_v[x] >= m_v[y] ? 1 : 0);
-	m_v[x] -= m_v[y];
+	mnemomicFormat() = "SUB V%4$01X,V%5$01X";
+	registers()[0xf] = (uint8_t)(registers()[x] >= registers()[y] ? 1 : 0);
+	registers()[x] -= registers()[y];
 }
 
 void Chip8::SHR(int x, int y) {
 	// https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 	// Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
-	m_mnemomicFormat = "SHR V%4$01X,V%5$01X";
-	m_v[0xf] = (uint8_t)(m_v[y] & 0x1);
-	m_v[y] >>= 1;
-	m_v[x] = m_v[y];
+	mnemomicFormat() = "SHR V%4$01X,V%5$01X";
+	registers()[0xf] = (uint8_t)(registers()[y] & 0x1);
+	registers()[y] >>= 1;
+	registers()[x] = registers()[y];
 }
 
 void Chip8::SUBN(int x, int y) {
-	m_mnemomicFormat = "SUBN V%4$01X,V%5$01X";
-	m_v[0xf] = (uint8_t)(m_v[x] > m_v[y] ? 0 : 1);
-	m_v[x] = (uint8_t)(m_v[y] - m_v[x]);
+	mnemomicFormat() = "SUBN V%4$01X,V%5$01X";
+	registers()[0xf] = (uint8_t)(registers()[x] > registers()[y] ? 0 : 1);
+	registers()[x] = (uint8_t)(registers()[y] - registers()[x]);
 }
 
 void Chip8::SHL(int x, int y) {
 	// https://github.com/Chromatophore/HP48-Superchip#8xy6--8xye
 	// Bit shifts X register by 1, VIP: shifts Y by one and places in X, HP48-SC: ignores Y field, shifts X
-	m_mnemomicFormat = "SHL V%4$01X,V%5$01X";
-	m_v[0xf] = (uint8_t)((m_v[y] & 0x80) == 0 ? 0 : 1);
-	m_v[y] <<= 1;
-	m_v[x] = m_v[y];
+	mnemomicFormat() = "SHL V%4$01X,V%5$01X";
+	registers()[0xf] = (uint8_t)((registers()[y] & 0x80) == 0 ? 0 : 1);
+	registers()[y] <<= 1;
+	registers()[x] = registers()[y];
 }
 
 void Chip8::SNE(int x, int y) {
-	m_mnemomicFormat = "SNE V%4$01X,V%5$01X";
-	if (m_v[x] != m_v[y]) {
-		m_pc += 2;
-	}
+	mnemomicFormat() = "SNE V%4$01X,V%5$01X";
+	if (registers()[x] != registers()[y])
+		PC() += 2;
 }
 
 void Chip8::LD_I(int nnn) {
-	m_mnemomicFormat = "LD I,%1$03X";
-	m_i = (uint16_t)nnn;
+	mnemomicFormat() = "LD I,%1$03X";
+	indirector() = (uint16_t)nnn;
 }
 
 void Chip8::JP_V0(int, int nnn) {
@@ -496,121 +487,116 @@ void Chip8::JP_V0(int, int nnn) {
 	//  VIP: correctly jumps based on v0
 	//  HP48 -SC: reads highest nibble of address to select
 	//      register to apply to address (high nibble pulls double duty)
-	m_mnemomicFormat = "JP V0,%1$03X";
-	m_pc = (uint16_t)(m_v[0] + nnn);
+	mnemomicFormat() = "JP V0,%1$03X";
+	PC() = (uint16_t)(registers()[0] + nnn);
 }
 
 void Chip8::RND(int x, int nn) {
-	m_mnemomicFormat = "RND V%4$01X,%2$02X";
+	mnemomicFormat() = "RND V%4$01X,%2$02X";
 	auto random = m_eightBitDistribution(m_randomNumberGenerator);
-	m_v[x] = (uint8_t)(random & nn);
+	registers()[x] = (uint8_t)(random & nn);
 }
 
 void Chip8::DRW(int x, int y, int n) {
-	m_mnemomicFormat = "DRW V%4$01X,V%5$01X,%3$01X";
+	mnemomicFormat() = "DRW V%4$01X,V%5$01X,%3$01X";
 	draw(x, y, 8, n);
 }
 
 void Chip8::SKP(int x) {
-	m_mnemomicFormat = "SKP V%4$01X";
-	if (m_keyboard.isKeyPressed(m_v[x])) {
-		m_pc += 2;
-	}
+	mnemomicFormat() = "SKP V%4$01X";
+	if (keyboard().isKeyPressed(registers()[x]))
+		PC() += 2;
 }
 
 void Chip8::SKNP(int x) {
-	m_mnemomicFormat = "SKNP V%4$01X";
-	if (!m_keyboard.isKeyPressed(m_v[x])) {
-		m_pc += 2;
-	}
+	mnemomicFormat() = "SKNP V%4$01X";
+	if (!keyboard().isKeyPressed(registers()[x]))
+		PC() += 2;
 }
 
 void Chip8::LD_Vx_II(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
-	m_mnemomicFormat = "LD V%4$01X,[I]";
-	std::copy_n(m_memory.getBus().cbegin() + m_i, x + 1, m_v.begin());
-	m_i += x + 1;
+	mnemomicFormat() = "LD V%4$01X,[I]";
+	std::copy_n(memory().bus().cbegin() + indirector(), x + 1, registers().begin());
+	indirector() += x + 1;
 }
 
 void Chip8::LD_II_Vx(int x) {
 	// https://github.com/Chromatophore/HP48-Superchip#fx55--fx65
 	// Saves/Loads registers up to X at I pointer - VIP: increases I, HP48-SC: I remains static
-	m_mnemomicFormat = "LD [I],V%4$01X";
-	std::copy_n(m_v.cbegin(), x + 1, m_memory.getBusMutable().begin() + m_i);
-	m_i += x + 1;
+	mnemomicFormat() = "LD [I],V%4$01X";
+	std::copy_n(registers().cbegin(), x + 1, memory().bus().begin() + indirector());
+	indirector() += x + 1;
 }
 
 void Chip8::LD_B_Vx(int x) {
-	m_mnemomicFormat = "LD B,V%4$01X";
-	auto content = m_v[x];
-	m_memory.set(m_i, (uint8_t)(content / 100));
-	m_memory.set(m_i + 1, (uint8_t)((content / 10) % 10));
-	m_memory.set(m_i + 2, (uint8_t)((content % 100) % 10));
+	mnemomicFormat() = "LD B,V%4$01X";
+	auto content = registers()[x];
+	memory().set(indirector(),     (uint8_t)(content / 100));
+	memory().set(indirector() + 1, (uint8_t)((content / 10) % 10));
+	memory().set(indirector() + 2, (uint8_t)((content % 100) % 10));
 }
 
 void Chip8::LD_F_Vx(int x) {
-	m_mnemomicFormat = "LD F,V%4$01X";
-	m_i = (uint16_t)(StandardFontOffset + (StandardFontSize * m_v[x]));
+	mnemomicFormat() = "LD F,V%4$01X";
+	indirector() = (uint16_t)(StandardFontOffset + (StandardFontSize * registers()[x]));
 }
 
 void Chip8::ADD_I_Vx(int x) {
 	// From wikipedia entry on CHIP-8:
 	// VF is set to 1 when there is a range overflow (I+VX>0xFFF), and to 0
 	// when there isn't. This is an undocumented feature of the CHIP-8 and used by the Spacefight 2091! game
-	m_mnemomicFormat = "ADD I,V%4$01X";
-	auto sum = m_i + m_v[x];
+	mnemomicFormat() = "ADD I,V%4$01X";
+	auto sum = indirector() + registers()[x];
 	auto masked = sum & 0xFFF;
-	m_v[0xf] = sum == masked ? 0 : 1;
-	m_i = masked;
+	registers()[0xf] = sum == masked ? 0 : 1;
+	indirector() = masked;
 }
 
 void Chip8::LD_ST_Vx(int x) {
-	m_mnemomicFormat = "LD ST,V%4$01X";
-	m_soundTimer = m_v[x];
+	mnemomicFormat() = "LD ST,V%4$01X";
+	soundTimer() = registers()[x];
 }
 
 void Chip8::LD_DT_Vx(int x) {
-	m_mnemomicFormat = "LD DT,V%4$01X";
-	m_delayTimer = m_v[x];
+	mnemomicFormat() = "LD DT,V%4$01X";
+	delayTimer() = registers()[x];
 }
 
 void Chip8::LD_Vx_K(int x) {
-	m_mnemomicFormat = "LD V%4$01X,K";
-	m_waitingForKeyPress = true;
-	m_waitingForKeyPressRegister = x;
+	mnemomicFormat() = "LD V%4$01X,K";
+	setWaitingForKeyPress();
+	setWaitingForKeyPressRegister(x);
 }
 
 void Chip8::LD_Vx_DT(int x) {
-	m_mnemomicFormat = "LD V%4$01X,DT";
-	m_v[x] = m_delayTimer;
+	mnemomicFormat() = "LD V%4$01X,DT";
+	registers()[x] = delayTimer();
 }
 
 ////
 
 void Chip8::waitForKeyPress() {
 	int key;
-	if (m_keyboard.checkKeyPress(key)) {
-		m_waitingForKeyPress = false;
-		m_v[m_waitingForKeyPressRegister] = (uint8_t)key;
+	if (keyboard().checkKeyPress(key)) {
+		setWaitingForKeyPress();
+		registers()[getWaitingForKeyPressRegister()] = (uint8_t)key;
 	}
 }
 
 void Chip8::updateDelayTimer() {
-	if (m_delayTimer > 0) {
-		--m_delayTimer;
-	}
+	if (delayTimer() > 0)
+		--delayTimer();
 }
 
 void Chip8::updateSoundTimer() {
-	if (m_soundTimer > 0) {
-		if (!m_soundPlaying) {
+	if (soundTimer() > 0) {
+		if (!m_soundPlaying)
 			onBeepStarting();
-		}
-		--m_soundTimer;
+		--soundTimer();
 	} else {
-		if (m_soundPlaying) {
+		if (m_soundPlaying)
 			onBeepStopped();
-		}
 	}
 }

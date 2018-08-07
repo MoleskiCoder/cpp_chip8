@@ -9,11 +9,11 @@ Memory::Memory(int size)
 : m_bus(size) {
 }
 
-const std::vector<uint8_t>& Memory::getBus() const {
+const std::vector<uint8_t>& Memory::bus() const {
 	return m_bus;
 }
 
-std::vector<uint8_t>& Memory::getBusMutable() {
+std::vector<uint8_t>& Memory::bus() {
 	return m_bus;
 }
 

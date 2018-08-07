@@ -11,8 +11,8 @@ void BitmappedGraphics::initialise() {
 	setHighResolution(false);
 }
 
-int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int drawY, int width, int height) {
-	auto bytesPerRow = width / 8;
+int BitmappedGraphics::draw(const Memory& memory, int address, const int drawX, const int drawY, const int width, const int height) {
+	const auto bytesPerRow = width / 8;
 	size_t hits = 0;
 	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
 		if (isPlaneSelected(plane)) {
@@ -20,79 +20,68 @@ int BitmappedGraphics::draw(const Memory& memory, int address, int drawX, int dr
 			address += height * bytesPerRow;
 		}
 	}
-	setDirty(true);
+	setDirty();
 	if (!m_countRowHits)
 		hits = hits > 0 ? 1 : 0;
 	return (int)hits;
 }
 
-void BitmappedGraphics::scrollDown(int count) {
-	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
+void BitmappedGraphics::scrollDown(const int count) {
+	for (int plane = 0; plane < getNumberOfPlanes(); ++plane)
 		maybeScrollDown(plane, count);
-	}
-	setDirty(true);
+	setDirty();
 }
 
 void BitmappedGraphics::scrollUp(int count) {
-	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
+	for (int plane = 0; plane < getNumberOfPlanes(); ++plane)
 		maybeScrollUp(plane, count);
-	}
-	setDirty(true);
+	setDirty();
 }
 
 void BitmappedGraphics::scrollLeft() {
-	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
+	for (int plane = 0; plane < getNumberOfPlanes(); ++plane)
 		maybeScrollLeft(plane);
-	}
-	setDirty(true);
+	setDirty();
 }
 
 void BitmappedGraphics::scrollRight() {
-	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
+	for (int plane = 0; plane < getNumberOfPlanes(); ++plane)
 		maybeScrollRight(plane);
-	}
-	setDirty(true);
+	setDirty();
 }
 
 void BitmappedGraphics::clear() {
-	for (int plane = 0; plane < getNumberOfPlanes(); ++plane) {
+	for (int plane = 0; plane < getNumberOfPlanes(); ++plane)
 		maybeClear(plane);
-	}
-	setDirty(true);
+	setDirty();
 }
 
-bool BitmappedGraphics::isPlaneSelected(int plane) const {
-	auto mask = 1 << plane;
-	auto selected = (getPlaneMask() & mask) != 0;
-	return selected;
+bool BitmappedGraphics::isPlaneSelected(const int plane) const {
+	const auto mask = 1 << plane;
+	return (getPlaneMask() & mask) != 0;
 }
 
-void BitmappedGraphics::maybeScrollDown(int plane, int count) {
-	if (isPlaneSelected(plane)) {
+void BitmappedGraphics::maybeScrollDown(const int plane, const int count) {
+	if (isPlaneSelected(plane))
 		m_planes[plane].scrollDown(count);
-	}
 }
 
-void BitmappedGraphics::maybeScrollUp(int plane, int count) {
-	if (isPlaneSelected(plane)) {
+void BitmappedGraphics::maybeScrollUp(const int plane, const int count) {
+	if (isPlaneSelected(plane))
 		m_planes[plane].scrollUp(count);
-	}
 }
 
-void BitmappedGraphics::maybeScrollLeft(int plane) {
-	if (isPlaneSelected(plane)) {
+void BitmappedGraphics::maybeScrollLeft(const int plane) {
+	if (isPlaneSelected(plane))
 		m_planes[plane].scrollLeft();
-	}
 }
 
-void BitmappedGraphics::maybeScrollRight(int plane) {
-	if (isPlaneSelected(plane)) {
+void BitmappedGraphics::maybeScrollRight(const int plane) {
+	if (isPlaneSelected(plane))
 		m_planes[plane].scrollRight();
-	}
 }
 
-void BitmappedGraphics::maybeClear(int plane) {
-	if (isPlaneSelected(plane)) {
+void BitmappedGraphics::maybeClear(const int plane) {
+	if (isPlaneSelected(plane))
 		m_planes[plane].clear();
-	}
 }

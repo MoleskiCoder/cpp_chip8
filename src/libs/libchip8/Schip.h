@@ -30,13 +30,8 @@ public:
 
 	virtual void initialise();
 
-	const std::array<uint8_t, 8>& getCalculatorRegisters() const {
-		return m_r;
-	}
-
-	std::array<uint8_t, 8>& getCalculatorRegistersMutable() {
-		return m_r;
-	}
+	const std::array<uint8_t, 8>& calculatorRegisters() const { return m_r; }
+	std::array<uint8_t, 8>& calculatorRegisters() { return m_r; }
 
 protected:
 	void onHighResolution();
